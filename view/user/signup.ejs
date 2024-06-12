@@ -1,0 +1,64 @@
+<%- include('../layouts/userLayout/header.ejs')%> 
+
+<style>
+    .error-message{
+        color : red
+    }
+</style>
+
+<div class="account-area mt-70 mb-70">
+    <div class="container">
+        <div class="row">
+        <div class="col-lg-6 ">
+            <div class="basic-login">
+                <h5>Register</h5>
+
+                <% if (alert&&alert.length >0) {%> 
+                    
+                  <div class="alert alert-danger" role="alert">
+                            <%= alert %> 
+                    <a href="/contact" class="alert-link">Need help?</a>
+                 </div>     
+                <% } %>
+
+                <form id="registrationForm" action="/signup" method="post" onsubmit="return validateForm()">  
+                    <label for="username">Name <span>*</span></label>
+                        <input id="username" type="text" placeholder="Enter Firstname and Lastname" name="name" required>
+                        <p id="name-error" class="error-message"></p>
+
+                    <label for="email-id ">Email Address <span>*</span></label>
+                        <input id="email-id" type="text" placeholder="Email address..." name="email" required>
+                        <p id="email-error" class="error-message"></p>
+
+                    <label for="number-id">Mobile number<span>*</span></label>
+                        <input id="phone" type="number" inputmode="numeric" placeholder="Enter your Phone number" name="phone" required>
+                        <p id="phone-error" class="error-message"></p>
+
+                    <label for="userpass">Password <span>*</span></label>
+                        <input type="password" placeholder="Enter password..." name="password" id="password" required>
+                        <p id="password-error" class="error-message"></p>
+
+                    <label for="userpass">Confirm Password <span>*</span></label>
+                        <input id="confirmPassword" type="password" placeholder="Enter password..." name="confirmPassword" required>
+                        <p id="confirmPassword-error" class="error-message"></p>
+                                
+                <div class="login-action mb-10 fix">
+
+                    <p>Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our <a href="#">privacy policy</a>.</p>
+                </div>
+                        <input type="submit" placeholder="submit" class="tp-in-btn w-100">
+                            <a href="/login" class="tp-in-btn1 w-100" style="border-radius: 2rem;">
+                                Already a user &nbsp ? &nbsp LOGIN</a>
+            </form>
+        </div>
+    </div>
+
+                   
+            <div class="social-login">
+                <a href="/auth/google"><button  id="google-login">
+                    <img src="assets/img/logo/google.png" alt="Google Logo"> SignUp with Google
+                </button></a>
+            </div>
+<script src="/userAssets/formValidation.js"></script>
+
+<%- include('../layouts/userLayout/footer.ejs')%>                     

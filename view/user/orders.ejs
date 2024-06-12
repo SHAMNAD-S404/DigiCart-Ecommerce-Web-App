@@ -1,0 +1,212 @@
+<%- include('../layouts/userLayout/header.ejs')%>
+
+  <link rel="stylesheet" href="assets/userProfile/css/swiper10-bundle.min.css">
+  <link rel="stylesheet" href="assets/userProfile/css/bootstrap-5.3.2.min.css">
+  <link rel="stylesheet" href="assets/userProfile/css/nouislider.min.css">
+  <link rel="stylesheet" href="assets/userProfile/css/aos-3.0.0.css">
+  <link rel="stylesheet" href="assets/userProfile/css/style.css">
+  
+  <!--font-awesome cdn-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+
+    <section class="blog about-blog">
+      <div class="container">
+        <div class="blog-bradcrum">
+          <span><a href="/">Home</a></span>
+          <span class="devider">/</span>
+          <span><a href="#">Orders</a></span>
+        </div>
+        <div class="blog-heading about-heading">
+          <h1 class="heading">My Orders <i class="fa-solid fa-cart-shopping"></i></h1>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="user-profile footer-padding">
+      <div class="container">
+        <div class="user-profile-section">
+
+          <div class="user-dashboard">
+
+
+            <div class="tab-content nav-content" id="v-pills-tabContent" style="flex: 1 0%;">
+
+              <!--ORDER INFO PAGE START-->
+
+              <div class="tab-pane fade show active" id="v-pills-order" role="tabpanel" aria-labelledby="v-pills-order-tab"
+                tabindex="0">
+                <% if( orderInfo && orderInfo.length>0) { %>
+                <div class="cart-section">
+                  <table>
+                    <tbody>
+                      <tr class="table-row table-top-row">
+                        <td class="table-wrapper wrapper-product">
+                          <h5 class="table-heading">PRODUCT</h5>
+                        </td>
+
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                            <h5 class="table-heading">QUANTITY</h5>
+                          </div>
+                        </td>
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                            <h5 class="table-heading">ORDER DATE</h5>
+                          </div>
+                        </td>
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                            <h5 class="table-heading">PAYMENT</h5>
+                          </div>
+                        </td>
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                            <h5 class="table-heading">STATUS</h5>
+                          </div>
+                        </td>
+                        <td class="table-wrapper">
+                          <div class="table-wrapper-center">
+                            <h5 class="table-heading">ACTION</h5>
+                          </div>
+                        </td>
+                        <td class="table-wrapper">
+                          <div class="table-wrapper-center">
+                            <h5 class="table-heading">DETAILS </h5>
+                          </div>
+                        </td>
+                      </tr>
+                      <% orderInfo.forEach(order => {
+                        order.orderItems.forEach(item => {
+                          const product = item.product.productID;
+                          const variant = item.product;
+                          //const address = order.shippingAddress;
+                          const quantity = item.quantity
+                          const status   = item.orderStatus
+                          //const totalPrice = order.grandTotal
+                          const paymentMode = order.paymentMethod
+                          const orderID     = order._id;
+                          const date  = order.orderDate
+                          const newDate = new Date(date)
+                          const orderDate = newDate.toDateString();
+
+                      %>
+                     
+                      <tr class="table-row ticket-row" id="row<%=orderID%>">
+                        <td class="table-wrapper wrapper-product">
+                          <div class="wrapper">
+                            <div class="wrapper-img">
+                              <a href="/track-order?orderID=<%=orderID%>"><img src="/uploaded_Images/<%= variant.imageName[1] %>" alt="img"
+                                data-toggle="tooltip" data-placement="right" title="Click to Show details">
+                                </a>
+                            </div>
+                            <div class="wrapper-content">
+                              <h5 class="heading"><%=product.name%>,<br><%=variant.variantName%></h5>
+                            </div>
+                          </div>
+                        </td>
+                    
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                           <p ><%=quantity %> </p>               
+                          </div>
+                        </td>
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                           <p ><%=orderDate %> </p>               
+                          </div>
+                        </td>
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                            <p style="color: green;"> <%=paymentMode %> </p>                       
+                          </div>
+                        </td>
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                            <h5 id="statusH5<%=variant._id%>" class="heading statusClass" data-h5status="<%=status %>" data-variantIDD="<%=variant._id%>" >
+                              <%=status %></h5>                           
+                          </div>
+                        </td>
+
+                        <td class="table-wrapper wrapper-total">
+                          <div class="table-wrapper-center">
+                            
+                          <button type="button" class="btn btn-danger btn-lg btnCancel" id="btnCancel<%=variant._id%>"
+                          onclick="cancelOrder('<%=orderID%>','<%=quantity%>','<%=variant._id%>')">CANCEL</button>
+
+                          <button type="button" id="returnBtn<%=variant._id%>" class="returnButton btn btn-primary btn-lg" style="display: none;"
+                           onclick="orderReturn('<%=orderID%>','<%=variant._id%>')" >RETURN</button>
+
+                          <button type="button" id="retryBtn<%=variant._id%>" class="returnButton btn btn-primary btn-lg ms-2" style="display: none;"
+                           onclick="orderRetry('<%=orderID%>','<%=variant._id%>')" >RETRY</button>
+
+                          <p id="spanCancel<%=variant._id%>" class="spanCancel" style="color: red; display: none;">Order cancelled</p>
+                          
+                          </div>
+                        </td>
+                        <td>
+                         <a href="/track-order?orderID=<%=orderID%>"> <h7><i class="fa-regular fa-eye fa-lg"></i></h7></a>
+                        </td>
+                        
+                      </tr>
+                      <% }) }) %>
+
+                    </tbody>
+                  </table>
+                </div>
+                <div class="pagination mt-4">
+                  <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                      <% for(let i=1; i <=totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                          <a class="page-link" href="?page=<%= i %>">
+                            <%= i %>
+                          </a>
+                        </li>
+                        <% } %>
+                    </ul>
+                  </nav>
+                </div>
+                <% }else{ %>
+                  <h4 class="emptyProduct" style="text-align: center; color: #216bdf;">Order is empty 
+                  <i class="fa-solid fa-cart-shopping"></i> ! purchase some product </h4>
+                    
+
+                  <%}%>
+              </div>
+     
+
+          </div>
+        </div>
+      </div>
+      </div>
+      
+
+    
+    </section>
+
+       <%// Razorpay %>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    //sweetalert2
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    //fetch functions
+    <script src="assets/userProfile/js/order.js"></script>
+    
+    <!--BOOTSTRAP-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>-->
+    <script src="assets/userProfile/js/jquery_3.7.1.min.js"></script>
+
+    <script src="assets/userProfile/js/bootstrap_5.3.2.bundle.min.js"></script>
+
+    <script src="assets/userProfile/js/nouislider.min.js"></script>
+
+    <script src="assets/userProfile/js/aos-3.0.0.js"></script>
+
+    <script src="assets/userProfile/js/swiper10-bundle.min.js"></script>
+
+    <script src="assets/userProfile/js/shopus.js"></script>
+
+    <%- include('../layouts/userLayout/footer.ejs')%>

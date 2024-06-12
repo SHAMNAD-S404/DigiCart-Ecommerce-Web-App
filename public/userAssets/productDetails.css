@@ -1,0 +1,9 @@
+.dm-item img {
+  width: 70px;
+  border: 4px solid transparent; /* Border color initially transparent */
+  transition: border-color 0.3s; /* Smooth transition for the border color change */
+}
+
+.dm-item img:hover {
+  border-color: #0a39e3; /* Change border color on hover */
+}

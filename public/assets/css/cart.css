@@ -1,0 +1,24 @@
+  .productImage:hover{
+      border: 2px solid rgb(69, 133, 228);
+      border-radius: 10px;
+      
+   }
+
+   .quantityClass{
+      display: flex;
+      justify-content: center;
+      
+
+   }
+   .incButton{
+      padding: 0.6rem 0.5rem;
+         font-size: 1.7rem;
+   }
+
+   .quantityField{
+      width: 3rem;
+      height: 3rem;
+      font-size: 1.2rem;
+      text-align: center;
+
+   }

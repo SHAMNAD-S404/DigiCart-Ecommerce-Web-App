@@ -1,0 +1,358 @@
+ <%- include('../layouts/userLayout/header.ejs')%> 
+
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+ <!--RAZORPAY-->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
+
+ <main> 
+        <!-- page-banner-area-start -->
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="page-banner-content text-center">
+                        <h4 class="breadcrumb-title" style="color: black;"><i class="fa-solid fa-cart-shopping"></i>  Checkout</h4>
+                        <div class="breadcrumb-two">
+                            <nav>
+                                <nav class="breadcrumb-trail breadcrumbs">
+                                    <ul class="breadcrumb-menu">
+                                        <li class="breadcrumb-trail">
+                                            <a href="/"><span style="color: blue;">Home</span></a>
+                                        </li>
+                                        <li class="trail-item">
+                                            <span style="color: black;">Checkout</span>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- page-banner-area-end -->
+<% /* %>
+        <!-- coupon-area-start -->
+        <section class="coupon-area pt-120 pb-30">
+            <div class="container">
+            <div class="row">
+            <div class="col-md-6">
+                <div class="coupon-accordion">
+                        <!-- ACCORDION START -->
+                        <h3>Returning customer? <span id="showlogin">Click here to login</span></h3>
+                        <div id="checkout-login" class="coupon-content">
+                        <div class="coupon-info">
+                            <p class="coupon-text">Quisque gravida turpis sit amet nulla posuere lacinia. Cras sed est
+                                    sit amet ipsum luctus.</p>
+                            <form action="#">
+                                    <p class="form-row-first">
+                                    <label>Username or email <span class="required">*</span></label>
+                                    <input type="text">
+                                    </p>
+                                    <p class="form-row-last">
+                                    <label>Password <span class="required">*</span></label>
+                                    <input type="text">
+                                    </p>
+                                    <p class="form-row">
+                                    <button class="tp-btn-h1" type="submit">Login</button>
+                                    <label>
+                                        <input type="checkbox">
+                                        Remember me
+                                    </label>
+                                    </p>
+                                    <p class="lost-password">
+                                    <a href="#">Lost your password?</a>
+                                    </p>
+                            </form>
+                        </div>
+                        </div>
+                        <!-- ACCORDION END -->
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="coupon-accordion">
+                        <!-- ACCORDION START -->
+                        <h3>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h3>
+                        <div id="checkout_coupon" class="coupon-checkout-content">
+                        <div class="coupon-info">
+                            <form action="#">
+                                    <p class="checkout-coupon">
+                                    <input type="text" placeholder="Coupon Code">
+                                    <button class="tp-btn-h1" type="submit">Apply Coupon</button>
+                                    </p>
+                            </form>
+                        </div>
+                        </div>
+                        <!-- ACCORDION END -->
+                </div>
+            </div>
+            </div>
+        </div>
+        </section>
+        <!-- coupon-area-end -->
+<% */ %>
+        <!-- checkout-area-start -->
+        <section class="checkout-area pb-85">
+            <div class="container">
+                <form action="#">
+                    <div class="row mt-4">
+                        <div class="col-lg-6">
+                            <div class="checkbox-form">
+                                <h3>Billing Details</h3>
+                                <div class="row">
+                                    <div class="col-md-12">                                      
+
+                                    <% if(userAddress) {%>
+                                    <div class="container">
+                                        
+                                        <h3>Select Address:</h3>
+                                        <form>
+                                           
+                                            <%
+                                                if(userAddress.address && userAddress.address.length > 0) { 
+                                                userAddress.address.forEach(address => {
+                                                            
+                                            %>
+                                            
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="addressRadio" id="address1" value="<%=address._id%>">
+                                                <label class="form-check-label" for="address1">
+                                                    <div class="card text-white bg-secondary mb-3" style="width: 20rem; height: 17rem;">
+                                                        <div class="card-header"><%= address.name %> </div>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title" style="color: white;"><%=address.address %></h5>
+                                                        
+                                                            <span><%=address.locality %> ,<%=address.landmark %></span><br>
+                                                            <span><%=address.city %></span> <span> -City</span><br>
+                                                            <span><%=address.state %></span><br>
+                                                            <span>Phone : </span><span><%=address.phone %></span><br>
+                                                            <span>Pincode : </span><span><%=address.pincode %></span><br>
+                                                            <span><%=address.addressType %></span><br>
+                                                        </div>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        <%
+                                            });
+                                                }
+                                        %>
+                                            </form>
+                                        </div>  
+                                        <% } %>     
+                                        
+
+                                    
+                                    </div>                            
+                                </div>
+                                <div class="different-address">
+                                    <div class="ship-different-title">
+                                        <h3>
+                                            <label>Ship to a different address?</label>
+                                            <input id="ship-box" type="checkbox">
+                                        </h3>
+                                    </div>
+                                    <div id="ship-box-info">
+                                         <form > 
+                                        <div class="row">  
+                                                                                   
+                                                <div class="col-md-6">
+                                                    <div class="checkout-form-list">
+                                                    <label>Full Name<span class="required">*</span></label>
+                                                    <input type="text" id="nameAddress" placeholder="Enter fullname" name="fullname" required>
+                                                    <span id="nameError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="checkout-form-list">
+                                                    <label>Phone <span class="required">*</span></label>
+                                                    <input type="text" id="userphone" placeholder="Enter Valid number" name="phone" required>
+                                                    <span id="phoneError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="checkout-form-list">
+                                                    <label>Address<span class="required">*</span></label>
+                                                    <input type="text" id="useraddress" name="address" required>
+                                                    <span id="addressError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="checkout-form-list">
+                                                    <label>locality <span class="required">*</span></label>
+                                                    <input type="text" id="userLocality" placeholder="Street address" name="locality" required>
+                                                    <span id="localityError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="checkout-form-list">
+                                                    <label>Landmark <span class="required">*</span></label>
+                                                    <input type="text" id="userLandmark" placeholder="Enter near landmark" name="landmark" required>
+                                                    <span id="landmarkError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="checkout-form-list">
+                                                    <label>District/City <span class="required">*</span></label>
+                                                    <input type="text" id="userCity"  name="city" required>
+                                                    <span id="cityError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="checkout-form-list">
+                                                    <label>State<span class="required">*</span></label>
+                                                    <input type="text" id="userState" name="state" required>
+                                                    <span id="stateError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="checkout-form-list">
+                                                    <label>Pincode / Zip <span class="required">*</span></label>
+                                                    <input type="text" id="userPincode" placeholder="Enter 6 digit Pincode" name="pincode" required>
+                                                    <span id="pincodeError" class="error"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="checkout-form-list">
+                                                    <label>Address Type <span class="required">*</span></label>
+                                            
+                                                    <select id="addressType"  name="inputAddressType" >
+                                                        <option value="Home" selected> Home </option>
+                                                        <option value="Office"> Office </option>
+                                                    </select>
+                   
+                                                </div>
+                                            </div>
+                                            <button type="button" class="btn btn-outline-primary" onclick="addAddress()" >Save & Proceed</button>
+                                        
+                                        </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     <% if(stock) { %>   
+                        <div class="col-lg-6 " style="margin-top: 3rem;">
+                            <div class="your-order mb-30 ">
+                                <h3>Your order</h3>
+                                <div class="your-order-table table-responsive">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th class="product-name" style="color: blue; ">Product</th>
+                                                <th class="product-quantity" style="color: blue;text-align: center; ">Quantity</th>
+                                                <th class="product-total  myClass" style="color: blue;">Total</th>
+                                            </tr>
+                                        </thead>
+                                       
+                                        
+                                            <tbody>
+
+                                                          
+                                                            
+                                                <% if(stock ) { %>
+                                               <% stock.forEach(element=> { %> 
+                                                    
+                                                    <% const product = element.productVariantId.productID;%>
+                                                    <% const variant = element.productVariantId ; %>
+                                                    <% const quantity = element.quantity;%>
+                                                    
+                                                    
+ 
+
+                                            <tr class="cart_item">
+                                                <td class="product-name myClass" style="color: black; "> <%= product.name %> <br>-<%= variant.variantName %> </td>                                                                                             
+                                                <td class="product-quantity myClass" style="text-align: center; color: black;" ><%=quantity %> Pcs</td>  
+                                                <% const sum = variant.price * quantity %>                                                  
+                                                <td class="product-total myClass"><span class="amount" style="color: green;"><%= sum  %> </span> </td>
+                                                <s style="display: none;" hidden id="unitPrice<%=variant._id%>"><%= variant.price%></s>
+                                                                                                       
+                                            </tr>
+                                            
+                                            
+                                             <%})  }%>  
+                                           
+                                            </tbody>
+                                            <% if(subTotal && total) { %>
+                                        <tfoot>
+                                            
+                                            <tr class="cart-subtotal">
+                                                <th style="color: blue; font-weight: bold;">Cart Subtotal</th>
+                                                <td><span class="amount" style="color: #0be015; font-weight: bold;"><%= subTotal %></span></td>
+                                            </tr>
+
+                                            <tr class="shipping">`
+                                                <th style="color: blue; font-weight: bold;">Shipping</th>
+                                                <% if( subTotal > 10000) { %>
+                                                    <td> <span class="amount" style="color: #e6710a; font-weight: bold;"> free shipping </span>  </td>
+                                                <%}else{%>
+                                                    <td> <span class="amount" style="color: #0be015; font-weight: bold;"> 60.00 </span>
+                                                          <br><span>Above 10,000 /- free shipping</span>
+                                                    </td>
+                                                <%}%>
+
+                                            </tr>
+
+                                            <tr class="order-total" id="trDiscount" >
+                                             <th style="color: blue; font-weight: bold;" >Coupon discount </th>                  
+                                                <td><strong><span class="amount" id="couponSpan" > NILL </span> </strong> </td>                                               
+                                            </tr>
+
+                                            <% if(offerDiscount){ %>
+
+                                            <tr class="cart-subtotal" id="" >
+                                             <th style="color: blue; font-weight: bold;" >Offer discount </th>                  
+                                                <td><strong><span class="amount" id="" style="font-size: 1rem;" >- <%=offerDiscount%> </span> </strong> </td>                                               
+                                            </tr>
+
+                                            <% } %>
+
+
+                                            
+                                            <tr class="order-total">
+                                             <th style="color: blue; font-weight: bold;" >Order Total</th>                  
+                                                <td><strong><span class="amount" id="couponTotalSpan" ><%= total %></span>  <span>&#8377;</span> </strong> </td>                                               
+                                            </tr>
+                                        </tfoot>
+                                        <% } %>
+                                    </table>
+                                </div>
+                               
+                                <div class="order-button ">
+                                    <div class="coupon" id="applyCouponDiv">
+                                          <input id="coupon_code" class="input-text w-100 mb-2"  placeholder="Enter code . Coupons are case sensitive" type="text">
+                                          <button class="tp-btn-h1 mb-2 w-100" type="button" onclick="applyCoupon('<%=total%>')"  
+                                           id="applyCoupnBtn" >Apply coupon</button>
+                                          <a href="/checkout" style="display: none; " id="couponCancel"><button type="button" class="btn btn-danger w-100 mb-2 "
+                                            id="couponCancel" >Cancel coupon</button></a>
+                                               
+                                       </div>
+
+                                    <div class="order-button-payment mt-20" id="choosePaymentBtn">
+                                        <button type="button" onclick="verifyAddress()"  class="tp-btn-h1">Choose Payment</button>
+                                    </div><br>
+                                    <div class="order-button-payment mt-20" id="backtoCartBtn" style="display: none;">
+                                        <a href="/cart"><button type="button" class="tp-btn-h1"> Back to Cart </button></a>
+                                    </div><br>
+                                    <button type="button" id="buttonCOD" class="btn btn-outline-primary w-50">Cash on Delivery</button><br>
+                                    <button type="button" id="buttonONLINE" class="btn btn-outline-success w-50"> Online Payments</button>
+                                    <% if(walletBalance) {%>
+                                    <button type="button" id="buttonWALLET" class="btn btn-outline-info mt-4 w-50"> Pay with Wallet</button>
+                                    <p id="walletBalance">Wallet balance : <%=walletBalance.balance%> </p>
+                                    <%}%> 
+                                </div>
+
+
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <!-- checkout-area-end -->
+
+
+<%- include('../layouts/userLayout/footer.ejs')%>
+<script src="assets/js/digiCart/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

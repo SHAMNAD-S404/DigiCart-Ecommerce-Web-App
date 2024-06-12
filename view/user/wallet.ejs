@@ -1,0 +1,213 @@
+<%- include('../layouts/userLayout/header.ejs')%>
+
+  <link rel="stylesheet" href="assets/userProfile/css/swiper10-bundle.min.css">
+  <link rel="stylesheet" href="assets/userProfile/css/bootstrap-5.3.2.min.css">
+  <link rel="stylesheet" href="assets/userProfile/css/nouislider.min.css">
+  <link rel="stylesheet" href="assets/userProfile/css/aos-3.0.0.css">
+  <link rel="stylesheet" href="assets/userProfile/css/style.css">
+
+
+
+    <section class="blog about-blog">
+      <div class="container">
+        <div class="blog-bradcrum">
+          <span><a href="/">Home</a></span>
+          <span class="devider">/</span>
+          <span><a href="#">Wallet </a></span>
+        </div>
+     
+      </div>
+      
+    </section>
+
+
+    <section class="user-profile footer-padding">
+      <div class="container">
+        <div class="user-profile-section">
+
+          <div class="user-dashboard">
+        
+
+
+          
+
+            <div class="tab-content nav-content" id="v-pills-tabContent" style="flex: 1 0%;">
+         
+            
+
+              <% //USER WALLET SESSION %>
+
+              <div class="tab-pane fade show active" id="v-pills-payment" role="tabpanel" aria-labelledby="v-pills-order-tab"
+                tabindex="0">
+                <div class="payment-section">
+                  <div class="wrapper">
+                    <div class="wrapper-item">
+                      <div class="wrapper-img">
+                        <img src="assets/userProfile/homepage-one/payment-img-1.png" alt="payment">
+                      </div>
+                      <div class="wrapper-content">
+                        <h5 class="heading">My Wallet</h5>
+
+                        <% if (wallet) { %>
+                          <h5 style="color: red;" class="p-4"><%= wallet.balance%> &#8377;</h5>
+                        <% }else{ %>
+                           <h5 style="color: red;" class="p-4">0 &#8377;</h5>
+                        <% } %>
+
+                        <p class="verified">Load wallet and Enjoy shopping</p>
+                      </div>
+                    </div>
+                    <input type="text" id="walletInput" class="shop-btn" placeholder="Enter the amount " required>                    
+                    <button class="shop-btn" onclick="loadWallet()" >Load Wallet</button>  
+                  </div>
+                  <hr>
+                  <% //wallet history %>
+                  <h5 style="text-align: center;">Wallet History</h5>
+                  <h6 style="text-align: center;">Last seven transactions</h6>
+                  <hr>
+                  <div class="support-ticket">
+                  
+                    <div class="ticket-section">
+                      <table>
+                          <% if(wallet) {%>
+                        <tbody>
+                        
+                          <tr class="table-row table-top-row">
+                            <td class="table-wrapper">
+                              <h5 class="table-heading">DATE</h5>
+                            </td>
+                            <td class="table-wrapper">
+                              <div class="table-wrapper-center">
+                                <h5 class="table-heading">STATUS</h5>
+                              </div>
+                            </td>
+                            <td class="table-wrapper">
+                              <div class="table-wrapper-center">
+                                <h5 class="table-heading">AMOUNT</h5>
+                              </div>
+                            </td>
+                            <td class="table-wrapper">
+                              <div class="table-wrapper-center">
+                                <h5 class="table-heading">DETAILS</h5>
+                              </div>
+                            </td>
+                  
+                          </tr>
+                          <% if(wallet && wallet.transactions){
+                            wallet.transactions.slice(0,7).forEach(item => {
+                            %>
+                  
+                  
+                            <tr class="table-row ticket-row">
+                              <td class="table-wrapper">
+                                <p class="ticker-date" >
+                                  <%= new Date(item.date).toLocaleDateString('en-IN')%> <br>
+                                  <span  ><%= new Date(item.date).toLocaleTimeString('en-IN')%></span>
+                                </p>
+                              </td>
+
+                                <%
+                                  let status='';
+                                  if (item.transactionMethod === 'Purchase' ) {
+                                    status = 'Debit';
+                                  }else {
+                                    status = 'Credit';
+                                  }
+                                  %>
+
+                              <td class="table-wrapper">
+                                <div class="table-wrapper-center">
+                                  <% if(status==='Debit'){ %>
+                                    <p class="ticket-number" style="color: red;"> <%= status%> </p>
+                                  <% } else{%>
+                                    <p class="ticket-number" style="color: green;"> <%= status%> </p>
+                                  <% } %>
+                                  
+                                </div>
+                              </td>
+
+
+                              <td class="table-wrapper">
+                                <div class="table-wrapper-center">
+                                  <p class="ticket-number" style="color: blue;">
+                                    <%= item.amount%>
+                                  </p>
+                                </div>
+                              </td>
+                              <td class="table-wrapper">
+                               
+                                <div class="table-wrapper-center">
+
+                                  <%
+                                  let message='';
+                                  if (item.transactionMethod === 'Razorpay' ) {
+                                    message = 'Wallet loaded with Razorpay';
+                                  }else if (item.transactionMethod === 'Refund') {
+                                    message = 'Refund of order credited to wallet';
+                                  }else if (item.transactionMethod === 'Purchase') {
+                                    message = 'Order purchased with wallet'
+                                  }else if (item.transactionMethod === 'Referral') {
+                                    message = ' Refferal bonus credited to wallet'
+                                  }
+                                  
+                                  %>
+
+                                  <p class="ticket-info"> <%=message%></p>
+
+                  
+                                </div>
+                                
+                              </td>
+                  
+                            </tr>
+                            <% }) }%>
+                  
+                        </tbody>
+
+                        <%}%>
+
+                      </table>
+                    </div>
+                  </div>
+
+                 
+
+                </div>
+              </div>
+
+
+          </div>
+        </div>
+      </div>
+      </div>
+      
+      
+
+    
+    </section>
+
+    
+    <%// Razorpay %>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <% // sweetalert2 %>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <%// fetch functions  %>
+    <script src="assets/userProfile/js/wallet.js"></script>
+    
+    <!--BOOTSTRAP-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>-->
+    <script src="assets/userProfile/js/jquery_3.7.1.min.js"></script>
+
+    <script src="assets/userProfile/js/bootstrap_5.3.2.bundle.min.js"></script>
+
+    <script src="assets/userProfile/js/nouislider.min.js"></script>
+
+    <script src="assets/userProfile/js/aos-3.0.0.js"></script>
+
+    <script src="assets/userProfile/js/swiper10-bundle.min.js"></script>
+
+    <script src="assets/userProfile/js/shopus.js"></script>
+
+    <%- include('../layouts/userLayout/footer.ejs')%>

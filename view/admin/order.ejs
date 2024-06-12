@@ -1,0 +1,260 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!--navbar-->
+
+    <%-include('../partials/navbar.ejs')%>
+
+        <!--start main wrapper-->
+        <main class="main-wrapper">
+            <div class="main-content">
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <a href="/admin/home"><div class="breadcrumb-title pe-3">DigiCart</div></a>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">All Orders</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div>
+                     <h2 class="text-center">All Orders <i class="fa-solid fa-cart-shopping"></i></h2>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <% /* %>
+                        <div class="position-relative">
+                            <input class="form-control px-5" type="search" id="searchInput" placeholder="Search  Products by Name">
+                            <span
+                                class="material-symbols-outlined position-absolute ms-3 translate-middle-y start-0 top-50 fs-5"></span>
+                        </div>
+                        <% */ %>
+                    </div>
+                    <% /* %>
+                    <div class="col-auto flex-grow-1 overflow-auto">
+                        <div class="btn-group position-static">
+                            <div class="btn-group position-static">
+                                <button type="button" class="btn btn-filter dropdown-toggle px-4"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Country
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:;">Action</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Another action</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="javascript:;">Something else here</a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group position-static">
+                                <button type="button" class="btn btn-filter dropdown-toggle px-4"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    Source
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:;">Action</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Another action</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="javascript:;">Something else here</a></li>
+                                </ul>
+                            </div>
+                            <div class="btn-group position-static">
+                                <button type="button" class="btn btn-filter dropdown-toggle px-4"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    More Filters
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:;">Action</a></li>
+                                    <li><a class="dropdown-item" href="javascript:;">Another action</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="javascript:;">Something else here</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <% */ %>
+
+                    <div class="col-auto">
+                        <div class="d-flex align-items-center gap-2 justify-content-lg-end">
+                            <a href="/admin/"><button class="btn btn-primary px-4"><i
+                                        class="bi bi-plus-lg me-2"></i>Go Back</button></a>
+                        </div>
+                    </div>
+                </div><!--end row-->
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="product-table">
+                            <div class="table-responsive white-space-nowrap">
+                                <table class="table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+
+                                            <th>SL</th>
+                                            <th>PRODUCT </th>
+                                            <th>CUSTOMER</th>
+                                            <th>PAYMENT</th>
+                                            <th>STATUS</th>
+                                            <th>ACTION</th>
+                                            <th>DETAILS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productTableBody">
+                                     <% let sl=0 %>
+                                     <% if ( orderInfo && orderInfo.length > 0 ) { 
+                                         orderInfo.forEach(order => {
+                                        order.orderItems.forEach(item => {
+                                        const product = item.product.productID;
+                                        const variant = item.product;
+                                        //const address = order.shippingAddress;
+                                        const quantity = item.quantity
+                                        const status   = item.orderStatus
+                                        const returnReason = item.returnReason
+                                        //const totalPrice = order.grandTotal
+                                        const paymentMode = order.paymentMethod
+                                        const user        = order.userId;
+                                        const orderID     = order._id;
+                                        const date  = order.orderDate
+                                        const newDate = new Date(date)
+                                        const orderDate = newDate.toDateString();
+                                        const temp = order.orderItems
+                                       
+                                          
+                                    %>
+                                   
+                                        <tr>
+                                            <td> 00<%= ++sl %> </td>
+                                            <td>        
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="product-box"><a href="/admin/product-details?id=<%=product._id%> ">
+                 
+                                                     <img src="/uploaded_Images/<%= variant.imageName[1]%>" width="70" class="rounded-3"alt="product image"> </a>                                                                                                                                                            
+                                                               
+                                                      </div>      
+                                                            <div class="product-info">
+                                                            
+                                                                    <%=product.name %>,<br>Variant : <%=variant.variantName%>
+                                                                                          
+                                                               <p style="font-size: 8px; color: rgb(243, 243, 109); ">
+                                                                            
+                                                                            tap product icon to see details</p>
+                                                            </div>
+
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        <span><%= user.name%> </span><br>
+                                                        <a href=""><span><%= user.email%></span></a>
+
+                                                    </td>  
+                                                    
+
+                                                    <td> 
+                                                        <h6 style="color: rgb(19, 215, 19);"><%= paymentMode%></h6>
+
+                                                    </td>
+                                                    <td>
+                                                      <h6 class="statusAlert" id="h6Status<%=variant._id%>" data-status="<%= status%>" 
+                                                        data-variantid="<%=variant._id%>" ><%= status%></h6>
+                                                      <p onclick="viewReason('<%=returnReason%>')" style="display: none; color: #12a0f3; cursor: pointer;"
+                                                         id="viewReason<%=variant._id%>" >  View the Reason</p>
+
+                                                    </td>
+                                                <td>
+                                                    <div class="btn-group position-static">
+                                                        <button type="button" id="statusID<%=variant._id%>" class="btn btn-outline-warning dropdown-toggle px-4 statusClass" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <%= status%>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>"  href="javascript:;">Processing</a></li>
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>" href="javascript:;">Shipped</a></li>
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>" href="javascript:;">Delivered</a></li> 
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>" href="javascript:;">Cancelled</a></li> 
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>" href="javascript:;">Completed</a></li> 
+                                                           
+                                                        </ul>
+
+                                                        <button type="button" id="returnBtn<%=variant._id%>" class="btn btn-outline-warning dropdown-toggle px-4 returnCls" data-bs-toggle="dropdown" aria-expanded="false"
+                                                           style="display: none;"  > <%= status%>
+                                                           
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                            
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>" href="javascript:;">Return approved</a></li>
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>" href="javascript:;">Return Rejected</a></li> 
+                                                            <li><a class="dropdown-item" data-variantId="<%=variant._id%>" data-orderId="<%=orderID%>" href="javascript:;">Refunded</a></li>  
+                                                           
+                                                        </ul>
+                                                    </div>
+
+                                                </td>
+                                                <td>
+                                                <a href="/admin/order-details?orderId=<%=orderID%>"><i class="fa-regular fa-eye fa-lg"></i> View</a>
+                                                </td>
+
+                                                                                                                                         
+                                                    <% } )
+                                                        })
+                                                        }else{ %>
+                                                        <h4 style="text-align: center;"> Order is empty !</h4>
+                                                        <%}%>    
+
+                                                </tr>
+                                    </tbody>
+                                </table> 
+                               
+                                <div class="pagination mt-4">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination">
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+                                        </ul>
+                                    </nav>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <%- include('../partials/sidebar.ejs')%>
+
+       
+            
+            <script src="assets/js/order.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!--bootstrap js-->         
+            <script src="assets/js/bootstrap.bundle.min.js"></script>
+
+            <!--plugins-->
+            <script src="assets/js/jquery.min.js"></script>
+            
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!--plugins-->
+            <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+            <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+            <script src="assets/js/main.js"></script>
+            
+
+            </body>
+
+            </html>

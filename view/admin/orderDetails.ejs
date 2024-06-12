@@ -1,0 +1,322 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+<!--navbar-->
+<%-include('../partials/navbar.ejs')%>
+
+
+<main class="main-wrapper">
+    <div class="main-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <a href="/admin/home">
+                <div class="breadcrumb-title pe-3">DigiCart</div>
+            </a>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Order Details</li>
+                    </ol>
+                    
+                </nav>
+            </div>
+            
+        </div>
+        
+<!--breadcumbs end-->
+<h1 style="text-align: center;" >Order Details</h1>
+<hr style="border-top: 2px solid white;">
+ <% if ( typeof orderInfo !== 'undefined' ) { %>
+            <% orderInfo.forEach(order=> {
+                const address = order.shippingAddress;
+                const totalPrice = order.grandTotal
+                const subTotal  = order.subTotal
+                const offerDiscount = order.offerDiscount
+                const deliveryFee = order.deliveryCharge
+                const paymentMode = order.paymentMethod
+                const orderID = order._id;
+                let discountedAmount = null;
+                if (order.couponDetails) {
+                discountedAmount = order.couponDetails.claimedAmount;
+                }
+                const date = order.orderDate
+                const newDate = new Date(date)
+                const orderDate = newDate.toDateString();
+             %>   
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-sm-4 mt-4">
+                  <h3>Order info</h3>
+                <hr style="border-top: 2px solid white; width: 60%;">
+  
+                    <table>
+                        <tr>
+                            <td class="tdHead">Order date </td>
+                            <td class="tdData"><%= orderDate %></td>
+                        </tr>
+                        <tr>
+                            <td class="tdHead">Sub Total</td>
+                            <td class="tdData" style="color: rgb(79, 79, 237);"><%= subTotal %></td>
+                        </tr>
+                        <tr>
+                            <td class="tdHead">Delivery Charge : </td>
+                            <td class="tdData "> <%= deliveryFee %></td>
+                        </tr>
+                    <% if (discountedAmount !==null) { %>
+                        <tr>
+                            <td class="tdHead">Coupon Discount</td>
+                            <td class="tdData">
+                                <%= discountedAmount %>
+                            </td>
+                        </tr>
+                    
+                    <% } %>
+
+                    <% if (offerDiscount !==0) { %>
+                        <tr>
+                            <td class="tdHead">Offer Discount</td>
+                            <td class="tdData">
+                                <%= offerDiscount %>
+                            </td>
+                        </tr>
+                    
+                    <% } %>
+
+                        <tr>
+                            <td class="tdHead">Grand Total</td>
+                            <td class="tdData" style="color: red;"><%= totalPrice %></td>
+                        </tr>
+                        <tr>
+                            <td class="tdHead">Payment mode </td>
+                            <td class="tdData" style="color: greenyellow;"><%= paymentMode %></td>
+                        </tr>
+                    <% if (discountedAmount !==null) { %>
+                        <tr>
+                             <td class="tdHead">Coupon Applied</td>
+                            <td class="tdData"> <%=order.couponDetails.couponCode%> </td>
+                                  
+                                
+                         </tr>
+                        
+                    <% } %>
+                        
+                    </table>
+    
+
+                </div>
+                <div class="col-sm-4 mt-4">
+                    <h3>Shipping address</h3>
+                    <hr style="border-top: 2px solid white; width: 60%;">
+                    <h4><%= address.name %></h4>
+                    <h6><%= address.address %></h6>
+                    <h6><%= address.locality %> , <%= address.landmark %></h6>
+                    <h6><%= address.city %> , <%= address.state %></h6>
+                    <h6>Pincode : <%= address.pincode %></h6>
+                    <h6>Phone : <%= address.phone %></h6>
+                    <h6>Addres Type : <%= address.addressType %></h6>
+    
+                   
+                </div>
+            </div>
+
+         </div> 
+        <hr style="border-top: 2px solid white;">
+         <%})%>
+         <h3 style="text-align: center;" class="mt-3">Order Items</h3>
+        <div class="card mt-4">
+            <div class="card-body">
+                <div class="product-table">
+                    <div class="table-responsive white-space-nowrap">
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+        
+                                    <th >Images</th>
+                                    <th >Product Details</th>
+                                    <th >Unit Price</th>
+                                    <th >Quantity</th>
+                                    <th >Total</th>
+                                    <th >Order Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTableBody">
+
+                            <% orderInfo.forEach(order=> {
+                                order.orderItems.forEach(item => {
+                                const product = item.product.productID;
+                                const variant = item.product;
+                                const address = order.shippingAddress;
+                                const quantity = item.quantity
+                                const status = item.orderStatus
+                                const totalPrice = order.grandTotal
+                                const paymentMode = order.paymentMethod
+                                const orderID = order._id;
+                                const date = order.orderDate
+                                const newDate = new Date(date)
+                                const orderDate = newDate.toDateString();
+                            
+                                %>
+        
+                                    <tr>
+                                            
+                                      <td>
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="product-box">
+                                                     <a href="/admin/product-details?id=<%=product._id%> ">
+        
+                                                            <img src="/uploaded_Images/<%= variant.imageName[1]%>" width="70"
+                                                                class="rounded-3" alt="product image"> </a>
+        
+                                                    </div>
+        
+                                            </div>
+                                        </td>
+        
+                                            <td>
+                                                <div class="product-info">
+                                                <%= product.name%> - <br>Variant : <%=variant.variantName%> <br>
+                                                    Color : <%=variant.color%></h4>
+                                                </div>
+                                            </td>
+        
+        
+                                            <td>
+                                                <h6> <%= variant.price%> </h6>
+
+        
+                                            </td>
+                                            <td>
+                                                <h6 >
+                                                    <%= quantity%>
+                                                </h6>
+        
+                                            </td>
+                                            <% let sum=variant.price * quantity %>
+                                            <td>
+                                                <h6 style="color: rgb(32, 155, 237);"><%= sum %></h6>
+        
+                                            </td>
+                                            
+                                            <td>
+                                               <h6 style="color: greenyellow;"><%= status %></h6>
+                                            </td>
+        
+        
+                                            <% } ) })  %>
+        
+                                        </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+        <div class="d-flex align-items-center gap-4 justify-content-lg-end">
+        <div class="row row-cols-12 row-cols-xl-12" style="width: 35rem;">
+            <h4>Order total</h4>
+        <div class="col ">
+          <div class="card ">
+            <div class="row g-0">
+              <div class="col-md-4 border-end">
+                <% orderInfo.forEach(order=> {
+                    const address = order.shippingAddress;
+                    const totalPrice = order.grandTotal
+                    const subTotal = order.subTotal
+                    const offerDiscount = order.offerDiscount
+                    const deliveryFee = order.deliveryCharge
+                    const paymentMode = order.paymentMethod
+                    const orderID = order._id;
+                    let discountedAmount = null;
+                    if (order.couponDetails) {
+                    discountedAmount = order.couponDetails.claimedAmount;
+                    }
+                    const date = order.orderDate
+                    const newDate = new Date(date)
+                    const orderDate = newDate.toDateString();
+                %>
+                
+                <div class="p-3">
+                  <h6> Payment Mode</h6><br>
+                  <h6 class="mt"> Subtotal</h6><br>
+                  <h6 class="mt"> Shipping charge </h6>
+
+            <% if (discountedAmount !==null) { %>
+                 <h6 class="mt-4"> Coupon discount </h6>
+            <% } %>  
+
+            <% if (offerDiscount) { %>
+                 <h6 class="mt-4"> Offer discount </h6>
+            <% } %>             
+     
+                  <h5 class="mt-3" style="color: red;"> Total </h5>
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                
+                
+                <h5 class="ms-2"><%=paymentMode %></h5>
+                <h5 class="mt-4 ms-2"><%=subTotal %></h5>
+                <h5 class="mt-4 ms-2"><%=deliveryFee %>.00</h5>
+
+            <% if (discountedAmount !==null) { %>
+                <h5 class="mt-3">- <%=discountedAmount %> </h5>
+            <% } %>
+
+            <% if (offerDiscount ) { %>
+                <h5 class="mt-3">- <%=offerDiscount %> </h5>
+            <% } %>
+
+                <h5 class="mt-3 ms-2"><%=totalPrice %></h5>
+                
+                </div>
+              </div>
+            </div>
+          </div>
+          <%})%>
+        </div>
+        </div>
+        </div>
+        </div>
+        <h6 style="text-align: center;"><a href="/admin/orders">
+            <button class="btn btn-outline-primary">Back to Orders</button></a></h6>
+        
+
+
+    <%}%>
+    </div>
+</main>        
+
+
+
+
+
+
+
+
+<%- include('../partials/sidebar.ejs')%>
+    
+    
+    
+
+        <!--bootstrap js-->
+        <script src="assets/js/bootstrap.bundle.min.js"></script>
+    
+        <!--plugins-->
+        <script src="assets/js/jquery.min.js"></script>
+    
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!--plugins-->
+        <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+        <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+        <script src="assets/js/main.js"></script>
+        <script src="assets/js/category.js"></script>
+    
+    
+        </body>
+    
+    
+    
+        </html>

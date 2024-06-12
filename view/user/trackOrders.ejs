@@ -1,0 +1,295 @@
+<%- include('../layouts/userLayout/header.ejs')%>
+    <link rel="stylesheet" href="assets/css/trackOrder.css">
+    <link rel="stylesheet" href="assets/css/sweetToast.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+
+
+    <main>
+        <!-- page-banner-area-start -->
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="page-banner-content text-center">
+                        <h4 class="breadcrumb-title mt-4" style="color: black;">Track Orders
+                        <i class="fa-solid fa-truck-fast"></i></h4>
+                        <div class="breadcrumb-two">
+                            <nav>
+                                <nav class="breadcrumb-trail breadcrumbs">
+                                    <ul class="breadcrumb-menu">
+                                        <li class="breadcrumb-trail">
+                                            <a href="/"><span style="color: blue;">Home</span></a>
+                                        </li>
+                                        <li class="trail-item">
+                                            <span style="color: black;">Track orders
+                                                <i class="fa-solid fa-truck"></i></span>
+                                                
+                                        </li>                                     
+                                    </ul>
+                                </nav>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- page-banner-area-end -->
+    <div id="invoiceContent">
+        <h5 class="text-end me-4" >Invoice Date :</h5>
+        <h5 class="text-end me-4" id="invoiceDate"></h5>
+        <h5 class="text-end me-4" id="invoiceTime"></h5>
+        <h1 class="text-center mt-4" style="color: rgb(64, 64, 210);">DigiCart Ecom</h1>
+        <h6 class="text-center">Top tech finds, at your fingertips.</h6>
+        <% if ( typeof orderInfo !== 'undefined' ) { %>
+            <% orderInfo.forEach(order=> {
+                const address = order.shippingAddress;
+                const totalPrice = order.grandTotal
+                const subTotal  = order.subTotal
+                const offerDiscount = order.offerDiscount
+                const deliveryFee = order.deliveryCharge
+                const paymentMode = order.paymentMethod
+                const orderID = order._id;
+                const date = order.orderDate
+                let discountedAmount = null;
+                if (order.couponDetails) {
+                discountedAmount = order.couponDetails.claimedAmount;
+                }
+                const newDate = new Date(date)
+                const orderDate = newDate.toDateString();
+                
+             %>   
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-sm-4 mt-4">
+                  <h3>Order info</h3>
+  
+                    <table>
+                        <tr>
+                            <td class="tdHead">Order date </td>
+                            <td class="tdData"><%= orderDate %></td>
+                        </tr>
+                        <tr>
+                            <td class="tdHead">Sub Total</td>
+                            <td class="tdData"><%= subTotal %></td>
+                        </tr>
+                        <tr>
+                            <td class="tdHead">Delivery Charge</td>
+                            <td class="tdData"><%= deliveryFee %></td>
+                        </tr>
+                        <% if (discountedAmount != null) { %>
+                            <tr>
+                                <td class="tdHead">Coupon Discount</td>
+                                <td class="tdData"><%= discountedAmount %></td>
+                            </tr>
+                            
+                        <% }  %>
+
+                        <% if (offerDiscount !== 0) { %>
+                            <tr>
+                                <td class="tdHead">Offer Discount</td>
+                                <td class="tdData"><%= offerDiscount %></td>
+                            </tr>
+                            
+                        <% }  %>
+                        
+                        <tr>
+                            <td class="tdHead">Grand Total</td>
+                            <td class="tdData" style="color: blue;"><%= totalPrice %></td>
+                        </tr>
+                        <tr>
+                            <td class="tdHead">Payment mode </td>
+                            <td class="tdData" style="color: green;"><%= paymentMode %></td>
+                        </tr>
+                <% if (discountedAmount != null) { %>
+                        <tr>
+                            <td class="tdHead">Coupon </td>
+                            <td class="tdData" style="color: blue;">Applied</td>
+                        </tr>
+                            
+                        <% }  %>
+                      
+                        
+                        
+                    </table>
+    
+
+                </div>
+                <div class="col-sm-4 mt-4">
+                    <h3>Shipping address</h3>
+                    <h4><%= address.name %></h4>
+                    <h6><%= address.address %></h6>
+                    <h6><%= address.locality %> , <%= address.landmark %></h6>
+                    <h6><%= address.city %> , <%= address.state %></h6>
+                    <h6>Pincode : <%= address.pincode %></h6>
+                    <h6>Phone : <%= address.phone %></h6>
+                    <h6>Addres Type : <%= address.addressType %></h6>
+    
+                   
+                </div>
+            </div>
+
+         </div> 
+         <%})%>
+
+         
+         <div class="container">
+            <div class="row">
+             <div class="col-12">
+                <h2 class="mt-4 mb-3" style="text-align: center;">Order Details</h2>
+                <% if(typeof orderInfo !== 'undefined' ) { %>
+                        <form >
+                           <div class="table-content table-responsive">
+                              <table class="table">
+                                    <thead>
+                                       <tr>
+                                          <th class="product-thumbnail">Images</th>
+                                          <th class="cart-product-name">Product Details</th>
+                                          <th class="product-price">Unit Price</th>
+                                          <th class="product-quantity">Quantity</th>
+                                          <th class="product-subtotal">Total</th>
+                                          <th class="product-remove">Order Status</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                      
+                                            <% orderInfo.forEach(order=> {
+                                                order.orderItems.forEach(item => {
+                                                const product = item.product.productID;
+                                                const variant = item.product;
+                                                const address = order.shippingAddress;
+                                                const quantity = item.quantity
+                                                const status = item.orderStatus
+                                                const totalPrice = order.grandTotal
+                                                const paymentMode = order.paymentMethod
+                                                const orderID = order._id;
+                                                const date = order.orderDate
+                                                const newDate = new Date(date)
+                                                const orderDate = newDate.toDateString();
+                                            
+                                                %>
+  
+                                       <tr>
+                                          <td class="product-thumbnail"><a href="/product-details?id=<%= product._id %>&vId=<%= variant._id %>">
+                                             <img src="/uploaded_Images/<%=variant.imageName[1] %>" alt="product image" class="productImage"
+                                             data-toggle="tooltip" data-placement="right" title="Click to Show details" ></a>
+                                         </td>
+                                          <td class="product-name"><a id="Link"> <%= product.name%> -  <br>Variant : <%=variant.variantName%> <br>
+                                            Color : <%=variant.color%> </a> </td>
+                                              
+                                          <td class="product-price"><span class="amount"><%= variant.price%> </span></td>
+                                              
+                                          <td class="product-quantity">                                                                
+                                             
+                                            <span class="amount"><%= quantity%> </span></td>
+                                            
+                                          </td>
+                                            <% let sum = variant.price * quantity %>
+                                      
+                                          <td class="product-subtotal ">
+                                                <span class="amount subTotalAmt"> <%= sum %> </span>                                                 
+                                          </td>
+                                          <td class="product-status ">
+                                                <span class="amount subTotalAmt statusOFproduct"  > <%= status %> </span>                                                 
+                                          </td>
+                                        
+                                       </tr>
+
+                                        <% }) }) %>
+                                            <% } %>
+                                    </tbody>
+                              </table>
+                           </div>
+                         
+                           <div class="row justify-content-end">
+                              <div class="col-md-5 orderTotalDiv">
+                                    <div class="cart-page-total">
+                                       <h2>Order totals</h2>
+                                        <% orderInfo.forEach(order=> {
+                                            const address = order.shippingAddress;
+                                            const totalPrice = order.grandTotal
+                                            const subTotal = order.subTotal
+                                            const deliveryFee = order.deliveryCharge
+                                            const offerDiscount = order.offerDiscount
+                                            const paymentMode = order.paymentMethod
+                                            const orderID = order._id;
+                                            const date = order.orderDate
+                                            const newDate = new Date(date)
+                                            const orderDate = newDate.toDateString();
+                                            let discountedAmount = null;
+                                            if (order.couponDetails) {
+                                                discountedAmount = order.couponDetails.claimedAmount;
+                                            }
+                                            %>
+                                       <ul class="mb-20">
+                                          <li>Subtotal <span class="orderTotal" > <%=subTotal %> </span></li>
+                                          <li>Shipping charge <span class="orderTotal"> <%=deliveryFee %></span></li>
+
+                                          <%if (discountedAmount != null) { %>
+                                            <li>Coupon discount <span class="orderTotal"> -<%=discountedAmount %></span></li>
+                                          <% } %>
+
+                                          <%if (offerDiscount !== 0) { %>
+                                            <li>Offer discount <span class="orderTotal"> -<%=offerDiscount %></span></li>
+                                          <% } %>
+
+                                          <li >Total <span class="orderTotal" > <%=totalPrice %> </span></li>
+                                       </ul>
+                                       <% }) %>
+                                       
+
+                                       
+                                    </div>
+                              </div>
+                           </div>
+                        </form>
+                        <% }  %>
+                           
+                  </div>
+               </div>
+            </div>
+    </div>    
+
+            <h1 class="text-end">
+                <a class="tp-btn-h1 mb-5 " id="downloadInvoice">Download Invoice</a>
+                  <a class="tp-btn-h1 mb-5 backOrder " onclick="backToOrders()">Back to Orders</a>
+                </h1>
+          
+
+
+<%- include('../layouts/userLayout/footer.ejs')%>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded',()=>{
+        const invoiceButton = document.getElementById('downloadInvoice')
+        const statusElement = document.querySelectorAll('.statusOFproduct')
+
+        statusElement.forEach((span)=>{
+            let status = span.textContent.trim()
+
+
+            if ( status ==='Pending Payment') {
+                invoiceButton.style.display = 'none'
+            }else if(status==='Cancelled'){
+                invoiceButton.style.display = 'none'
+            } else if(status==='Shipped') {
+                invoiceButton.style.display='none'
+            } else if(status==='Processing') {
+                invoiceButton.style.display='none'
+            }
+
+        })
+       
+    })
+
+    </script>
+
+
+<!--sweetalert2-->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!--fetch functions-->
+
+<script src="assets/js/digiCart/trackOrder.js"></script>

@@ -1,0 +1,99 @@
+
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+    <!--navbar-->
+
+    <%-include('../partials/navbar.ejs')%>
+
+    <div class="container mt-5 justify-content-center p-5">
+
+        <% if(typeof variant !=='undefined') {   %>
+
+    <h2 style="text-align: center;">Update Variant</h2>
+    <form action="/admin/edit-variant?id=<%= variant._id %>" method="post"  enctype="multipart/form-data" id="editVariantForm">
+
+        <div class="form-group">
+                <label for="variantName">Variant name</label>
+                <input type="text" class="form-control" id="variantName" name="variantName" value="<%= variant.variantName %>">
+                <div id="variantNameError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" class="form-control" id="price" name="price" required value="<%= variant.price %>">
+                <div id="priceError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+                <label for="color">Color</label>
+                <input type="text" class="form-control" id="color" name="color" required value="<%= variant.color %>">
+                <div id="colorError" class="text-danger"></div>
+        </div>
+
+        <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" class="form-control" id="stock" name="stock" required value="<%= variant.stock %>">
+                <div id="stockError" class="text-danger"></div>
+        </div>
+      
+        <div class="form-group">
+                <label for="ram">RAM</label>
+                <input type="text" class="form-control" id="ram" name="ram" value="<%= variant.ram  %>">
+                 <div id="ramError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+                <label for="phoneMemory">Phone Memory</label>
+                <input type="text" class="form-control" id="phoneMemory" name="phoneMemory" value="<%= variant.phoneMemory %>">
+
+        </div>
+        <div class="form-group">
+                <label for="size">size</label>
+                <input type="text" class="form-control" id="phoneMemory" name="size" value="<%= variant.size %>">
+        </div>
+        <div class="form-group">
+                <label for="uploaded_Images">Upload image</label>
+                <input type="file" class="form-control" id="images" name="images" accept=".jpg, .png, image/jpeg, image/png" multiple >
+                <input type="hidden" name="oldImage" value="<%= variant.imageName %>"> 
+                <label for="uploaded_Images">Select upto 3 images</label><br><br>
+                
+                        <% variant.imageName.forEach(element => { %>
+               
+                <img src="/uploaded_Images/<%= element %>" width="70" class="rounded-3" alt="product image">
+                <% }); %>
+                <p>previous images</p>
+        </div>
+          
+        <br>
+
+        <a href="/admin/allProducts"><button type="button" class="btn btn-secondary ml-2">Cancel</button></a>
+        <button type="submit" class="btn btn-primary">Submit</button>
+       
+        <% } %>
+    </form>
+</div>
+
+
+
+
+    <%- include('../partials/sidebar.ejs')%>
+
+<!--sweet alert and form validation-->
+<!--//<script src="assets/js/formValidation/addVarValid.js"></script>-->
+<script src="assets/js/formValidation/editVar.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+
+  <!--plugins-->
+  <script src="assets/js/jquery.min.js"></script>
+  <!--plugins-->
+  <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.ui.widget.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.fileupload.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.iframe-transport.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.fancy-fileupload.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+.sidebar {
+    height: auto;
+    width: 16rem;
+    background-color: #0a0b0b;
+    overflow-x: hidden;
+    padding-top: 16px;
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+
+/* Style sidebar links */
+.sidebar a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #818181;
+  display: block;
+ 
+}
+
+/* Style links on mouse-over */
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+/* Style the main content */
+.main {
+  margin-left: 160px; /* Same as the width of the sidenav */
+  padding: 0px 10px;
+}
+
+/* Add media queries for small screens (when the height of the screen is less than 450px, add a smaller padding and font-size) */
+@media screen and (max-height: 450px) {
+  .sidebar {padding-top: 15px;}
+  
+  .sidebar a {font-size: 18px;}
+}
+
+a{
+    text-decoration: none;
+}
+
+.welcome{
+    color: green;
+}
+.h6-heading{
+     color: white;
+     padding: 0.7rem 2rem;
+     
+}
+
+.h6-heading:hover{
+    color: blue;
+}
+.header{
+
+  text-align: center;
+  
+}
+
+.fa-trash-can {
+  color: black;
+  cursor: pointer;
+
+}
+.fa-trash-can:hover {
+  color: red;
+
+}

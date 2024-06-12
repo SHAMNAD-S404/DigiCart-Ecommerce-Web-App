@@ -1,0 +1,98 @@
+
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+<!--navbar-->
+
+<%-include('../partials/navbar.ejs')%>
+
+  <!--start main wrapper-->
+  <main class="main-wrapper">
+    <div class="main-content">
+      <!--breadcrumb-->
+				<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+					<a href="/admin/home"><div class="breadcrumb-title pe-3">DigiCart</div></a>
+					<div class="ps-3">
+						<nav aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0 p-0">
+								<li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+								</li>
+								<li class="breadcrumb-item active" aria-current="page">Categories</li>
+							</ol>
+						</nav>
+					</div>
+					<div class="ms-auto">
+                 <a href="/admin/add_category"><button type="button" class="btn btn-success " >Add Category</button></a>
+                 
+ 
+					</div>
+				</div>
+				<!--end breadcrumb-->
+   
+
+      <div class="row row-cols-1 row-cols-xl-2">
+         <% if(typeof categories !== 'undefined') {   %> 
+          <% categories.forEach(element => { %>
+        <div id="row<%=element._id  %>" class="col">
+          <div class="card">
+            <div class="row g-0">
+              <div class="col-md-4 border-end">
+                <div class="p-3">
+                  <img src="/uploaded_Images/<%= element.imageUrl  %>" class="w-100 rounded-start" alt="...">
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title"><%= element.name %></h5>
+                  <p class="card-text"><%= element.description %></p>
+                  
+                  <div class="mt-2 d-flex align-items-center justify-content-center gap-5">
+
+                        <a href="/admin/edit-category?id=<%= element._id %>"><button type="button" class="btn btn-primary" >Edit</button></a>
+                        <button class="btn btn-danger" onclick="deleteItem('row<%= element._id %>','<%= element._id %>','category')">delete</button>                 
+                     <% if(element.block == false){ %>
+                       <button type="button" class="btn " style="background-color: red;" onclick="blockItem(this,'<%= element._id %>','category')">block</button>
+
+                     <% }else{%>
+                       <button type="button" class="btn " style="background-color: green;" onclick="blockItem(this,'<%= element._id %>','category')">unblock</button>
+
+                      <% } %>
+                  </div>
+                </div>
+              </div>      
+            </div>
+          </div>
+        </div>
+
+        <!--second tryy-->
+         <% }); %>
+        <% }%>
+        
+ 
+      </div>
+
+
+    </div>
+  </main>
+
+<%- include('../partials/sidebar.ejs')%>
+ <!--Sweet alert-->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script src="assets/js/category.js"></script>
+   <!--bootstrap js-->
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <!--sweet alert-->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!--plugins-->
+  <script src="assets/js/jquery.min.js"></script>
+  <!--plugins-->
+  <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+  <script src="assets/js/main.js"></script>
+
+
+
+</body>
+
+
+
+</html>

@@ -1,0 +1,25 @@
+/* Hide default file input */
+input[type="file"] {
+    display: none;
+}
+
+/* Custom file input styling */
+.custom-file-upload {
+    margin-top: 20px;
+    background-color: #0088f7;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.custom-file-upload:hover {
+    background-color: #57a90a;
+    
+}
+
+.myClass{
+    text-align: center;
+}

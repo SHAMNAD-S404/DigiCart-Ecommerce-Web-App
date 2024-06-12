@@ -1,0 +1,178 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+    <!--navbar-->
+<link rel="stylesheet" href="assets/css/custom.css">
+
+    <%-include('../partials/navbar.ejs')%>
+
+        <!--start main wrapper-->
+        <main class="main-wrapper">
+            <div class="main-content">
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <a href="/admin/home"><div class="breadcrumb-title pe-3">DigiCart</div></a>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Edit Products</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    
+                </div>
+                <!--end breadcrumb-->
+                <div class="row">
+                    <div class="col-12 col-lg-10">
+                        <form action="/admin/edit-product" method="post" enctype="multipart/form-data" id="editProduct">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Product Title</h5>
+                                   
+                                    <% if(typeof product !=='undefined'){ %>
+                                        
+                                            
+                                      
+                                    <input type="hidden" class="form-control" value="<%=product._id %>"  name="id"  >
+                                    <input type="text" class="form-control" value="<%=product.name %>" placeholder="write title here...." name="name" id="name" required>
+                                    <div id="nameError" class="text-danger"></div>
+                                </div>
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Product Description</h5>
+                                    <textarea class="form-control" cols="4" rows="6" 
+                                        placeholder="write a description here.." name="discription" id="description" required><%= product.discription %></textarea>
+                                        <div id="descriptionError" class="text-danger"></div>
+                                </div>
+                              <% /* %>   <div class="form-group">
+                                   
+                                     <label for="uploaded_Images" class="custom-file-upload">Upload image</label>
+                                     <input type="file" class="form-control" id="imagesInput" name="images" accept=".jpg, .png, image/jpeg, image/png" >
+                                     <div id="preview-container"></div>                   
+                                     <% if(typeof product.imageName !== 'undefined') { %>
+
+                                        <input type="hidden" name="oldImage" value="<%= product.imageName %>">
+
+                                    <img src="/uploaded_Images/<%= product.imageName %>" style="margin-bottom: 15px;" width="20%" class="rounded-3" alt="product image">
+                                    <p>previously uploaded image</p>
+                                    <%  }%>
+                                </div>
+                                <% */ %>
+
+                        <div class="form-group">
+                            <label for="image-upload" class="custom-file-upload">Upload image</label>
+                             <input type="file" class="form-control" id="image-upload" name="images" accept=".jpg, .png, image/jpeg, image/png"  >
+                            <div id="preview-container"></div>
+                              <input type="hidden"  name="oldImage" value="<%= product.imageName %>"  >
+                            <img src="/uploaded_Images/<%= product.imageName  %>" style="margin-bottom: 15px;" width="15%" class="rounded-3" alt="product image">
+                            <p>*previous image</p>    
+                        </div>
+
+                                <div class="col-12 col-lg-4">
+ 
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-3">Organize</h5>
+                                            <div class="row g-3">
+
+                                                <div class="col-12">
+                                                    <label for="AddCategory" class="form-label">Category</label>
+                                                    <select class="form-select" id="AddCategory" name="category" required>
+
+                                                <% if(typeof categories && product.category  !== 'undefined') {%>
+                                                    <option value="<%= product.category._id %>"><%= product.category.name %></option>
+                                                            <% categories.forEach(category => { %>
+                                                                <option value="<%= category._id %>"> <%= category.name  %> </option>
+                                                                
+                                                            <% }); %>
+                                                      <% } %>
+
+                                                    </select>
+                                                </div>
+
+
+
+                                            </div><br>
+                                            <div class="col-12">
+                                                <label for="Vendor" class="form-label">Brand</label>
+                                                <input type="text" class="form-control" id="brand" placeholder="Enter branad name"
+                                                    name="brand" value="<%= product.brand%>" required >
+                                                    <div id="brandError" class="text-danger"></div> 
+                                            </div>
+                                        </div><!--end row-->
+                                    </div>
+                                </div>
+
+                               
+                                
+                               <%   }  %>
+
+
+                            </div>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-5">
+                                    <a href="/admin/allProducts"><button type="button" class="btn btn-outline-danger flex-fill"><i
+                                                class="bi bi-x-circle me-2"></i>Discard</button></a>
+                                        <button type="submit" class="btn btn-outline-success flex-1"><i
+                                                class="bi bi-cloud-download me-2"></i>Submit</button>
+                                                
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div><!--end row-->
+                        </form>
+                    </div>
+        </main>
+
+        <%- include('../partials/sidebar.ejs')%>
+        <!--<script>
+    document.getElementById('imageInput').addEventListener('change', function(event) {
+        const previewContainer = document.getElementById('imagePreview');
+        previewContainer.innerHTML = ''; // Clear previous preview
+
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.width = 70;
+            img.className = 'rounded-3';
+            img.alt = 'product image';
+            previewContainer.appendChild(img);
+        };
+
+        reader.readAsDataURL(file);
+    });
+</script>-->
+            <script src="assets/js/formValidation/previewImg.js"></script>
+            <!--sweet alert and validation form-->
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="assets/js/formValidation/editProValid.js"></script>
+            <!--bootstrap js-->
+            <script src="assets/js/bootstrap.bundle.min.js"></script>
+
+            <!--plugins-->
+            <script src="assets/js/jquery.min.js"></script>
+            <!--plugins-->
+            <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+            <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+            <script src="assets/plugins/fancy-file-uploader/jquery.ui.widget.js"></script>
+            <script src="assets/plugins/fancy-file-uploader/jquery.fileupload.js"></script>
+            <script src="assets/plugins/fancy-file-uploader/jquery.iframe-transport.js"></script>
+            <script src="assets/plugins/fancy-file-uploader/jquery.fancy-fileupload.js"></script>
+            <script src="assets/js/main.js"></script>
+
+
+            </body>
+
+
+
+            </html>

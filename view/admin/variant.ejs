@@ -1,0 +1,121 @@
+
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+    <!--navbar-->
+<link rel="stylesheet" href="assets/css/custom.css">
+<%-include('../partials/navbar.ejs')%>
+
+    <div class="container mt-5 justify-content-center p-5">
+    <h2>Add Variant</h2>
+    <form action="/admin/addVariants" method="post" id="variantForm" enctype="multipart/form-data">
+        <div class="form-group " style="display: none;">
+            <label for="productID">Product ID</label>
+            <%if (typeof ProductID  !== 'undefined' ) { %>
+
+                <input type="text" class="form-control" id="productID" name="productID" value="<%= ProductID %>" readonly >              
+           <% } %>
+            
+        </div>
+        <div class="form-group">
+            <label for="variantName">Variant name</label>
+            <input type="text" class="form-control" id="variantName" name="variantName" required>
+            <div id="variantNameError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" class="form-control" id="price" name="price" required>
+            <div id="priceError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="color">Color</label>
+            <input type="text" class="form-control" id="color" name="color" required>
+            <div id="colorError" class="text-danger"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="stock">Stock</label>
+            <input type="number" class="form-control" id="stock" name="stock" required>
+            <div id="stockError" class="text-danger"></div>
+        </div>
+      
+        <div class="form-group">
+            <label for="ram">RAM</label>
+            <input type="text" class="form-control" id="ram" name="ram">
+            <div id="ramError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="phoneMemory">Phone Memory</label>
+            <input type="text" class="form-control" id="phoneMemory" name="phoneMemory">
+            <div id="phoneMemoryError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="size">size</label>
+            <input type="text" class="form-control" id="size" name="size">
+            <div id="sizeError" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="image-upload" class="custom-file-upload">Upload image</label>
+            <input type="file" class="form-control" required id="image-upload" name="images" accept=".jpg, .png, image/jpeg, image/png" multiple >
+             <div id="preview-container"></div>
+             
+        </div>
+         <!--<div class="form-group">
+            <label for="image-upload1" class="custom-file-upload">Upload image 1</label>
+            <input type="file" class="form-control" id="image-upload1" name="images1" accept=".jpg, .png, image/jpeg, image/png"  required>
+            <div id="preview-container1"></div>
+         </div>
+         <div class="form-group">
+            <label for="image-upload2" class="custom-file-upload">Upload image 2</label>
+            <input type="file" class="form-control" id="image-upload2" name="images2" accept=".jpg, .png, image/jpeg, image/png"  required>
+            <div id="preview-container2"></div>
+         </div>
+         <div class="form-group">
+            <label for="image-upload3" class="custom-file-upload">Upload image 3</label>
+            <input type="file" class="form-control" id="image-upload3" name="images3" accept=".jpg, .png, image/jpeg, image/png"  required>
+            <div id="preview-container3"></div>
+         </div>-->
+          
+        <br>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" class="btn btn-secondary ml-2">Cancel</button>
+        <button type="button" class="btn btn-success ml-2" onclick="addAnotherVariant()"> Add Another Variant </button>
+    </form>
+</div>
+
+
+
+
+    <%- include('../partials/sidebar.ejs')%>
+
+<!--script for add another Variant-->
+<!--<script>
+    function addAnotherVariant() {
+        const form = document.getElementById('variantForm');
+        form.setAttribute('action', '/admin/add-anothervariant'); 
+        form.submit(); 
+    }
+</script>-->
+
+<!--<script src="assets/js/formValidation/previewImg2.js"></script>-->
+<script src="assets/js/formValidation/addVarValid.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+
+  <!--plugins-->
+  <script src="assets/js/jquery.min.js"></script>
+  <!--plugins-->
+  <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.ui.widget.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.fileupload.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.iframe-transport.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.fancy-fileupload.js"></script>
+
+</body>
+</html>

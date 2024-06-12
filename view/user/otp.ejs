@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OTP Verification</title>
+<link rel="stylesheet" href="/userAssets/otp.css">
+</head>
+<body>
+<header>
+    <!-- Your header content here -->
+<%- include('../layouts/userLayout/header.ejs')%>   
+</header>
+<main class="container">
+    <h2 class="heading">OTP Verification</h2>
+    <p>An OTP has been sent to your mobile number. Please enter the 6-digit OTP below.</p>
+        <form id="otpForm" method="post" action="/otp">
+
+                <div class="otp-inputs">
+                    <input type="text" maxlength="1" name="otp" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" name="otp" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" name="otp" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" name="otp" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" name="otp" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" name="otp" pattern="[0-9]" required>
+                </div>
+
+                <div class="buttons">
+                    <button type="submit" class="otpbtn">Verify OTP</button>
+                  <button type="submit" id="resendOTP" class="otpbtn"> <a href="/resendOtp">Resend OTP</a></button>
+                </div>
+                <div id="timer" class="timer"></div>
+        </form>
+    
+</main>
+<footer>
+    <!-- Your footer content here -->
+<%- include('../layouts/userLayout/footer.ejs')%> 
+</footer>
+<script src="/userAssets/otp.js"></script>
+</body>
+</html>

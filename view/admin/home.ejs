@@ -1,0 +1,260 @@
+<%- include('../layouts/adminLayout/header.ejs')%>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css ">
+
+<!--navbar-->
+
+<%- include('../partials/navbar.ejs')%>
+
+<!--start main wrapper-->
+<main class="main-wrapper">
+    <div class="main-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">Dashboard</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">eCommerce</li>
+                    </ol>
+                </nav>
+            </div>
+            
+        </div>
+        <!--end breadcrumb-->
+
+
+        <div class="row">
+            <div class="col-12 col-xl-4">
+                <div class="card rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <div class="">
+                                <h2 class="mb-0">Welcome Admin</h2>
+                            </div>
+                           
+                        </div>
+                        <p class="mb-0">Scroll down for detailed report</p>
+                        <div id="chart1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-8">
+                <div class="card rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-around flex-wrap gap-4 p-4">
+                            <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                                <a href="javascript:;"
+                                    class="mb-2 wh-48 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="material-icons-outlined">shopping_cart</i>
+                                </a>
+                                <h3 class="mb-0"><%=totalOrder?totalOrder:''%></h3>
+                                <p class="mb-0">Total Orders</p>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                                <a href="javascript:;"
+                                    class="mb-2 wh-48 bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="fa-solid fa-user fa-lg"></i>
+                                </a>
+                                <h3 class="mb-0"><%=customers?customers:''  %></h3>
+                                <p class="mb-0">Total Customers</p>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                                <a href="javascript:;"
+                                    class="mb-2 wh-48 bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="fa-solid fa-laptop fa-lg" ></i>
+                                </a>
+                                <h3 class="mb-0"><%=product?product:'' %></h3>
+                                <p class="mb-0">Total Products</p>
+                            </div>
+                            <div class="vr"></div>
+
+                            <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                                <a href="javascript:;"
+                                    class="mb-2 wh-48 bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center">
+                                <i class="fa-solid fa-list fa-lg"></i>
+                                </a>
+                                <h3 class="mb-0"><%=category?category:'' %></h3>
+                                <p class="mb-0">Total Category</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!--end row-->
+
+
+    <!--chart area start from here -->
+    <div class="row">
+    <% if(labels && counts) { %>
+        <div class="col-12 col-xl-6 mt-2" id="barchartDiv" data-labels='<%= JSON.stringify(labels) %>'
+            data-counts='<%= JSON.stringify(counts) %>'>
+            <div class="card rounded-4 mb-0">
+                <div class="card-body">
+                        <h4 class="text-center">Last Seven Day Orders</h4>
+                    <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+
+    <% if(catLabel && catCount) { %>
+        <div class="col-12 col-xl-6 mt-2" id="pieChartDiv" data-labels='<%= JSON.stringify(catLabel) %>'
+            data-counts='<%= JSON.stringify(catCount) %>'>
+            <div class="card rounded-4 mb-0">
+                <div class="card-body">
+                        <h4 class="text-center">Top Selling Category</h4>
+                    <canvas id="myPieChart" style="width:100%;max-width:700px"></canvas>
+                </div>
+            </div>
+        </div>
+    <% } %>
+    </div>
+
+    <div class="row">
+        <% if(proLabel && proCount) { %>
+            <div class="col-12 col-xl-12 mt-2" id="horizontalChart" data-labels='<%= JSON.stringify(proLabel) %>'
+                data-counts='<%= JSON.stringify(proCount) %>'>
+                <div class="card rounded-4 mb-0">
+                    <div class="card-body">
+                        <h4 class="text-center">Top Selling Products</h4>
+                        <canvas id="myHorizontal" style="width:100%;max-width:100%"></canvas>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="row mt-4">
+        <h2 class="text-center mb-4">Top Products & Category</h2>
+        <div class="col-6 mt-3">
+            <div class="card-body">
+                <div class="product-table">
+                    <div class="table-responsive white-space-nowrap">
+                        <% if(proLabel && proCount){ %>
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+    
+                                    <th>Product Name</th>
+                                    <th>Total Order</th>
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                  <% proLabel.forEach((name,index)=> { %>
+                                                                            
+                                <tr>
+    
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            
+                                            <div class="product-info">
+                                                <a class="product-title"><%=name  %></a>
+                                                
+                                               
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td> <%=proCount[index]  %></td>
+                                   
+    
+                                </tr>
+                                <% }) %>
+    
+                            </tbody>
+                        </table>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-6 mt-3">
+            <div class="card-body">
+                <div class="product-table">
+                    <div class="table-responsive white-space-nowrap">
+                    <% if(catLabel && catCount){ %>
+                        <table class="table align-middle">
+                            <thead class="table-light">
+                                <tr>
+    
+                                    <th>Category Name</th>
+                                    <th>Total Orders</th>
+    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% catLabel.forEach((name,index) => {
+                                     
+                                  %>
+                                <tr>
+     
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                           
+                                            <div class="product-info">
+                                                <a href="" class="product-title"><%=name%></a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td><%=catCount[index]%></td>
+    
+    
+                                </tr>
+                                <%                          
+                                    
+                                });
+                                
+                                %>
+    
+                            </tbody>
+                        </table>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    
+    </div>
+
+    </div>
+</main>
+<!--end main wrapper-->
+
+
+<!--side bar-->
+<%- include('../partials/sidebar.ejs')%>
+
+ <!--bootstrap js-->
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+  <!--chart js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="assets/js/home.js"></script>
+
+  <!--plugins-->
+  <script src="assets/js/jquery.min.js"></script>
+  <!--plugins-->
+  <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+  <script src="assets/plugins/apexchart/apexcharts.min.js"></script>
+  <script src="assets/js/index.js"></script>
+  <script src="assets/plugins/peity/jquery.peity.min.js"></script>
+  <script>
+    $(".data-attributes span").peity("donut")
+  </script>
+  <script src="assets/js/main.js"></script>
+
+
+</body>
+
+
+
+</html>

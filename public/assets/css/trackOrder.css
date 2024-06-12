@@ -1,0 +1,19 @@
+.tdData{
+    padding-left: 3rem;
+    font-family: 'Rubik';
+    font-weight: 500;
+
+}
+.tdHead{
+    font-weight: 500;
+    color: black;
+}
+.orderTotal{
+    color: black;
+}
+.backOrder{
+    background-color: rgb(60, 60, 205);
+}
+.orderTotalDiv{
+    margin-bottom: 5rem;
+}

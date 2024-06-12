@@ -1,0 +1,118 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+    <!--navbar-->
+    <link rel="stylesheet" href="assets/css/custom.css">
+    <!--calendar date picker-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <%-include('../partials/navbar.ejs')%>
+
+        <!--start main wrapper-->
+        <main class="main-wrapper">
+            <div class="main-content">
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <a href="/admin/home">
+                        <div class="breadcrumb-title pe-3">DigiCart</div>
+                    </a>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Add Coupon</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <!--alert box-->
+
+            <!--end breadcrumb-->
+            <div class="row">
+                <div class="col-12 col-lg-10 ms-5  itachi">
+                    
+                    <form action="" method="post" >
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h5 class="mb-2">Coupon Code</h5>
+                                    <label for="coupon" class="form-label mb-2">Enter Coupon  code here</label><br>
+                                    <input type="text" class="form-control" placeholder="Enter 6 digit Code here"
+                                        name="category" id="couponCode" required>
+                                    <span id="couponCodeError" style="color: red;"></span>
+                                </div>
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Coupon Description</h5>
+                                    <textarea class="form-control" cols="4" rows="4" id="description"
+                                        placeholder="write a description here.." name="description" required></textarea>
+                                    <span id="descriptionError" style="color: red;"></span>
+                                </div>
+                                <div class="col-md-12">
+                                    <h5 class="mb-2">Discount Percentage</h5> 
+                                    <label for="" class="form-label">Enter number Only</label>                                   
+                                    <input type="text" class="form-control rounded-0" id="DPercentage"
+                                    placeholder="Enter Percentage from 10% - 70%" required>
+                                    <span id="discountError" style="color: red;"></span>
+                                </div>
+                                <div class="col-md-12 mt-4">
+                                    <h6 class="mb-2">Min Purchase amount</h6>                                 
+                                    <input type="text" class="form-control rounded-0" id="minAmt"
+                                     placeholder="Enter amount" required>
+                                    <span id="minError" style="color: red;"></span>
+                                </div>
+                                <div class="col-md-12 mt-4">
+                                    <h6 class="mb-2">Maximum Redeamble amount</h6>                                
+                                    <input type="text" class="form-control rounded-0" id="maxAmt"
+                                     placeholder="Enter amount" required>
+                                    <span id="maxError" style="color: red;"></span>
+                                </div>
+                                <div class="col-md-12 mt-4 mb-3">
+                                    <h6 class="mb-2">Select a Expiry Date</h6>
+                                    <input type="date" class="form-control datepicker flatpickr-input"
+                                     id="datePicker" required>
+                                    <span id="dateError" style="color: red;"></span>
+                                </div>
+                              
+
+                                <button type="button" class="btn btn-primary mt-4" onclick="addCoupon()" >Submit</button>
+                                <a href="/admin/all-coupon"><button type="button" class="btn btn-info mt-4 ms-4" >Go back</button></a>
+                    </form>
+
+                </div>
+
+            </div>
+            </div>
+        </main>
+
+        <%-include('../partials/sidebar.ejs')%>
+
+           
+            
+            <script src="assets/js/formValidation/coupon.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!--bootstrap js-->
+            <script src="assets/js/bootstrap.bundle.min.js"></script>
+            <!--plugins-->
+            <script src="assets/js/jquery.min.js"></script>
+            <!--plugins-->
+            <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+            <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+
+            <script src="assets/js/main.js"></script>
+
+            <!--CALENDAR DATE PICKER-->
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+            <script>
+                flatpickr("#datePicker",{
+                             
+                    dateFormat: "d-m-Y",              
+                    minDate: "today"
+                    
+                });
+            </script> 
+
+            </body>
+
+
+
+            <!--</html>-->

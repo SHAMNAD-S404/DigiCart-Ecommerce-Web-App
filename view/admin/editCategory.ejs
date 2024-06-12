@@ -1,0 +1,105 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+<!--navbar-->
+<link rel="stylesheet" href="assets/css/custom.css">
+<%-include('../partials/navbar.ejs')%>
+
+<!--start main wrapper-->
+<main class="main-wrapper">
+    <div class="main-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <a href="/admin/home"><div class="breadcrumb-title pe-3">DigiCart</div></a>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Edit Category </li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="ms-auto">
+                <div class="btn-group gap-4">
+                    <button type="button" class="btn btn-primary">Edit</button>
+                    <button type="button" class="btn btn-primary">Delete</button>
+                    <button type="button" class="btn btn-primary">Settings</button>
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+        <div class="row">
+            <div class="col-12 col-lg-10  itachi">
+                <form action="/admin/edit-category" method="patch" enctype="multipart/form-data" id="updateCategory">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <% if(typeof categoryData !== 'undefined') { %>
+                            <input type="hidden" name="id" value= "<%= categoryData._id %>">
+                            <h5 class="mb-3">Category Title</h5>
+                            <input type="text" class="form-control" value="<%= categoryData.name %>" name="category"  id="categoryName" required>
+                            <span id="categoryError" style="color: red;"></span>
+                        </div>
+                        <div class="mb-4">
+                            <h5 class="mb-3">Category Description</h5>
+                            <textarea class="form-control" cols="4" rows="6" name="description" id="description" required><%= categoryData.description %></textarea>
+                            <span id="descriptionError" style="color: red;"></span>
+                        </div>     
+                       
+                        <div class="form-group">
+                            <label for="image-upload" class="custom-file-upload">Upload image</label>
+                             <input type="file" class="form-control" id="image-upload" name="images" accept=".jpg, .png, image/jpeg, image/png"  >
+                            <div id="preview-container"></div>
+                              <input type="hidden"  name="oldImage" value="<%= categoryData.imageUrl %>"  >
+                            <img src="/uploaded_Images/<%= categoryData.imageUrl  %>" style="margin-bottom: 15px;" width="15%" class="rounded-3" alt="product image">
+                            <p>*previous image</p>    
+                        </div>
+                        
+                       <% } %>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <a href="/admin/category_management"><button type="button" class="btn btn-danger">Cancel</button></a>
+                        </form>
+
+            </div>
+
+        </div><!--end row-->
+    </div>
+</main>
+
+<%- include('../partials/sidebar.ejs')%>
+<script src="assets/js/formValidation/previewImg.js"></script>
+<!--sweetalert2 and validation js-->
+<script src="assets/js/formValidation/updateCategory.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!--bootstrap js-->
+  <script src="assets/js/bootstrap.bundle.min.js"></script>
+
+  <!--plugins-->
+  <script src="assets/js/jquery.min.js"></script>
+  <!--plugins-->
+
+
+  <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+  <script src="assets/plugins/fancy-file-uploader/jquery.ui.widget.js"></script>
+	<script src="assets/plugins/fancy-file-uploader/jquery.fileupload.js"></script>
+	<script src="assets/plugins/fancy-file-uploader/jquery.iframe-transport.js"></script>
+	<script src="assets/plugins/fancy-file-uploader/jquery.fancy-fileupload.js"></script>
+  <script>
+		$('#fancy-file-upload').FancyFileUpload({
+			params: {
+				action: 'fileuploader'
+			},
+			maxfilesize: 1000000
+		});
+	</script>
+  <script src="assets/js/main.js"></script>
+
+
+</body>
+
+
+
+</html>

@@ -1,0 +1,309 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
+
+    
+
+
+    <!--navbar-->
+
+    <%-include('../partials/navbar.ejs')%>
+
+        <!--start main wrapper-->
+        <main class="main-wrapper">
+            <div class="main-content">
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <a href="/admin/home">
+                        <div class="breadcrumb-title pe-3">DigiCart</div>
+                    </a>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Sales Report</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+
+
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <!--<div class="position-relative">
+                            <input class="form-control px-5" type="search" id="searchInput"
+                                placeholder="Search  Products by Name">
+                       
+                        </div>
+                        -->
+
+                    </div>
+                    <div class="col-auto flex-grow-1 overflow-auto">
+                        <div class="btn-group position-static">
+
+                            <div class="btn-group position-static ">
+                                <a href="/admin/sales-report-filter">
+                                    <button type="button" class="btn btn-outline-warning px-4" id="dayFilter"> View full Report</button> </a>
+                            </div>
+
+                            <div class="btn-group position-static">
+
+                                <a href="/admin/sales-report-filter?filter=day">
+                                    <button type="button" class="btn btn-outline-warning px-4" 
+                                    id="dayFilter"> Day </button> </a>   
+                            </div>
+                            <div class="btn-group position-static">
+                                <a href="/admin/sales-report-filter?filter=week ">
+                                <button type="button" class="btn btn-outline-warning px-4"
+                                id="weekFilter" >Week</button> </a>                                                         
+                              
+                            </div>
+                            <div class="btn-group position-static">
+                                <a href="/admin/sales-report-filter?filter=year">
+                                <button type="button" class="btn btn-outline-warning px-4" 
+                                id="yearFilter"  >Year</button></a>                                                          
+                              
+                            </div>
+                            <div class="btn-group position-static">
+                                <button type="button" class="btn btn-outline-warning px-4"
+                                onclick="showDatePicker()" >Custom</button> 
+
+                                <input type="date" class="form-control" style="display: none;"
+                                placeholder="Pick two dates" id="datePicker" required>
+                                
+                                <button class="btn btn-primary" id="searchButton" style="display: none;"
+                                ><i class="fa-solid fa-magnifying-glass"></i></button>
+                              
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="d-flex align-items-center gap-2 justify-content-lg-end">
+                            <button class="btn btn-outline-success" id="toPDF"><i class="fa-solid fa-file-pdf"></i>
+                                - PDF</button>
+                            <button class="btn btn-outline-info" id="toExcel" ><i class="fa-solid fa-file-excel"></i>
+                                 - Excel</button>
+                            <a href="/admin/"><button class="btn btn-primary px-4">Go Back</button></a>
+                                                       
+                        </div>
+                    </div>
+                </div><!--end row-->
+
+        <div id="pdfContent">
+            <div id="header" style="text-align: center; margin-bottom: 20px;">
+                <h1 class="mt-4">DigiCart Ecom</h1>            
+            </div>
+            
+                <h2 class="text-center mt-2">Sales Report</h2>
+                <p id="currentDate" class=""></p>
+                <p id="currentTime"></p>
+                <div class="card mt-4" id="salesReport">
+                    <div class="card-body">
+                        <div class="product-table">
+                            <div class="table-responsive white-space-nowrap">
+                                <table class="table mb-0 table-dark table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+
+                                            <th>ORDER ID</th>
+                                            <th>ORDER DATE</th>
+                                            <th>PRODUCT </th>
+                                            <th>CUSTOMER</th>
+                                            <th>PAYMENT MODE</th>
+                                            <th>STATUS</th>
+                                            <th>OFFER DISCOUNT </th>
+                                            <th>COUPON DISCOUNT </th>
+                                            <th>FINAL CART PRICE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ayne_ne_ethaa">
+                                       
+                                            <% if ( orderInfo && orderInfo.length> 0 ) {
+                                                orderInfo.forEach(order => {
+                                                order.orderItems.forEach(item => {
+                                                const product = item.product.productID;
+                                                const variant = item.product;
+                                                //const address = order.shippingAddress;
+                                                const quantity = item.quantity
+                                                const status = item.orderStatus
+                                                const totalPrice = order.grandTotal
+                                                const offerDiscount = order.offerDiscount
+                                                const paymentMode = order.paymentMethod
+                                                const couponOffer = order.couponDetails.claimedAmount
+                                                const user = order.userId;
+                                                const orderID = order._id;
+                                                const date = order.orderDate
+                                                const newDate = new Date(date)
+                                                const orderDate = newDate.toDateString();
+                                                const temp = order.orderItems
+                                                
+                                                if (status === 'Delivered' || status === 'Return Rejected' || status === 'Completed') {
+                                                %>
+                                                
+                                               
+
+                                                <tr>
+                                                    
+                                                    <td> 
+                                                        <a href="/admin/order-details?orderId=<%=orderID%>"><%=orderID%></a>
+                                                    </td>
+
+                                                    <td>
+                                                        <span>
+                                                            <%= new Date(date).toLocaleDateString('en-IN')%> <br>
+                                                            <span>
+                                                            <%= new Date(date).toLocaleTimeString('en-IN')%>
+                                                            </span>
+                                                        </span>
+                                                    
+                                                    
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-3">
+                                                     
+                                                            <div class="product-info">
+
+                                                                <%=product.name %>,
+                                                                <br>Variant :
+                                                                <%=variant.variantName%>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </td>
+
+                                                  
+                                                    <td>
+                                                        <span>
+                                                            <%= user.name%>
+                                                        </span><br>
+                                                        <a href=""><span>
+                                                                <%= user.email%>
+                                                            </span></a>
+
+                                                    </td>
+
+
+                                                    <td>
+                                                        <h6 style="color: rgb(19, 215, 19);">
+                                                            <%= paymentMode%>
+                                                        </h6>
+
+                                                    </td>
+                                                    <td>
+                                                        <span >
+                                                            <%= status%>
+                                                        </span>
+
+                                                    </td>
+                                                    <td >
+
+                                                        <% if(offerDiscount) {%>
+                                                            <span class="ms-2"><%= offerDiscount %></span>
+                                                        <% } else {%>
+                                                            <span class="ms-2">None</span>
+                                                        <% } %>   
+
+                                                    </td>
+                                                    <td>
+                                                       
+                                                        <% if(couponOffer) {%>
+                                                            <span ><%= couponOffer %></span>
+                                                        <% } else {%>
+                                                            <span >None</span>
+                                                        <% } %>    
+                                                       
+                                                    </td>
+                                                    <td>
+                                                         <% if(totalPrice === 0) {%>
+                                                            <span >Cancelled</span>
+                                                        <% } else {%>
+                                                            <span><%=totalPrice%></span>
+                                                        <% } %>    
+                                                     
+                                                    </td>
+
+
+                                                    <%} } ) }) }else{ %>
+                                                        <h4 style="text-align: center;"> Order is empty !</h4>
+                                                        <%}%>
+                                                      
+
+                                                </tr>
+
+                                                
+                                    </tbody>
+                                </table>
+
+                                <div class="pagination mt-4">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination">
+                                            <% for(let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+                                        </ul>
+                                    </nav>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+
+
+            </div>
+            
+        </main>
+
+        <%- include('../partials/sidebar.ejs')%>
+
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+            <script src="assets/js/salesReport.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+             <% // TO CONVERT TO EXCEL %>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+            <% // TO CONVERT TO PDF %>
+       
+
+            <!--bootstrap js-->
+            <script src="assets/js/bootstrap.bundle.min.js"></script>
+
+            <!--plugins-->
+            <script src="assets/js/jquery.min.js"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!--plugins-->
+            <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+            <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+            <script src="assets/js/main.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+            <script>
+                flatpickr("#datePicker",{
+                                
+                    dateFormat: "d-m-Y",
+                    maxDate: "today",
+                    mode: "range",
+                    minDate: "2024-01-01",
+                    
+
+                });
+            </script>
+
+
+            </body>
+
+            </html>

@@ -1,0 +1,55 @@
+<%- include('../layouts/userLayout/header.ejs')%>  
+
+ <div class="account-area mt-70 mb-70">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="basic-login mb-50">
+                            <h5>Login</h5>
+                            
+                            <% if (alert&&alert.length >0) {%> 
+                                
+                
+                                    <div class="alert alert-danger" role="alert">
+                                        <%= alert %> 
+                                        <a href="/contact" class="alert-link">Need help?</a>
+                                    </div>     
+                            <% } %>
+                                   <% if (success&&success.length >0) {%> 
+                             
+                
+                                    <div class="alert alert-success" role="alert">
+                                        <%= success %> 
+                                        <a href="/contact" class="alert-link">Need help?</a>
+                                    </div>     
+                            <% } %>
+                            <form action="/login" method="post">
+
+                                        <label for="name">Username or email address  <span>*</span></label>
+                                        <input id="name" type="email" placeholder="Enter your email" name="email">
+                                        <label for="pass">Password <span>*</span></label>
+                                        <input id="pass" type="password" placeholder="Enter password..." name="password">
+                                        <div class="login-action mb-10 fix">
+                                            
+                                            <span class="forgot-login f-right">
+                                            <a href="/forgotpassword">Lost your password?</a>
+                                            </span>
+                                        </div>
+                                         <input type="submit" placeholder="Log in" class="tp-in-btn w-100" value="Log In">        
+                                        <a href="/signup" class="tp-in-btn1 w-100" style="border-radius: 2rem;">
+                                            New User &nbsp ? &nbsp SignUp</a>
+                            </form>
+
+
+                        </div>
+                    </div>
+                       <div class="social-login ">
+                                <a href="/auth/google"><button id="google-login">
+                                    <img src="assets/img/logo/google.png" alt="Google Logo"> Login with Google
+                                </button></a>
+                         </div>
+
+
+<%- include('../layouts/userLayout/footer.ejs')%>
+
+<script src="assets/js/digiCart/home.js"></script>

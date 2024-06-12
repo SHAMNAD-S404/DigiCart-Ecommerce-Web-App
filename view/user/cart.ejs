@@ -1,0 +1,175 @@
+
+<%- include('../layouts/userLayout/header.ejs')%> 
+<link rel="stylesheet" href="assets/css/cart.css">
+<link rel="stylesheet" href="assets/css/sweetToast.css">
+ 
+ <main>
+        <!-- page-banner-area-start -->
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="page-banner-content text-center">
+                            <h4 class="breadcrumb-title" style="color: black;">Your Cart</h4>
+                            <div class="breadcrumb-two">
+                                <nav>
+                                   <nav class="breadcrumb-trail breadcrumbs">
+                                      <ul class="breadcrumb-menu">
+                                         <li class="breadcrumb-trail">
+                                            <a href="/"><span style="color: blue;" >Home</span></a>
+                                         </li>
+                                         <li class="trail-item">
+                                            <span style="color: black;">Cart</span>
+                                         </li>
+                                      </ul>
+                                   </nav> 
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+        <!-- page-banner-area-end -->
+
+        <!-- cart-area-start -->
+
+        <section class="cart-area pt-30 pb-120">
+            <div class="container">
+               <div class="row">
+                  <div class="col-12">
+                     <% if(cartProducts && cartProducts.products.length > 0 ) { %>
+                        <form action="#">
+                           <div class="table-content table-responsive">
+                              <table class="table">
+                                    <thead>
+                                       <tr>
+                                          <th class="product-thumbnail">Images</th>
+                                          <th class="cart-product-name">Product - Variant</th>
+                                          <th class="product-price">Unit Price</th>
+                                          <th class="product-quantity">Quantity</th>
+                                          <th class="product-subtotal">Total</th>
+                                          <th class="product-remove">Remove</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                      
+                                             <%  
+                                             cartProducts.products.forEach(element => { 
+                                             const product  = element.productVariantId.productID;
+                                             const variant  = element.productVariantId ;
+                                             const quantity = element.quantity;
+                                             %>
+  
+                                       <tr id="deleteRow<%=variant._id%>">
+                                          <td class="product-thumbnail"><a href="/product-details?id=<%= product._id %>&vId=<%= variant._id %>">
+                                             <img src="/uploaded_Images/<%=variant.imageName[1] %>" alt="product image" class="productImage"
+                                             data-toggle="tooltip" data-placement="right" title="Click to Show details" ></a></td>
+                                          <td class="product-name"><a href="#" id="Link"> <%= product.name%> -  <br> <%=variant.variantName%></a>
+                                                <p id="statusAlert<%= variant._id %>" style="display: none;" ></p>
+
+                                                <% if(variant.block == true) { %> 
+                                                      <p class="pStatus<%= variant._id %>" style="color: red;">Product unavilable</p>
+                                                <%}else if(variant.stock >= 5) { %> 
+                                                      <p class="pStatus<%= variant._id %>" style="color: green;">In stock</p>
+                                                <%}else if(variant.stock < 5 && variant.stock > 0 ){ %>
+                                                      <p class="pStatus<%= variant._id %>" style="color: rgb(194, 78, 11);">Only few stock left </p> 
+                                                <%}else{%>  
+                                                      <p class="pStatus<%= variant._id %>" style="color: red;">Out of stock</p>
+                                                <%}%>   
+                                          </td>
+                                           
+                                          <td class="product-price"><span class="amount" id="unitPrice<%= variant._id %>">
+                                              <%= variant.price%> </span></td>
+                                          <td class="product-quantity">
+
+                                       <%if (variant.stock !== 0 && variant.block !== true ) { %>                                                                
+                                             
+                                             <div class="quantityClass">
+                                                <div class="incButton"><button type="button" id="decreaseButton<%= variant._id %>" 
+                                                   onclick="decreaseQuantity('<%= variant._id %>','<%= variant.stock %>')">-</button></div>                                 
+                                                <input class="quantityField" type="text" readonly id="quantityID<%= variant._id%>" value="<%=quantity%>">
+                                                <div class="incButton"><button type="button" id="increaseButton<%= variant._id %>"
+                                                onclick="increaseQuantity('<%= variant._id %>','<%= variant.stock %>','<%= variant.block %>')" >+</button></div> 
+                                             </div>
+                                       <% }%>
+                                              
+                                          </td>
+                                            <% let sum = variant.price * quantity %>
+                                      
+                                          <td class="product-subtotal ">
+                                                <%if (variant.stock !==0 && variant.block !==true ) { %>
+                                                      <span class="amount subTotalAmt" id="totalPrice<%= variant._id %>" > <%= sum %> </span>
+                                                <%}else {%>
+                                                   <span class="amount" style="color: red;"> not <br> included</span>
+                                                <%}%>   
+                                          </td>
+                                          <td class="product-remove"><a><i class="fa fa-times" style="cursor: pointer;" onclick="deleteCart('<%=variant._id%>')"></i></a></td>
+                                       </tr>
+
+                                       <% }); %>
+                                    </tbody>
+                              </table>
+                           </div>
+                           <%/*%>
+                           <div class="row">
+                              <div class="col-12">
+                                    <div class="coupon-all">
+                                       
+                                       //COUPON DIV
+                                       <!--<div class="coupon">
+                                          <input id="coupon_code" class="input-text" name="coupon_code" value="" placeholder="Coupon code" type="text">
+                                          <button class="tp-btn-h1" name="apply_coupon" type="submit">Apply
+                                                coupon</button>
+                                       </div>-->
+                                       
+                                       <div class="coupon2">
+                                          <a href=""></a><button class="tp-btn-h1" name="update_cart" type="submit">Update cart</button>
+                                       </div>
+                                    </div>
+                              </div>
+                           </div>
+                           <%*/%>
+                           <div class="row justify-content-end">
+                              <div class="col-md-5">
+                                    <div class="cart-page-total">
+                                       <h2>Cart totals</h2>
+                                       <ul class="mb-20">
+                                          <li>Subtotal <span id="subTotalID" ></span></li>
+                                          <li>Shipping charge <span id="shipChargeID">60.00&#x20B9;</span><pre>free shipping above 10000/- orders</pre></li>
+                                          <li>Total <span id="totalID"></span></li>
+                                       </ul>
+                                       <a class="tp-btn-h1" href="/checkout" onclick="checkoutLoad()" >Proceed to checkout</a>
+                                    </div>
+                              </div>
+                           </div>
+                        </form>
+                        <% } else{ %>
+
+                           <div class="col-lg-12 text-center ">
+                               <img src="assets/userfile/emptycart2.png" class="img-fluid" alt="" style="background-size: contain; height: 30rem; ">
+                              
+                           </div>
+                           <div class="text-center " style="margin-top: -5rem;">
+                              <a href="/shopall"><button type="button" class="btn btn-primary">Continue Shopping</button></a>
+                          </div>
+
+                           <% }%>
+                  </div>
+               </div>
+            </div>
+         </section>
+
+
+<%- include('../layouts/userLayout/footer.ejs')%>
+<!--sweetalert2-->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script src="assets/js/digiCart/cart.js"></script>
+<script src="assets/js/digiCart/checkout.js"></script>
+
+
+
+
+
+

@@ -1,0 +1,184 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+    <!--navbar-->
+
+    <%-include('../partials/navbar.ejs')%>
+
+
+        <!--start main wrapper-->
+        <main class="main-wrapper">
+            <div class="main-content">
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <a href="/admin/home">
+                        <div class="breadcrumb-title pe-3">DigiCart</div>
+                    </a>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">All Customers</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <div class="position-relative">
+                            <form action="/admin/searchUsers" id="searchForm" method="get">
+                                <input class="form-control px-5 " type="text" id="searchInput" name="searchInput"
+                                    placeholder="Search Customers by name or email">
+                                <span
+                                    class="material-symbols-outlined position-absolute ms-3 translate-middle-y start-0 top-50 fs-5"></span>
+                             
+                        </div>
+                        <!--<ul id="userList"></ul>-->
+                    </div>
+                    <div class="col-auto flex-grow-1 overflow-auto">
+                        <div class="btn-group position-static">
+                            
+                            <button type="submit" class="btn btn-outline-success">Search</button>
+                            </form>
+                            
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="d-flex align-items-center gap-2 justify-content-lg-end">
+                            <button class="btn btn-success px-4"><i class="bi bi-box-arrow-right me-2"></i>Home</button>
+                            <button class="btn btn-primary px-4"><i class="bi bi-plus-lg me-2"></i>Add
+                                Customers</button>
+                        </div>
+                    </div>
+                </div><!--end row-->
+
+                <!-- The Modal -->
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="customer-table">
+                            <div class="table-responsive white-space-nowrap">
+                                <table class="table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+
+                                            <th>Numbers</th>
+                                            <th>Customer</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Blocked</th>
+                                            <th>Edit</th>
+                                            <th>Block</th>
+                                        </tr>
+                                    </thead>
+                                    <div id="myModal" class="modal">
+                                        <div class="modal-content">
+                                            <span class="close">&times;</span>
+                                            <ul id="userList"></ul>
+                                        </div>
+                                    </div>
+
+                                    <tbody>
+                                        <% if(customers.length> 0){
+                                            for(let i =0;i<customers.length;i++){ %>
+                                                <tr>
+
+                                                    <td>&nbsp;<%= [i+1] %> <br></td>
+                                                    <td>
+                                                        <a class="d-flex align-items-center gap-3" href="javascript:;">
+                                                            <div class="customer-pic">
+                                                                <img src="/assets/images/man.png" class="rounded-circle"
+                                                                    width="40" height="40" alt="customer-pic">
+                                                            </div>
+                                                            <p class="mb-0 customer-name fw-bold">
+                                                                <%= customers[i].name %>
+                                                            </p>
+                                                        </a>
+                                                    </td>
+                                                    <td> <a href="javascript:;" class="font-text1">
+                                                            <%= customers[i].email %>
+                                                        </a> </td>
+                                                    <td>
+                                                        <%= customers[i].phone %>
+                                                    </td>
+
+                                                    <td>
+                                                        <% if (customers[i].isBlocked==true) { %>
+                                                            <p style="color:rgb(235, 36, 36);">User <br> Blocked </p>
+                                                            <% } else {%>
+                                                                <p style="color: rgb(23, 224, 23);">User Not<br> blocked
+                                                                </p>
+                                                                <%}%>
+                                                    </td>
+
+                                                    <td> <a href="/admin/edit-user?id=<%= customers[i]._id %>"><button
+                                                                type="button" class="btn btn-primary">Edit</button></a>
+                                                    </td>
+                                                    <td>
+                                                        <% if(customers[i].isBlocked==false){ %>
+                                                            <button type="button" class="btn "
+                                                                style="background-color: red;"
+                                                                onclick="blockItem(this,'<%= customers[i]._id %>','user')">block</button>
+
+                                                            <% }else{%>
+                                                                <button type="button" class="btn "
+                                                                    style="background-color: green;"
+                                                                    onclick="blockItem(this,'<%= customers[i]._id %>','user')">unblock</button>
+
+                                                                <% } %>
+                                                    </td>
+                                                </tr>
+
+                                                <% } } else{ %>
+                                                    <tr>
+                                                        <td colspan="5"> Users not found!!..check database</td>
+                                                    </tr>
+                                                    <% } %>
+
+                                    </tbody>
+                                </table>
+
+                                <div class="pagination mt-4">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination">
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+                                        </ul>
+                                    </nav>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </main>
+
+        <%- include('../partials/sidebar.ejs')%>
+
+
+            <!--bootstrap js-->
+            <script src="assets/js/bootstrap.bundle.min.js"></script>
+            <!--sweet alert-->
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!--plugins-->
+            <script src="assets/js/jquery.min.js"></script>
+            <!--plugins-->
+            <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+            <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+            <script src="assets/js/main.js"></script>
+            <script src="assets/js/category.js"></script>
+
+            </body>
+
+
+
+            </html>

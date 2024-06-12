@@ -1,0 +1,182 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+    <!--navbar-->
+
+    <%-include('../partials/navbar.ejs')%>
+
+        <!--start main wrapper-->
+        <main class="main-wrapper">
+            <div class="main-content">
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <a href="/admin/home">
+                        <div class="breadcrumb-title pe-3">DigiCart</div>
+                    </a>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">All Proudcts</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+
+               
+
+                <div class="row g-3">
+                    <div class="col-auto">
+                        <div class="position-relative">
+                            <input class="form-control px-5" type="search" id="searchInput"
+                                placeholder="Search  Products by Name">
+                            <span
+                                class="material-symbols-outlined position-absolute ms-3 translate-middle-y start-0 top-50 fs-5"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="justify-content-lg-end">
+                        <div class="d-flex align-items-center gap-2 justify-content-lg-end">
+                            <button class="btn btn-filter px-4"><i
+                                    class="bi bi-box-arrow-right me-2"></i>Export</button>
+                            <a href="/admin/addProduct"><button class="btn btn-primary px-4"><i
+                                        class="bi bi-plus-lg me-2"></i>Add Products</button></a>
+                        </div>
+                    </div>
+                </div><!--end row-->
+
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <div class="product-table">
+                            <div class="table-responsive white-space-nowrap">
+                                <table class="table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+
+                                            <th>Count</th>
+                                            <th>Product Name</th>
+                                            <th>Category</th>
+                                            <th>Edit</th>
+                                            <th>Block</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="productTableBody">
+                                        <% if (showProducts.length> 0) {
+                                            for (let i = 0; i< showProducts.length; i++) { %>
+                                                <tr id="row<%= showProducts[i]._id%>">
+                                                    <td>
+                                                        <%= [i+1] %>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex align-items-center gap-3">
+                                                            <div class="product-box">
+                                                                <a
+                                                                    href="/admin/product-details?id=<%=showProducts[i]._id%> ">
+                                                                    <img src="/uploaded_Images/<%= showProducts[i].imageName%>"
+                                                                        width="70" class="rounded-3"
+                                                                        alt="product image">
+                                                                </a>
+                                                            </div>
+                                                            <div class="product-info">
+                                                                <a href="javascript:;" class="product-title">
+                                                                    <%=showProducts[i].name %>
+                                                                </a>
+                                                                <% if (showProducts[i].category) { %>
+                                                                    <p class="mb-0 product-category">Category :
+                                                                        <%=showProducts[i].category.name %>
+                                                                    </p>
+
+                                                                    <p
+                                                                        style="font-size: 8px; color: rgb(243, 243, 109); ">
+
+                                                                        tap product icon to see details</p>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+
+                                                        <p style="color: rgb(23, 224, 23);">
+                                                            <%=showProducts[i].category.name %>
+                                                        </p>
+
+
+                                                    </td>
+                                                    <% } %>
+
+                                                        <td> <a class="aLink"
+                                                                href="/admin/edit-product?id=<%= showProducts[i]._id %>"><button
+                                                                    type="button"
+                                                                    class="btn btn-primary">Edit</button></a>
+                                                        </td>
+                                                        <td>
+                                                            <% if(showProducts[i].Blocked==false) { %>
+                                                                <button
+                                                                    onclick="blockItem(this,'<%= showProducts[i]._id %>','product')"
+                                                                    type="button" class="btn"
+                                                                    style="background-color: red;">block</button>
+                                                                <% }else { %>
+                                                                    <button
+                                                                        onclick="blockItem(this,'<%= showProducts[i]._id %>','product')"
+                                                                        type="button" class="btn"
+                                                                        style="background-color: green;">unblock</button>
+                                                                    <% } %>
+                                                        </td>
+
+                                                        <td><button type="button" class="btn btn-danger"
+                                                                onclick="deleteItem('row<%= showProducts[i]._id%>','<%= showProducts[i]._id%>','product')">Delete</button>
+                                                        </td>
+                                                        <% } } %>
+
+                                                </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div class="pagination">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination">
+                                            <% for (let i=1; i <=totalPages; i++) { %>
+                                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                    <a class="page-link" href="?page=<%= i %>">
+                                                        <%= i %>
+                                                    </a>
+                                                </li>
+                                                <% } %>
+                                        </ul>
+                                    </nav>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <%- include('../partials/sidebar.ejs')%>
+
+
+
+            <!--start switcher-->
+            <!--bootstrap js-->
+            <script src="assets/js/bootstrap.bundle.min.js"></script>
+
+            <!--plugins-->
+            <script src="assets/js/jquery.min.js"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <!--plugins-->
+            <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+            <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+            <script src="assets/js/main.js"></script>
+            <script src="assets/js/category.js"></script>
+
+
+            </body>
+
+
+
+            </html>

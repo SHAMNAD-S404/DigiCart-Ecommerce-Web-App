@@ -1,0 +1,129 @@
+<%-include('../layouts/adminLayout/header.ejs')%>
+
+    <!--navbar-->
+<link rel="stylesheet" href="assets/css/custom.css">
+<%-include('../partials/navbar.ejs')%>
+
+        <!--start main wrapper-->
+    <main class="main-wrapper">
+            <div class="main-content">
+                <!--breadcrumb-->
+                <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+                    <a href="/admin/home"><div class="breadcrumb-title pe-3">DigiCart</div></a>
+                    <div class="ps-3">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 p-0">
+                                <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                                </li>
+                                <li class="breadcrumb-item active" aria-current="page">Add Products</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    
+                </div>
+                <!--end breadcrumb-->
+                <div class="row">
+                    <div class="col-12 col-lg-10">
+                        <form action="/admin/addProduct" method="post" enctype="multipart/form-data" id="productForm">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Product Title</h5>
+                                    <input type="text" class="form-control" placeholder="write title here...." name="name"  id="name" required>
+                                    <div id="nameError" class="text-danger"></div>
+                                </div>
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Product Description</h5>
+                                    <textarea class="form-control" cols="4" rows="6"
+                                        placeholder="write a description here.." name="discription" id="description"  required></textarea>
+                                         <div id="descriptionError" class="text-danger"></div>
+                                </div>
+                                 <div class="form-group">
+                                        <label for="image-upload" class="custom-file-upload">Upload image</label>
+                                        <input type="file" class="form-control" id="image-upload" name="images" accept=".jpg, .png, image/jpeg, image/png"  required>
+                                        <div id="preview-container"></div>
+             
+                                </div>
+
+                                <div class="col-12 col-lg-4">
+
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="mb-3">Organize</h5>
+                                            <div class="row g-3">
+
+                                                <div class="col-12">
+                                                    <label for="AddCategory" class="form-label">Category</label>
+                                                    <select class="form-select" id="AddCategory" name="category" required>
+                                                        <% if(typeof categories !== 'undefined') {%>
+                                                        <option value="">Select a Category</option>
+                                                            <% categories.forEach(category => { %>
+                                                                <option value="<%= category._id %>"> <%= category.name  %> </option>
+                                                                
+                                                            <% }); %>
+                                                      <% } %>
+                                                    </select>
+                                                </div>
+
+                                            </div><br>
+
+                                           
+                                     <div class="col-12">
+                                         <label for="Vendor" class="form-label">Brand</label>
+                                        <input type="text" class="form-control" id="brand" placeholder="Enter brnad name"name="brand" required>
+                                         <div id="brandError" class="text-danger"></div>       
+                                    </div>
+                                     
+                                        </div><!--end row-->
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center gap-5">
+                                    <a href="/admin/addProduct"><button type="button" class="btn btn-outline-danger flex-fill"><i
+                                                class="bi bi-x-circle me-2"></i>Discard</button></a>
+                                    <a href="/admin/allProducts"><button type="button" class="btn btn-outline-primary flex-fill"><i
+                                                class="bi bi-x-circle me-2"></i>Go back</button></a>
+                                        <button type="submit" class="btn btn-outline-success flex-1"><i
+                                                class="bi bi-cloud-download me-2"></i>Continue</button>
+                                                <label for="submit" style="opacity: 40% ; font-size: 12px; margin-left: -18px;">*Press continue for add Variants</label>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div><!--end row-->
+                        </form>
+                    </div>
+        </main>
+
+ <%- include('../partials/sidebar.ejs')%>
+    <script src="assets/js/formValidation/previewImg.js"></script>
+    <!--sweetalert2 and form validation-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/formValidation/addProValid.js"></script>
+    <!--bootstrap js-->
+     <script src="assets/js/bootstrap.bundle.min.js"></script>
+    <!--plugins-->
+    <script src="assets/js/jquery.min.js"></script>
+     <!--plugins-->
+    <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+    <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
+    <script src="assets/plugins/fancy-file-uploader/jquery.ui.widget.js"></script>
+    <script src="assets/plugins/fancy-file-uploader/jquery.fileupload.js"></script>
+    <script src="assets/plugins/fancy-file-uploader/jquery.iframe-transport.js"></script>
+    <script src="assets/plugins/fancy-file-uploader/jquery.fancy-fileupload.js"></script>
+    <script src="assets/js/main.js"></script>
+
+
+            </body>
+
+
+
+            </html>
