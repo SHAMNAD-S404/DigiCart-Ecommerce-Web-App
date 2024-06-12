@@ -1,10 +1,10 @@
-const file       = require('fs')
-const path       = require('path')
-const sharp      = require('sharp')
+const file       = require ('fs')
+const path       = require ('path')
+const sharp      = require ('sharp')
 const productDB  = require ('../../model/productModel')
 const catagoryDB = require ('../../model/catogoryModel')
 const variantDB  = require ('../../model/variantModel')
-const shamnad    = require('../../model/catogoryModel')
+const shamnad    = require ('../../model/catogoryModel')
 require('dotenv').config()
 
  
@@ -109,10 +109,10 @@ const blockProducts = async (req,res) => {
                                  {$set:{Blocked:true}});
         if(productBlock){
             console.log('success');
-            // res.redirect('/admin/allProducts')
+            
         }else{
             console.log('product not found !!');
-           // return res.redirect('/admin/allProducts')
+           
         }
 
     } catch (error) {
