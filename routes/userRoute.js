@@ -113,12 +113,12 @@ userRoute.post ('/load-wallet',auth.isLogin,walletController.loadWallet)
  
 
 
-//FOR UNDIFINED ROUTES
-userRoute.use ((req,res,next)=> {
-    const err = new Error('Not found the url!')
-    err.status = 404;
-    next(err)
-})         
+////FOR UNDIFINED ROUTES
+//userRoute.use ((req,res,next)=> {
+//    const err = new Error('Not found the url!')
+//    err.status = 404;
+//    next(err)
+//})         
 
 
 

@@ -101,12 +101,12 @@ adminRoute.get   ('/offers',adminAuth.isLogin,offerController.loadOfferPage)
           
 
 
-//FOR UNDEFINED ADMIN ROUTES
-adminRoute.use ((req,res,next)=> {
-    const err = new Error('Url not found !');
-    res.status = 404;
-    next(err)
-})
+////FOR UNDEFINED ADMIN ROUTES
+//adminRoute.use ((req,res,next)=> {
+//    const err = new Error('Url not found !');
+//    res.status = 404;
+//    next(err)
+//})
 
 
 //FOR MULTER ERROR HANDLING    
