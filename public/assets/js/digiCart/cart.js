@@ -41,6 +41,11 @@ async function deleteCart(variantID){
 
                 if(data.success) {
 
+                    //TO PLAY NOTIFICATION SOUND
+
+                    const audio=new Audio('/Audio/delete.mp3');
+                    audio.play();
+
                     tableRowID.style.display='none';
 
                     const totalUnit = parseInt(document.getElementById('totalPrice'+variantID).innerText);

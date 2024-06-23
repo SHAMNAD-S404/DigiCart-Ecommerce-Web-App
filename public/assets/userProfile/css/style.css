@@ -5209,3 +5209,41 @@ color: #ee2bd4;
 .swal2-popup-custom-font-size {
   font-size: 16px !important;
 }
+
+
+
+  .referral-container {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      height: 26rem;
+  }
+
+  .referral-code {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #343a40;
+  }
+
+  .referral-header {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #007bff;
+  }
+
+  .btn-custom {
+      background-color: #007bff;
+      color: #fff;
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-size: 1.25rem;
+      margin-top: 1rem;
+  }
+
+  .form-control-custom {
+      border-radius: 30px;
+      padding: 10px;
+      font-size: 1rem;
+  }

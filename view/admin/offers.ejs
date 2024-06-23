@@ -30,8 +30,8 @@
 
                     </div>
                 </div>
+                
                 <!--end breadcrumb-->
-
 
                 <div class="row row-cols-1 row-cols-xl-2">
                     <% if(offers && offers.length > 0  ) { %>
@@ -105,6 +105,25 @@
 
 
                 </div>
+
+                    <!-- Pagination controls -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center mt-4">
+                            <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                                <a class="page-link" href="/admin/offers?page=<%= currentPage - 1 %>" tabindex="-1">Previous</a>
+                            </li>
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                                <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                                    <a class="page-link" href="/admin/offers?page=<%= i %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                                <% } %>
+                                <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link" href="/admin/offers?page=<%= currentPage + 1 %>">Next</a>
+                                </li>
+                        </ul>
+                    </nav>
 
 
             </div>

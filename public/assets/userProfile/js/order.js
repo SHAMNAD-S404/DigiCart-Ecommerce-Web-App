@@ -232,6 +232,11 @@ async function cancelOrder(orderID,quantity,variantID) {
 
                 const data=await response.json();
                 if(data.success) {
+
+                    const audio = new Audio('/Audio/sura cancel.mp3');
+                    audio.play()
+
+
                     statusAlert.textContent='Cancelled'
 
 

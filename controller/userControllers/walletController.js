@@ -1,16 +1,19 @@
-const bcrypt=require('bcrypt');
-const Razorpay=require('razorpay')
-const crypto=require('crypto')
-const walletDB=require('../../model/walletModel')
+
+const Razorpay  =   require('razorpay')
+const crypto    =   require('crypto')
+const walletDB  =   require('../../model/walletModel')
 require('dotenv').config()
 
+
+
 //GET WALLET
-const walletPage=async (req,res) => {
+const walletPage=async (req,res,next) => {
     try {
-        const userID=req.session.login_id;
-        const wallet=await walletDB.findOne({userID: userID})
-            .sort({createdAt: -1})
-            .limit(6)
+        const userID = req.session.login_id;
+        const wallet = await walletDB.findOne({userID: userID})
+                        .sort({createdAt: -1})
+                        .limit(6);
+
         //REVERSE THE TRANSACTION FIELD                             
         if(wallet) {
             wallet.transactions.reverse();
@@ -20,14 +23,14 @@ const walletPage=async (req,res) => {
 
 
     } catch(error) {
-        console.error(error);
+        next(error)
     }
 }
 
 
 
 //LOAD WALLET 
-const loadWallet=async (req,res) => {
+const loadWallet=async (req,res,next) => {
     try {
         const userID=req.session.login_id;
         const {orderAmount}=req.body
@@ -61,13 +64,13 @@ const loadWallet=async (req,res) => {
 
 
     } catch(error) {
-        console.error(error);
+        next(error)
     }
 }
 
 //VERIFY ONLINE PAYMENT FOR WALLET
 
-const walletVerifyPayment=async (req,res) => {
+const walletVerifyPayment=async (req,res,next) => {
     try {
 
         const {razorpay_order_id,razorpay_payment_id,razorpay_signature,order_id,orderAmount}=req.body;
@@ -103,7 +106,7 @@ const walletVerifyPayment=async (req,res) => {
         }
 
     } catch(error) {
-        console.error(error);
+        next(error)
     }
 }
 

@@ -150,7 +150,11 @@
 
     function viewReason(returnReason){
     
-        Swal.fire(returnReason);
+        Swal.fire({
+            title: "Return Reason",
+            text: returnReason || 'something went wrong!'
+            
+        });
     }
 
 

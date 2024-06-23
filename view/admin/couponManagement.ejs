@@ -1,5 +1,5 @@
 <%-include('../layouts/adminLayout/header.ejs')%>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <!--navbar-->
 
@@ -25,72 +25,91 @@
                     <div class="ms-auto">
                         <a href="/admin/add-coupon"><button type="button" class="btn btn-success ">Add
                                 Coupon</button></a>
-
-
+                    
                     </div>
-                </div>
-                <!--end breadcrumb-->
-
-
-                <div class="row row-cols-1 row-cols-xl-2">
-                    <% if(couponData&&couponData.length>0 ) { %>
-                        <% couponData.forEach(coupon=> { %>
-                            <div id="rowCoupon<%=coupon._id  %>" class="col">
-                                <div class="card">
-                                    <div class="row g-0">
-                                        <div class="col-md-4 border-end">
-                                            <div class="p-3">
-                                             
-                                                    <i class="fa-solid fa-gift fa-7x ms-4"></i>
+                    </div>
+                    <!--end breadcrumb-->
+                    
+                    <div class="row row-cols-1 row-cols-xl-2">
+                        <% if(couponData&&couponData.length>0 ) { %>
+                            <% couponData.forEach(coupon=> { %>
+                                <div id="rowCoupon<%=coupon._id  %>" class="col">
+                                    <div class="card">
+                                        <div class="row g-0">
+                                            <div class="col-md-4 border-end">
+                                                <div class="p-3"> <i class="fa-solid fa-gift fa-7x ms-4"></i></div>
+                    
+                                                <p class="onloadP" data-block="<%=coupon.block %>" data-id="<%=coupon._id %>" hidden></p>
+                    
                                             </div>
-                                    <p class="onloadP" data-block="<%=coupon.block %>" data-id="<%=coupon._id %>"  hidden></p>
-                                           
-                                        </div>
-                                  
-                                        <div class="col-md-8">
-                                            <div class="card-body">
-                                                <h5 class="card-title"> Coupon Code :  <%= coupon.couponCode %> </h5>
-                                                                                                
-                                                <p class="card-text"> Description : <%= coupon.discription %></p>
-                                                                                                   
-                                                <h6 class="card-text">Discount ercentage : <%= coupon.discountPercentage %>% </h6>
-                                                <h6 class="card-text">Min Purchase Amount : <%= coupon.minPurchaseAmount %></h6>
-                                                <h6 class="card-text">Max Reedemable Amount : <%= coupon.maxDiscountAmount %></h6>
-                                                <h6 class="card-text mb-4" style="color: red;">Expiry Date : <%= coupon.expiryDate %></h6>
-
-                                        <div class="mt-2 d-flex align-items-center justify-content-center gap-5">
-                                                    
-
-                                            <a href="/admin/edit-coupon?id=<%=coupon._id %>">
-                                                <button type="button" class="btn btn-primary" onclick="edit('<%=coupon._id %>')" 
-                                                    >Edit</button></a>
-                                                           
-                                            <button class="btn btn-danger" onclick="removeCoupon('<%=coupon._id %>')" >Remove</button>
-                                                                             
-                                            <button type="button" class="btn btn-success" onclick="unblock('<%=coupon._id %>')"
-                                             id="activateBtn<%=coupon._id %>" >Activate</button>
-                                           
-                                            <button type="button" class="btn btn-danger" id="deactivateBtn<%=coupon._id %>"
-                                            onclick="block('<%=coupon._id %>')">Deactivate</button>
-                                                           
-                                                                                                             
-                                        </div>
+                    
+                                            <div class="col-md-8">
+                                                <div class="card-body">
+                                                    <h5 class="card-title"> Coupon Code : <%= coupon.couponCode %>
+                                                    </h5>
+                    
+                                                    <p class="card-text"> Description : <%= coupon.discription %>
+                                                    </p>
+                    
+                                                    <h6 class="card-text">Discount ercentage : <%= coupon.discountPercentage %>% </h6>
+                                                    <h6 class="card-text">Min Purchase Amount : <%= coupon.minPurchaseAmount %>
+                                                    </h6>
+                                                    <h6 class="card-text">Max Reedemable Amount : <%= coupon.maxDiscountAmount %>
+                                                    </h6>
+                                                    <h6 class="card-text mb-4" style="color: red;">Expiry Date : <%= coupon.expiryDate %>
+                                                    </h6>
+                    
+                                                    <div class="mt-2 d-flex align-items-center justify-content-center gap-5">
+                    
+                    
+                                                        <a href="/admin/edit-coupon?id=<%=coupon._id %>">
+                                                            <button type="button" class="btn btn-primary"
+                                                                onclick="edit('<%=coupon._id %>')">Edit</button></a>
+                    
+                                                        <button class="btn btn-danger"
+                                                            onclick="removeCoupon('<%=coupon._id %>')">Remove</button>
+                    
+                                                        <button type="button" class="btn btn-success" onclick="unblock('<%=coupon._id %>')"
+                                                            id="activateBtn<%=coupon._id %>">Activate</button>
+                    
+                                                        <button type="button" class="btn btn-danger" id="deactivateBtn<%=coupon._id %>"
+                                                            onclick="block('<%=coupon._id %>')">Deactivate</button>
+                    
+                    
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!--second tryy-->
-                            <% }); %>
-                                <% }%>
-
-
-                </div>
-
-
-            </div>
-        </main>
+                    
+                    
+                                <% }); %>
+                                    <% }%>
+                    
+                    </div>
+                    <!-- Pagination controls -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center mt-4">
+                            <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                                <a class="page-link" href="/admin/all-coupon?page=<%= currentPage - 1 %>" tabindex="-1">Previous</a>
+                            </li>
+                            <% for (let i=1; i <=totalPages; i++) { %>
+                                <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                                    <a class="page-link" href="/admin/all-coupon?page=<%= i %>">
+                                        <%= i %>
+                                    </a>
+                                </li>
+                                <% } %>
+                                <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link" href="/admin/all-coupon?page=<%= currentPage + 1 %>">Next</a>
+                                </li>
+                        </ul>
+                    </nav>
+                    
+                    
+                    </div>
+                    </main>
 
         <%- include('../partials/sidebar.ejs')%>
             <!--Sweet alert-->
@@ -108,10 +127,6 @@
             <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
             <script src="assets/js/main.js"></script>
 
-
-
             </body>
-
-
 
             </html>

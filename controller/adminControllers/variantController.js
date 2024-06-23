@@ -1,30 +1,36 @@
-const productDB  = require('../../model/productModel')
-const catagoryDB = require('../../model/catogoryModel')
-const variantDB  = require('../../model/variantModel')
-const path       = require('path')
-const sharp      = require('sharp')
+
+const productDB  = require  ('../../model/productModel')
+const variantDB  = require  ('../../model/variantModel')
 require('dotenv').config()
 
 
-const loadVarients=async (req,res) => {
+const loadVarients=async (req,res,next) => {
 
     let ProductID = req.session.productID
     if(req.query.pId){
-        ProductID = req.query.pId
-     
+
+        ProductID = req.query.pId;    
     }
     
     try {
 
-        res.render('variant',{ProductID})
+        //TO FETCH CATEGORY NAME
+        const productDetails = await productDB.findOne({_id: ProductID}).populate({
+                                    path:'category',
+                                    select:'name -_id'
+                                    })
+                                    .select('_id');
+
+        const categoryName = productDetails.category.name;
+
+        res.render('variant',{ProductID,categoryName})
 
     } catch(error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const insertVariant=async (req,res) => {
+const insertVariant = async (req,res,next) => {
 
     try {
         const {productID,variantName,price,color,stock,ram,phoneMemory,size}=req.body
@@ -37,26 +43,16 @@ const insertVariant=async (req,res) => {
 
         }else{
 
-            const images=[];
-
-    //Resize the image 
+            const images = [];
 
             for(let i=0;i<req.files.length;i++) {
-            const resizedImage=await sharp(req.files[i].path)
-                .resize({width: 900,height: 900})
-                .png({quality: 90,background: {r: 255,g: 255,b: 255,alpha: 0}})
-                .toBuffer()
 
-    //Save the resized image
-
-            const newPath='public/uploaded_Images/resized'+req.files[i].filename;
-            await sharp(resizedImage).toFile(newPath);
-            const fileName=path.basename(newPath);
-            images.push(fileName)
+                images.push(req.files[i].filename)               
             
-        }
+            }
 
-        const productDetails=await productDB.findOne({_id: productID}).select('name categoryName -_id')
+
+        const productDetails=await productDB.findOne({_id: productID}).select('name categoryName -_id brand')
 
         const newVariant=new variantDB({
 
@@ -70,15 +66,16 @@ const insertVariant=async (req,res) => {
             size: size,
             imageName: images,
             productName: productDetails.name,
-            categoryName: productDetails.categoryName
+            categoryName: productDetails.categoryName,
+            brandName: productDetails.brand
 
         })
 
         const saveVariant=await newVariant.save()
 
         if(saveVariant) {
-            const variantID=saveVariant._id
-            const addToProduct=await productDB.updateMany({_id: productID},{$push: {variants: variantID}})
+            const variantID = saveVariant._id;
+            await productDB.updateMany({_id: productID},{$push: {variants: variantID}})
             delete req.session.productID;
             
 
@@ -94,17 +91,17 @@ const insertVariant=async (req,res) => {
       }
     } catch(error) {
 
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
+//FOR ADDING MULTIPLE VARIANTS
 
-const multipleVariant=async (req,res) => {
+const multipleVariant=async (req,res,next) => {
 
     try {
+
         const {productID,variantName,price,color,stock,ram,phoneMemory,size}=req.body
-        //const imageName=req.files.map(file=>file.filename)
         const regexPattern=new RegExp(`^${variantName}$`,'i')
         const alreadyExist=await variantDB.aggregate([{$match: {name: regexPattern}}])
 
@@ -115,22 +112,14 @@ const multipleVariant=async (req,res) => {
     }else{
 
         const images=[];
-        for(let i=0; i<req.files.length;i++){
 
-            const resizedImage = await sharp(req.files[i].path)
-                    .resize({width:900, height : 900})
-                    .png({quality: 90,background: {r: 255,g: 255,b: 255,alpha: 0}})
-                    .toBuffer()
-            //save the file
-            const newPath='public/uploaded_Images/resized'+req.files[i].filename;
-           
-            await sharp(resizedImage).toFile(newPath);
-            const fileName=path.basename(newPath);
-            //const fileName=req.files[i].filename;
-            images.push(fileName)
+        for(let i=0;i<req.files.length;i++) {
+
+            images.push(req.files[i].filename)
 
         }
 
+        const productDetails=await productDB.findOne({_id: productID}).select('name categoryName -_id brand')
 
         const newVariant=new variantDB({
 
@@ -142,7 +131,10 @@ const multipleVariant=async (req,res) => {
             ram: ram,
             phoneMemory: phoneMemory,
             size: size,
-            imageName: images
+            imageName: images,
+            productName: productDetails.name,
+            categoryName: productDetails.categoryName,
+            brandName: productDetails.brand
 
         })
 
@@ -164,13 +156,12 @@ const multipleVariant=async (req,res) => {
         }
     } catch(error) {
 
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
 
-const blockVariant = async(req,res) => {
+const blockVariant = async(req,res,next) => {
     try {
         const variantID=req.query.id
         const block=await variantDB.findByIdAndUpdate(variantID,{$set: {block:true}});
@@ -184,13 +175,12 @@ const blockVariant = async(req,res) => {
         }
         
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 
 }
 
-const unblockVariant = async(req,res) => {
+const unblockVariant = async(req,res,next) => {
     try {
         const variantID = req.query.id
         const unblock = await variantDB.findByIdAndUpdate(variantID,{$set:{block:false}});
@@ -203,24 +193,22 @@ const unblockVariant = async(req,res) => {
        
         
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const editVariant = async(req,res) => {
+const editVariant = async(req,res,next) => {
     try {
         const variantID = req.query.id
         const variant = await variantDB.findById(variantID)
         res.render('editVariant',{variant})
         
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const deleteVariant = async (req,res) => {
+const deleteVariant = async (req,res,next) => {
 
     try {
         const variantID = req.query.id
@@ -233,45 +221,35 @@ const deleteVariant = async (req,res) => {
         }
         
     } catch (error) {
-        console.error(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
 
-const updateVariant = async(req,res) => {
+const updateVariant = async(req,res,next) => {
     try {
 
             const variantID = req.query.id
-            const{variantName,price,color,stock,ram,phoneMemory,size,oldImage} = req.body
-
-        //    const regexPattern=new RegExp(`^${variantName}$`,'i')
-        //    const alreadyExist=await variantDB.aggregate([{$match: {name: regexPattern}}])
-
-        //    if(alreadyExist.length>1) {
-
-        //    return res.status(401).json({success: false,message: 'name already exists'})
-
-        //}       
+            const{variantName,price,color,stock,ram,phoneMemory,size} = req.body;
+                 
             let images =[];
 
-            if(req.files && req.files.length > 0 ){
-              
-               // image = req.files.map(element => element.filename)
-               for( let i =0; i< req.files.length; i++){
-                const resizedImage = await sharp(req.files[i].path)
-                        .resize({width : 900, height :900})
-                        .png({quality: 90,background: {r: 255,g: 255,b: 255,alpha: 0}})
-                        .toBuffer()
 
-                //Save the resized image
-                const newPath='public/uploaded_Images/resized'+req.files[i].filename;
-                await sharp(resizedImage).toFile(newPath)
-                const fileName = path.basename(newPath)
-                images.push(fileName)
-               }
-            }else{
-                images = oldImage.split(',')
+            // Retrieve old image names
+            for (let i = 0; i < 3; i++) {
+
+                images.push(req.body[`oldImage${i}`]);
+
+            }
+
+            // Update images array with new uploads if they exist
+            if(req.files) {
+
+                req.files.forEach(file => {
+                    
+                    const index=parseInt(file.fieldname.replace('image',''));
+                    images[index]=file.filename;
+                });
             }
 
             const update = await variantDB.findByIdAndUpdate(variantID, {
@@ -293,8 +271,7 @@ const updateVariant = async(req,res) => {
                     console.log('update failed');
                 }             
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 

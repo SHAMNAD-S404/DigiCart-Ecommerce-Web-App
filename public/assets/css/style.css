@@ -6512,7 +6512,7 @@ p.checkout-coupon input[type=text]::placeholder {
 }
 
 .payment-method .btn-link {
-  -moz-user-select: none;
+  user-select: none;
   background: no-repeat;
   border: medium none;
   border-radius: 0;
@@ -7001,3 +7001,83 @@ p.checkout-coupon input[type=text]::placeholder {
   font-size: 4rem;
 }
 
+            /*?checkout css*/
+
+
+.modal-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.coupon-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.coupon-card {
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.coupon-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.coupon-header {
+  background: #28a745;
+  color: #fff;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.coupon-header h5 {
+  margin: 0;
+}
+
+.copy-button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.copy-button i {
+  margin-right: 5px;
+}
+
+.coupon-body {
+  padding: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.coupon-body p {
+  margin: 10px 0;
+}
+
+.description {
+  font-style: italic;
+}
+
+.discount {
+  font-size: 20px;
+  font-weight: bold;
+  color: #28a745;
+}

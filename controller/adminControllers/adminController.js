@@ -1,28 +1,50 @@
 //Requiring Nessesery Modules
-const userData   = require('../../model/userModel')
-const orderDB    = require('../../model/orderModel')
-const productDB  = require('../../model/productModel')
-const CategoryDB = require('../../model/catogoryModel')
-const excelJs    = require('exceljs')
-const moment     = require('moment') 
+const userData    = require  ('../../model/userModel')
+const orderDB     = require  ('../../model/orderModel')
+const productDB   = require  ('../../model/productModel')
+const CategoryDB  = require  ('../../model/catogoryModel')
+const moment      = require  ('moment') 
+const PDFDocument = require  ('pdfkit');
 require('dotenv').config()
 
 
-const loadLogin = async (req,res) => {
+const loadLogin = async (req,res,next) => {
 
         try {
           
             res.render('login')
 
         } catch (error) {
-            console.log('error in adminControl loadLogin',error);
-            return res.status(500).redirect('/admin/error')
+            next(error)
         }
 }
 
+//TO GET START AND END DATE FUNCTION 
+
+const getTimeRange=(period) => {
+
+    const now=new Date();
+    let startDay;
+    switch(period) {
+        case 'weekly':
+            startDay=new Date(now.setDate(now.getDate()-7));
+            break;
+        case 'monthly':
+            startDay=new Date(now.setMonth(now.getMonth()-1));
+            break;
+        case 'yearly':
+            startDay=new Date(now.setFullYear(now.getFullYear()-1));
+            break;
+        default:
+            startDay=new Date(now.setDate(now.getDate()-7));
+    }
+    return {startDay,endDay: new Date()};
+};
+
+
 //LOAD DASHBOARD
 
-const loadHome=async (req,res) => {
+const loadHome=async (req,res,next) => {
 
     try {
             //ORDER COUNT BY DATE
@@ -87,8 +109,58 @@ const loadHome=async (req,res) => {
         const catCount=sortedOrderInfo.map(item => item.count);
 
 
+        //ORDER COUNT BY BRAND
+        const brandInfo = await orderDB.aggregate([
+                {
+                    $unwind: "$orderItems"
+                },
+                {
+                    $lookup:{
+                        from:'variants',
+                        localField:'orderItems.product',
+                        foreignField:"_id",
+                        as:"productDetails"
+                    }
+                },
+                {
+                    $unwind:'$productDetails'
+                },
+                {
+                    $group:{
+                        _id:"$productDetails.brandName",
+                        count:{$sum:1}
+                    }
+                },
+                {
+                    $project: {
+                        _id:0,
+                        brand: "$_id",
+                        count :1
+                    }
+                }
+        ]);
+
+        //REVERSE THE ARRAY IN DESENDING ORDER
+        const sortedBrandInfo = brandInfo.sort((a,b)=>b.count-a.count).slice(0,6)
+        const brandLabel = sortedBrandInfo.map(item => item.brand);
+        const brandCount = sortedBrandInfo.map(item => item.count)
+
+        
+        
+
         //ORDER COUNT BY PRODUCT
+        const period = req.query.period || 'yearly'        
+        const {startDay,endDay}=getTimeRange(period);    
+
         const productCount=await orderDB.aggregate([
+            {
+                $match: {
+                    orderDate: {
+                        $gte: startDay,
+                        $lt: endDay
+                    }
+                }
+            },
             {
                 $unwind: "$orderItems"
             },
@@ -123,8 +195,7 @@ const loadHome=async (req,res) => {
         const proLabel=sortedProductArray.map(item => item.product);
         const proCount=sortedProductArray.map(item => item.count);
         const totalOrder = productCount.reduce((sum,current)=>sum+current.count,0)
-        
-            // Create an array for the last 5 days with default count 0
+
             const orderCounts=[];
             for(let i=4;i>=0;i--) {
                 const date=moment().subtract(i,'days').format('YYYY-MM-DD');
@@ -139,30 +210,20 @@ const loadHome=async (req,res) => {
             const product   = await productDB.countDocuments()
             const category  = await CategoryDB.countDocuments()
 
-        res.render('home',{labels,counts,catLabel,
-            catCount,proLabel,proCount,totalOrder,customers,product,category});
+        res.render('home',{ labels,counts,catLabel,catCount,
+                            proLabel,proCount,totalOrder,customers,                           
+                            product,category, brandLabel,brandCount });
+                          
 
     } catch(error) {
-        console.log(error)
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
 
+const verifyLogin = async (req,res,next) => {
 
 
-const errorPage = async (req,res) => {
-    try {
-        res.render('../partials/505')
-    } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
-    }
-}
-
-
-
-const verifyLogin = async (req,res) => {
             const{email,password} = req.body
             const adminEmail = process.env.ADMIN_EMAIL
             const adminPass = process.env.ADMIN_PASS
@@ -179,13 +240,12 @@ const verifyLogin = async (req,res) => {
             }
             
         } catch (error) {
-            console.log('error in adminController verifyLogin',error);
-            return res.status(500).redirect('/admin/error')
+            next(error)
         }
 }
 
 
-const logOut = async(req,res) => {
+const logOut = async(req,res,next) => {
 
     try {
        
@@ -193,24 +253,14 @@ const logOut = async(req,res) => {
         res.redirect('/admin')
        
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error') 
+        next(error)
     }
 }
 
-const showUsers = async (req,res) => {
+const showUsers = async (req,res,next) => {
 
     try {
-        //let users =[];
-        //if(req.query.searchInput) {
-        //    const searchInput=req.query.searchInput.toString()
-        //    users = await userData.find({
-        //             $or: [{name: {$regex: searchInput,$options: 'i'}},
-        //            {email: {$regex: searchInput,$options: 'i'}}]});
-                
-        //}else{
-        //    users = await userData.find()
-        //}
+       
 
         let query = {}
         const page = parseInt(req.query.page)||1
@@ -237,12 +287,11 @@ const showUsers = async (req,res) => {
         res.render('userList',{customers:users,currentPage:page,totalPages });
         
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const blockUser = async (req,res) => {
+const blockUser = async (req,res,next) => {
    
     try {
         const userID = req.query.id
@@ -258,30 +307,28 @@ const blockUser = async (req,res) => {
         }
         
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const unblockUser = async (req,res) => {
+const unblockUser = async (req,res,next) => {
      try {
         const userID = req.query.id
         const unblockUser = await userData.updateOne({_id:userID},{$set:{isBlocked:false}})
         if(unblockUser){
             res.redirect('userlist')
         }else{
-            res.redirect('userlist')
+            res.redirect('/userlist')
         }
       } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+         next(error)
      }
 }
 
 
     //LOAD SALES REPORT
 
-    const filterSalesReport = async (req,res) => {
+    const filterSalesReport = async (req,res,next) => {
 
         try {
 
@@ -346,10 +393,152 @@ const unblockUser = async (req,res) => {
 
     } catch (error) {
 
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+            next(error)
+         }
     
     }
+
+
+// Route to download sales report as PDF
+
+    const downloadPdf = async (req,res,next) =>{
+        try {
+            const filter=req.query.filter;
+            const orderInfo=await getFilteredSalesReport(req.query);
+
+            const doc=new PDFDocument({margin: 20,size: 'A2'}); // Set size to 'A2' for more width
+
+            res.setHeader('Content-Type','application/pdf');
+            res.setHeader('Content-Disposition','attachment; filename=sales_report.pdf');
+            doc.pipe(res);
+
+            doc.fontSize(20).text('DigiCart Ecom Sales Report',{align: 'center'});
+            doc.fontSize(14).text('Custom Sales Report ',{align: 'center'});
+            doc.moveDown();
+          
+
+            const tableHeaders=['Order ID','Order Date','Product','Customer','Payment Mode','Status','Offer Discount','Coupon Discount','Final Cart Price'];
+            const tableWidths=[130,100,200,150,100,100,120,120,100]; // Adjust column widths
+
+            doc.fontSize(12);
+
+            const drawTableRow=(row,y,cellHeight) => {
+
+                let x=doc.page.margins.left;
+                row.forEach((cell,i) => {
+                    doc.rect(x,y,tableWidths[i],cellHeight).stroke();
+                    doc.text(cell,x+2,y+2,{width: tableWidths[i]-4,height: cellHeight-4});
+                    x+=tableWidths[i];
+                });
+            };
+
+            const cellHeight=30; // Increase row height
+            let y=doc.y;
+
+            drawTableRow(tableHeaders,y,cellHeight);
+            y+=cellHeight;
+
+            orderInfo.forEach(order => {
+                order.orderItems.forEach(item => {
+
+                    if(['Delivered','Completed','Return Rejected'].includes(item.orderStatus)) {
+
+                        const row=[
+
+                            order._id.toString(),
+                            new Date(order.orderDate).toLocaleDateString(),
+                            item.product.productID.name,
+                            order.userId.email,
+                            order.paymentMethod,
+                            item.orderStatus,
+                            order.offerDiscount.toString(),
+                            (order.couponDetails&&order.couponDetails.claimedAmount)? order.couponDetails.claimedAmount.toString():'0',
+                            order.grandTotal.toString()
+                        ];
+
+                        if(y+cellHeight>doc.page.height-doc.page.margins.bottom) {
+
+                            doc.addPage();
+                            y=doc.page.margins.top;
+                            drawTableRow(tableHeaders,y,cellHeight);
+                            y+=cellHeight;
+                        }
+
+                        drawTableRow(row,y,cellHeight);
+                        y+=cellHeight;
+                    }
+                });
+            });
+
+            doc.end();
+
+        } catch(error) {
+            next(error)
+        }
+    
+    }
+
+
+// Function to get the filtered sales report data
+async function getFilteredSalesReport(query) {
+
+    const filter=query.filter;
+    let dateFilter={};
+    const today=new Date();
+
+    if(filter==='day') {
+
+        dateFilter={$gte: new Date(today.setHours(0,0,0,0)),$lt: new Date(today.setHours(23,59,59,999))};
+
+    } else if(filter==='week') {
+
+        const firstDayOfWeek=new Date(today.setDate(today.getDate()-today.getDay()));
+        dateFilter={$gte: firstDayOfWeek,$lt: new Date(firstDayOfWeek.getTime()+7*24*60*60*1000)};
+
+    } else if(filter==='year') {
+
+        const firstDayOfYear=new Date(today.getFullYear(),0,1);
+        dateFilter={$gte: firstDayOfYear,$lt: new Date(firstDayOfYear.getFullYear()+1,0,1)};
+        
+    } else if(filter==='custom') {
+
+        const date=query.date;
+        const [startDate,endDate]=date.split(' to ').map(dates => {
+            const [day,month,year]=dates.split('-').map(Number);
+            return new Date(year,month-1,day);
+        });
+        dateFilter={$gte: startDate,$lt: new Date(endDate.setHours(23,59,59,999))};
+    }
+
+    const statusFilter=['Delivered','Completed','Return Rejected'];
+
+    const queryObject={
+        ...dateFilter&&{orderDate: dateFilter},
+        'orderItems.orderStatus': {$in: statusFilter}
+    };
+
+    const orderInfo=await orderDB.find(queryObject)
+        .populate('userId')
+        .populate({
+
+            path: 'orderItems.product',
+            model: 'Variant',
+            select: ('-stock -ram -phoneMemory -block -size'),
+            populate: {
+                path: 'productID',
+                model: 'Product',
+                select: ('-description -brand -Blocked')
+            }
+        })
+        .sort({createdAt: -1});
+
+    return orderInfo;
+}
+
+
+
+
+
 
 
 module.exports = {
@@ -360,6 +549,6 @@ module.exports = {
     showUsers,
     blockUser,
     unblockUser,
-    errorPage,
-    filterSalesReport
+    filterSalesReport,
+    downloadPdf
 }

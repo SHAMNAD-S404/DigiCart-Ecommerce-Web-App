@@ -1,14 +1,14 @@
-const cartDB=require('../../model/cartModel')
-const variantDB=require('../../model/variantModel')
-const walletDB=require('../../model/walletModel')
-const addressDB=require('../../model/addressModel')
-const couponDB=require('../../model/couponModel')
+const cartDB    = require('../../model/cartModel')
+const variantDB = require('../../model/variantModel')
+const walletDB  = require('../../model/walletModel')
+const addressDB = require('../../model/addressModel')
+const couponDB  = require('../../model/couponModel')
 
 
 
 //CART LOADING
 
-const loadCart=async (req,res) => {
+const loadCart=async (req,res,next) => {
     try {
 
         const userID=req.session.login_id;
@@ -24,14 +24,13 @@ const loadCart=async (req,res) => {
         res.render('cart',{cartProducts})
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 
 //ADD TO CART 
-const addToCart=async (req,res) => {
+const addToCart=async (req,res,next) => {
 
     try {
 
@@ -76,18 +75,18 @@ const addToCart=async (req,res) => {
         }
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 //DELETE CART ITEMS
 
-const removeCartItem=async (req,res) => {
+const removeCartItem=async (req,res,next) => {
     try {
         const {variantID}=req.body;
         const userID=req.session.login_id;
         const authCheck=await cartDB.findOne({userId: userID,'products.productVariantId': variantID})
+
         if(authCheck) {
 
             const deleteItem=await cartDB.findOneAndUpdate({userId: userID},
@@ -107,14 +106,13 @@ const removeCartItem=async (req,res) => {
 
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 //INCREASE CART ITEMS  
 
-const addCartItems=async (req,res) => {
+const addCartItems=async (req,res,next) => {
     try {
         const userID=req.session.login_id;
         const {variantID,quantity}=req.body
@@ -149,8 +147,7 @@ const addCartItems=async (req,res) => {
 
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
@@ -158,7 +155,7 @@ const addCartItems=async (req,res) => {
 
 //CHECKOUT PAGE
 
-const loadCheckOut=async (req,res) => {
+const loadCheckOut=async (req,res,next) => {
     try {
 
         const userID=req.session.login_id;
@@ -173,6 +170,11 @@ const loadCheckOut=async (req,res) => {
                     model: 'Product'
                 }
             });
+
+            //IF CART ITEMS IS EMPTY
+            if (cartIteam.products.length === 0) {
+                return res.status(400).redirect('/cart');
+            }
 
 
             const walletBalance=await walletDB.findOne({userID: userID}).select('balance -_id');
@@ -193,26 +195,26 @@ const loadCheckOut=async (req,res) => {
             total=offerDiscount!=='null'? total-offerDiscount:total;
 
             const userAddress=await addressDB.findOne({userId: userID}).sort({createdAt: -1})
+            //COUPON DETAILS
+            const coupons = await couponDB.find({block: false}).select('-_id -block -updatedAt -createdAt')
 
 
-
-            res.render('checkout',{stock,subTotal,userAddress,total,walletBalance,offerDiscount})
+            res.render('checkout',{stock,subTotal,userAddress,total,walletBalance,offerDiscount,coupons})
 
         } else {
-            return res.status(400).json({empty: 'empty cart,add some products in cart'})
+            return res.status(400).redirect('/cart')
         }
 
 
 
     } catch(error) {
-        console.log(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 //CHECK COUPON 
 
-const checkCoupon=async (req,res) => {
+const checkCoupon=async (req,res,next) => {
     try {
         const total=parseInt(req.query.total);
         const code=req.query.code;
@@ -251,7 +253,7 @@ const checkCoupon=async (req,res) => {
         }
 
     } catch(error) {
-        console.error(error);
+        next(error)
     }
 }
 

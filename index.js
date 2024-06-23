@@ -1,18 +1,20 @@
-const express = require('express');
-const session = require('express-session');
-const flash   = require('express-flash');
-const app     = express();
-const path    = require('path')
-const nocache = require('nocache')
-const userRoute = require('./routes/userRoute');
-const adminRoute = require('./routes/adminRoute')
-const mongoose  = require('mongoose');
-const {link}=require('fs');
-                  require('dotenv').config();
+
+const express    = require  ('express');
+const session    = require  ('express-session');
+const flash      = require  ('express-flash');
+const app        = express  ();
+const nocache    = require  ('nocache')
+const userRoute  = require  ('./routes/userRoute');
+const adminRoute = require  ('./routes/adminRoute')
+const mongoose   = require  ('mongoose');
+require('dotenv').config();
 
 
+app.set('view engine','ejs');
+app.set('views','./views');
+
+//MIDDLEWARE
 app.use (nocache());
-//CSS AND ASSETS file link
 app.use (express.static('public'));
 app.use (express.static('public/adminAssets'));
 
@@ -24,12 +26,21 @@ app.use(session({
 
 }))
 
+
+app.use(flash());
 app.use ('/',userRoute);
 app.use ('/admin',adminRoute)
-app.use(flash());
+
 
 
 const port = process.env.PORT || 3000 ;
+
+
+app.use((req,res,next) => {
+    const err=new Error('Not Found');
+    err.status=404;
+    next(err);
+});
 
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => {

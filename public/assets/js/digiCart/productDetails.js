@@ -25,7 +25,7 @@
                 
             }else if (stock > 0 && stock <= 5) {
                 spanAlert.textContent = 'FEW  STOCK LEFT'
-                spanAlert.style.color = 'yellow'
+                spanAlert.style.color= '#eb5809'
             }
 
             
@@ -71,6 +71,12 @@
                 const data=await response.json()
 
                 if(data.success) {
+
+                    //TO PLAY NOTIFICATION SOUND
+
+                    const audio=new Audio('/Audio/cart.mp3');
+                    audio.play();
+
                         Swal.fire({
                         icon: "success",
                         text: data.success||"Updated successfully",
@@ -79,6 +85,12 @@
 
                     })
                 } else if(data.error) {
+
+                    //TO PLAY NOTIFICATION SOUND
+
+                    const audio=new Audio('/Audio/serror.mp3');
+                    audio.play();
+
                         Swal.fire({
                         icon: "error",
                         text: data.error||"Something went wrong!",
@@ -125,6 +137,9 @@ async function addWishlistFunction(variantID){
         const data = await response.json()
         if (response.ok) {
             
+            const audio=new Audio('/Audio/wishlist.mp3');
+            audio.play();
+
             const Toast=Swal.mixin({
                 toast: true,
                 position: 'bottom',
@@ -145,6 +160,12 @@ async function addWishlistFunction(variantID){
            
             
         }else if(data.error){
+
+            //TO PLAY NOTIFICATION SOUND
+
+                    const audio=new Audio('/Audio/serror.mp3');
+                    audio.play();
+
             const Toast=Swal.mixin({
                 toast: true,
                 position: 'bottom',

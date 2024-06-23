@@ -22,8 +22,9 @@ const orderSchema=new mongoose.Schema({
                 orderStatus: {
                     type: String,
                     default: 'Pending Payment',
-                    enum: ['Pending Payment','Processing','Shipped','Delivered','Cancelled','Returned','Completed','Return requested',
-                            'Return approved','Return Rejected','Refunded'],
+                    enum: ['Pending Payment','Processing','Shipped','Delivered','Cancelled','Returned',
+                            'Completed','Return requested','Return approved','Return Rejected','Refunded'],
+                            
                 },
                 productPrice: {
                     type: Number,

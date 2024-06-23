@@ -18,7 +18,7 @@ function validateForm() {
     let isValid = true;
 
     if(!nameRegex.test(name)){
-        displayError('name-error','Please enter a valid name (First Name and Last Name)');
+        displayError('name-error','Please enter a valid name (First Name and Last Name).No white space allowed');
         isValid = false;
     }else{
         hideError('name-error');
@@ -46,10 +46,10 @@ function validateForm() {
     }
 
     if(password!==confirmPassword) {
-        displayError('confirm-password-error','Passwords do not match');
+        displayError('confirmPassword-error','Passwords do not match');
         isValid=false;
     } else {
-        hideError('confirm-password-error');
+        hideError('confirmPassword-error');
     }
 
     return isValid ;

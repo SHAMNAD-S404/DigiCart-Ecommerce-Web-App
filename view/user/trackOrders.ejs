@@ -49,6 +49,7 @@
                 const subTotal  = order.subTotal
                 const offerDiscount = order.offerDiscount
                 const deliveryFee = order.deliveryCharge
+                const deliveryDate = order.deliveryDate
                 const paymentMode = order.paymentMethod
                 const orderID = order._id;
                 const date = order.orderDate
@@ -106,6 +107,13 @@
                         <tr>
                             <td class="tdHead">Coupon </td>
                             <td class="tdData" style="color: blue;">Applied</td>
+                        </tr>
+                            
+                        <% }  %>
+                <% if (deliveryDate !== null) { %>
+                        <tr>
+                            <td class="tdHead">Delivery Date </td>
+                            <td class="tdData" style="color: blue;"><%=deliveryDate.toLocaleDateString ()%></td>
                         </tr>
                             
                         <% }  %>
@@ -174,7 +182,7 @@
                                           <td class="product-thumbnail"><a href="/product-details?id=<%= product._id %>&vId=<%= variant._id %>">
                                              <img src="/uploaded_Images/<%=variant.imageName[1] %>" alt="product image" class="productImage"
                                              data-toggle="tooltip" data-placement="right" title="Click to Show details" ></a>
-                                         </td>
+                                          </td>
                                           <td class="product-name"><a id="Link"> <%= product.name%> -  <br>Variant : <%=variant.variantName%> <br>
                                             Color : <%=variant.color%> </a> </td>
                                               
@@ -252,39 +260,13 @@
     </div>    
 
             <h1 class="text-end">
-                <a class="tp-btn-h1 mb-5 " id="downloadInvoice">Download Invoice</a>
+                <a class="tp-btn-h1 mb-5 " id="downloadInvoice" style="display: inline;">Download Invoice</a>
                   <a class="tp-btn-h1 mb-5 backOrder " onclick="backToOrders()">Back to Orders</a>
                 </h1>
           
 
 
 <%- include('../layouts/userLayout/footer.ejs')%>
-
-<script>
-
-    document.addEventListener('DOMContentLoaded',()=>{
-        const invoiceButton = document.getElementById('downloadInvoice')
-        const statusElement = document.querySelectorAll('.statusOFproduct')
-
-        statusElement.forEach((span)=>{
-            let status = span.textContent.trim()
-
-
-            if ( status ==='Pending Payment') {
-                invoiceButton.style.display = 'none'
-            }else if(status==='Cancelled'){
-                invoiceButton.style.display = 'none'
-            } else if(status==='Shipped') {
-                invoiceButton.style.display='none'
-            } else if(status==='Processing') {
-                invoiceButton.style.display='none'
-            }
-
-        })
-       
-    })
-
-    </script>
 
 
 <!--sweetalert2-->

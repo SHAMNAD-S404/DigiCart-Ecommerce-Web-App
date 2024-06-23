@@ -27,11 +27,11 @@
 
         <div class="row">
             <div class="col-12 col-xl-4">
-                <div class="card rounded-4">
+                <div class="card rounded-4" style="height: 13rem;">
                     <div class="card-body">
                         <div class="d-flex align-items-center gap-3 mb-2">
                             <div class="">
-                                <h2 class="mb-0">Welcome Admin</h2>
+                                <h2 class="mt-4">Welcome Admin</h2>
                             </div>
                            
                         </div>
@@ -92,9 +92,9 @@
     <div class="row">
     <% if(labels && counts) { %>
         <div class="col-12 col-xl-6 mt-2" id="barchartDiv" data-labels='<%= JSON.stringify(labels) %>'
-            data-counts='<%= JSON.stringify(counts) %>'>
+            data-counts='<%= JSON.stringify(counts) %>'>          
             <div class="card rounded-4 mb-0">
-                <div class="card-body">
+                <div class="card-body">                   
                         <h4 class="text-center">Last Seven Day Orders</h4>
                     <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
                 </div>
@@ -122,6 +122,9 @@
                 data-counts='<%= JSON.stringify(proCount) %>'>
                 <div class="card rounded-4 mb-0">
                     <div class="card-body">
+                            <a href="/admin/home?period=weekly"><button class="btn btn-outline-info ">Weekly</button></a>
+                            <a href="/admin/home?period=monthly"><button class="btn btn-outline-info">Monthly</button></a>
+                            <a href="/admin/home?period=yearly"><button class="btn btn-outline-info" >Yearly</button></a>
                         <h4 class="text-center">Top Selling Products</h4>
                         <canvas id="myHorizontal" style="width:100%;max-width:100%"></canvas>
                     </div>
@@ -131,8 +134,8 @@
     </div>
 
     <div class="row mt-4">
-        <h2 class="text-center mb-4">Top Products & Category</h2>
-        <div class="col-6 mt-3">
+        <h2 class="text-center mb-4">Top Products , Category & Brands</h2>
+        <div class="col-12 col-lg-4 mt-3">
             <div class="card-body">
                 <div class="product-table">
                     <div class="table-responsive white-space-nowrap">
@@ -175,54 +178,91 @@
             </div>
         </div>
     
-        <div class="col-6 mt-3">
+        <div class="col-12 col-lg-4 mt-3">
             <div class="card-body">
                 <div class="product-table">
                     <div class="table-responsive white-space-nowrap">
-                    <% if(catLabel && catCount){ %>
-                        <table class="table align-middle">
-                            <thead class="table-light">
-                                <tr>
-    
-                                    <th>Category Name</th>
-                                    <th>Total Orders</th>
-    
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% catLabel.forEach((name,index) => {
-                                     
-                                  %>
-                                <tr>
-     
-                                    <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                           
-                                            <div class="product-info">
-                                                <a href="" class="product-title"><%=name%></a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    
-                                    <td><%=catCount[index]%></td>
-    
-    
-                                </tr>
-                                <%                          
-                                    
-                                });
-                                
-                                %>
-    
-                            </tbody>
-                        </table>
-                        <% } %>
+                        <% if(catLabel && catCount){ %>
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+        
+                                        <th>Category Name</th>
+                                        <th>Total Orders</th>
+        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% catLabel.forEach((name,index)=> { %>
+                                               
+                                        <tr>
+        
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+        
+                                                    <div class="product-info">
+                                                        <a href="" class="product-title">
+                                                            <%=name%>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+        
+                                            <td>
+                                                <%=catCount[index]%>
+                                            </td>
+        
+        
+                                        </tr>
+                                        <% }); %>
+        
+                                </tbody>
+                            </table>
+                            <% } %>
                     </div>
                 </div>
             </div>
         </div>
-    
-    
+
+
+    <div class="col-12 col-lg-4 mt-3">
+        <div class="card-body">
+            <div class="product-table">
+            <div class="table-responsive white-space-nowrap">
+                <% if (brandLabel && brandCount) { %>
+                <table class="table align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Brand Name</th>
+                        <th>Total Orders</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% brandLabel.forEach((name, index) => { %>
+                        <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                            <div class="product-info">
+                                <a href="" class="product-title">
+                                <%= name %>
+                                </a>
+                            </div>
+                            </div>
+                        </td>
+                        <td>
+                            <%= brandCount[index] %>
+                        </td>
+                        </tr>
+                    <% }); %>
+                    </tbody>
+                </table>
+                <% } %>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
     </div>
 
     </div>
@@ -237,24 +277,18 @@
   <script src="assets/js/bootstrap.bundle.min.js"></script>
   <!--chart js-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
-<script src="assets/js/home.js"></script>
+  <script src="assets/js/home.js"></script>
 
   <!--plugins-->
   <script src="assets/js/jquery.min.js"></script>
   <!--plugins-->
   <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
   <script src="assets/plugins/metismenu/metisMenu.min.js"></script>
-  <script src="assets/plugins/apexchart/apexcharts.min.js"></script>
   <script src="assets/js/index.js"></script>
   <script src="assets/plugins/peity/jquery.peity.min.js"></script>
-  <script>
-    $(".data-attributes span").peity("donut")
-  </script>
   <script src="assets/js/main.js"></script>
 
 
 </body>
-
-
 
 </html>

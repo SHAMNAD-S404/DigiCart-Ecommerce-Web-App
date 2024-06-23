@@ -3,7 +3,28 @@
 
     <!--navbar-->
 
-    <%-include('../partials/navbar.ejs')%>
+<!--cropper js link-->
+<link rel="stylesheet" href="assets/css/custom.css">
+<link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet" />
+<script src="https://unpkg.com/cropperjs"></script>
+
+<style>
+        .cropper-container {
+                width: 100%;
+                max-height: 400px;
+                margin-bottom: 10px;
+        }
+
+        .modal-content {
+                margin: 10% auto;
+                padding: 20px;
+                width: 80%;
+                max-width: 600px;
+                background-color: #363636;
+        }
+</style>
+
+<%-include('../partials/navbar.ejs')%>
 
     <div class="container mt-5 justify-content-center p-5">
 
@@ -48,18 +69,23 @@
                 <label for="size">size</label>
                 <input type="text" class="form-control" id="phoneMemory" name="size" value="<%= variant.size %>">
         </div>
-        <div class="form-group">
-                <label for="uploaded_Images">Upload image</label>
-                <input type="file" class="form-control" id="images" name="images" accept=".jpg, .png, image/jpeg, image/png" multiple >
-                <input type="hidden" name="oldImage" value="<%= variant.imageName %>"> 
-                <label for="uploaded_Images">Select upto 3 images</label><br><br>
-                
-                        <% variant.imageName.forEach(element => { %>
-               
-                <img src="/uploaded_Images/<%= element %>" width="70" class="rounded-3" alt="product image">
-                <% }); %>
-                <p>previous images</p>
-        </div>
+     
+        <!--FOR IMAGE UPLOAD-->
+
+        <% for (let i=0; i < 3; i++) { %>
+                <div class="form-group">
+                        <i class="fa-solid fa-photo-film fa-2x ms-3"></i>
+                        <label for="image-upload-<%= i + 1 %>" class="custom-file-upload">Upload Image <%= i + 1 %></label>
+                        <img src="" class="image-preview" alt="">                  
+                        <input type="file" class="form-control" id="image-upload-<%= i + 1 %>" name="image<%= i %>"
+                                accept=".jpg, .png, image/jpeg, image/png" onchange="previewImage(event)">
+                        <input type="hidden" name="oldImage<%= i %>" value="<%= variant.imageName[i] %>">
+                        <img src="/uploaded_Images/<%= variant.imageName[i] %>" width="30%" class="rounded-3"
+                                alt="product image">
+                        <label for="oldImage">*Previous Image</label>        
+                        <div id="image<%= i + 1 %>Error" class="text-danger"></div>
+                </div>
+                <% } %>
           
         <br>
 
@@ -74,9 +100,137 @@
 
 
     <%- include('../partials/sidebar.ejs')%>
+ 
+<!-- Modal for cropping -->
+<div id="cropperModal" class="modal ">
+        <div class="modal-content">
+                <div class="cropper-container">
+                        <img id="cropperImage" src="" alt="Image for cropping" />
+                </div>
+                <button onclick="cropImage()">Crop</button>
+                <button onclick="closeModal()">Cancel</button>
+        </div>
+</div>
+
+
+<!--CROPER JS FUNCTION FOR CROPING AND REMOVE BG-->
+
+<script>
+
+
+        let cropper;
+        let currentInput;
+        let croppedFiles=new Map(); // To store the cropped files
+
+        function previewImage(event) {
+                const input=event.target;
+                const file=input.files[0];
+                currentInput=input; // Save the reference to the current input
+                if(file) {
+                        const reader=new FileReader();
+                        reader.onload=function (e) {
+                                const cropperImage=document.getElementById('cropperImage');
+                                cropperImage.src=e.target.result;
+                                document.getElementById('cropperModal').style.display='block';
+                               
+                                if(cropper) {
+                                        cropper.destroy();
+                                }
+                                cropper=new Cropper(cropperImage,{
+                                        aspectRatio: 1/1, // Portrait aspect ratio
+                                        viewMode: 1,
+                                });
+                        };
+                        reader.readAsDataURL(file);
+                }
+        }
+
+        function removeWhiteBackground(image) {
+                const canvas=document.createElement('canvas');
+                const context=canvas.getContext('2d');
+                canvas.width=image.width;
+                canvas.height=image.height;
+
+                context.drawImage(image,0,0);
+
+                const imageData=context.getImageData(0,0,canvas.width,canvas.height);
+                const data=imageData.data;
+
+                // background color to remove
+                const bgColor={r: 255,g: 255,b: 255,alpha: 0};
+
+                // Loop through each pixel and remove only the exact background color
+                for(let i=0;i<data.length;i+=4) {
+                        const red=data[i];
+                        const green=data[i+1];
+                        const blue=data[i+2];
+                        const alpha=data[i+3];
+
+                        // Remove only the exact white background
+                        if(red===bgColor.r&&green===bgColor.g&&blue===bgColor.b) {
+                                data[i+3]=bgColor.alpha; // Set alpha to 0 (transparent)
+                        }
+                }
+
+                context.putImageData(imageData,0,0);
+                return canvas;
+        }
+
+        function cropImage() {
+                if(cropper) {
+                        const croppedCanvas=cropper.getCroppedCanvas({
+                                width: 1200, // desired width
+                                height: 1200, // desired height
+                        });
+
+                        const croppedImage=new Image();
+                        croppedImage.src=croppedCanvas.toDataURL('image/png');
+                        croppedImage.onload=function () {
+                                const canvasWithRemovedBg=removeWhiteBackground(croppedImage);
+
+                                canvasWithRemovedBg.toBlob(function (blob) {
+                                        const croppedImageSrc=URL.createObjectURL(blob);
+                                        const imagePreview=currentInput.previousElementSibling;
+                                        if(imagePreview&&imagePreview.tagName==='IMG') {
+                                                const previewCanvas=document.createElement('canvas');
+                                                const previewContext=previewCanvas.getContext('2d');
+                                                previewCanvas.width=400;
+                                                previewCanvas.height=400;
+                                                const previewImage=new Image();
+                                                previewImage.src=croppedImageSrc;
+                                                previewImage.onload=function () {
+                                                        previewContext.drawImage(previewImage,0,0,400,400);
+                                                        imagePreview.src=previewCanvas.toDataURL('image/png');
+                                                };
+                                        }
+
+                                        const dataTransfer=new DataTransfer();
+                                        const file=new File([blob],`croppedImage${Date.now()}.png`,{type: "image/png"});
+                                        dataTransfer.items.add(file);
+                                        currentInput.files=dataTransfer.files;
+                                        croppedFiles.set(currentInput.name,file);
+                                        closeModal();
+                                },'image/png',1);
+                        };
+                }
+        }
+
+        function closeModal() {
+                document.getElementById('cropperModal').style.display='none';
+                if(cropper) {
+                        cropper.destroy();
+                        cropper=null;
+                }
+        }
+
+
+
+
+
+</script>
+    
 
 <!--sweet alert and form validation-->
-<!--//<script src="assets/js/formValidation/addVarValid.js"></script>-->
 <script src="assets/js/formValidation/editVar.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

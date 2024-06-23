@@ -1,20 +1,19 @@
 
-//const bcrypt=require('bcrypt');
-const Razorpay=require('razorpay')
-const crypto=require('crypto')
-const cartDB=require('../../model/cartModel')
-const couponDB=require('../../model/couponModel')
-const addressDB=require('../../model/addressModel')
-const orderDB=require('../../model/orderModel')
-const variantDB=require('../../model/variantModel')
-const walletDB=require('../../model/walletModel')
+const Razorpay  =   require ('razorpay')
+const crypto    =   require ('crypto')
+const cartDB    =   require ('../../model/cartModel')
+const couponDB  =   require ('../../model/couponModel')
+const addressDB =   require ('../../model/addressModel')
+const orderDB   =   require ('../../model/orderModel')
+const variantDB =   require ('../../model/variantModel')
+const walletDB  =   require ('../../model/walletModel')
 require('dotenv').config()
 
 
 
 //ORDER PLACE
 
-const placeOrder=async (req,res) => {
+const placeOrder=async (req,res,next) => {
 
     try {
         const userID=req.session.login_id;
@@ -210,19 +209,18 @@ const placeOrder=async (req,res) => {
             }
 
         } else {
-            return res.status(400).json({empty: 'empty cart,add some products in cart'})
+            return res.status(400).redirect('/cart')
         }
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 
 //VERIFY ONLINE PAYMENT 
 
-const verifyPayment=async (req,res) => {
+const verifyPayment=async (req,res,next) => {
     try {
         const {razorpay_order_id,razorpay_payment_id,razorpay_signature,order_id}=req.body;
 
@@ -248,13 +246,13 @@ const verifyPayment=async (req,res) => {
         }
 
     } catch(error) {
-        console.error(error);
+        next(error)
     }
 }
 
 
 //LOAD TRACK ORDERS 
-const loadTrackOrder=async (req,res) => {
+const loadTrackOrder=async (req,res,next) => {
     try {
         const userID=req.session.login_id;
         const orderID=req.query.orderID
@@ -281,13 +279,12 @@ const loadTrackOrder=async (req,res) => {
 
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 //LOAD ORDER PAGE
-const orderPage = async(req,res)=>{
+const orderPage=async (req,res,next)=>{
     try {
 
         const page = parseInt(req.query.page) || 1;
@@ -303,9 +300,11 @@ const orderPage = async(req,res)=>{
                 model: 'Product'
                 }
             })
+            .select('orderItems deliveryDate paymentMethod createdAt orderDate')
             .sort({createdAt: -1})
             .skip(skip)
             .limit(limit);
+
 
         const totalOrders = await orderDB.countDocuments({userId:userID});
         const totalPages  = Math.ceil(totalOrders/limit)
@@ -315,6 +314,7 @@ const orderPage = async(req,res)=>{
         res.render('orders',{orderInfo,currentPage:page,totalPages})
         
     } catch (error) {
+        next(error)
         
     }
 }
@@ -322,7 +322,7 @@ const orderPage = async(req,res)=>{
 
 //CANCEL ORDER  
 
-const cancelOrder=async (req,res) => {
+const cancelOrder=async (req,res,next) => {
     try {
         const {orderId,stock,variantId}=req.body
         const userID=req.session.login_id;
@@ -339,16 +339,16 @@ const cancelOrder=async (req,res) => {
                 const variantDetails=orderDetail.orderItems.find(item => item.product.equals(variantId))
                 const quantity=parseInt(variantDetails.quantity)
                 const productPrice=parseInt(variantDetails.productPrice)
-                const total=quantity*productPrice;  //PRICE OF CANCELLED PRODUCT
+                let total=quantity*productPrice;  //PRICE OF CANCELLED PRODUCT
 
                 //INCREASING THE STOCK QUANTITY
                 await variantDB.findByIdAndUpdate(variantId,{$inc: {stock: quantity}},{new: true});
 
 
-                const deductSubtotal=await orderDB.findByIdAndUpdate(orderId,
-                    {$inc: {subTotal: -total}},{new: true});
+                const deductSubtotal = await orderDB.findByIdAndUpdate(orderId,
+                                        {$inc: {subTotal: -total}},{new: true});
 
-                const subTotal=deductSubtotal.subTotal;
+                const subTotal = deductSubtotal.subTotal;
 
                 const deliveryfee=(subTotal>10000)? 'free shipping':(subTotal>0&&subTotal<=10000)? 60:0;
                 let grandTotal=(subTotal>10000)? subTotal:(subTotal>0&&subTotal<=10000)? subTotal+60:0;
@@ -358,105 +358,138 @@ const cancelOrder=async (req,res) => {
 
                 if(isUsed) {
 
-                    //FIND NEW DISCOUNT
-                    if(grandTotal>isUsed.couponDetails.minPurchaseAmount) {
+                        //FIND NEW DISCOUNT
+                        if(grandTotal>isUsed.couponDetails.minPurchaseAmount) {
 
-                        const newDiscount=parseInt((grandTotal*isUsed.couponDetails.discountPercentage)/100)
+                            const newDiscount = parseInt((grandTotal*isUsed.couponDetails.discountPercentage)/100)
 
-                        const maxDiscountOfCoupon = isUsed.couponDetails.maxDiscountAmount
+                            const maxDiscountOfCoupon = isUsed.couponDetails.maxDiscountAmount
 
-                        const finalDiscount=newDiscount>maxDiscountOfCoupon?
-                                             maxDiscountOfCoupon:newDiscount;
+                            const finalDiscount = newDiscount>maxDiscountOfCoupon?
+                                                  maxDiscountOfCoupon:newDiscount;
 
-                        grandTotal=parseInt(grandTotal-finalDiscount)
+                            grandTotal=parseInt(grandTotal-finalDiscount)
 
-                        //UPDATE DB
-                        await orderDB.findByIdAndUpdate(orderId,{
-                            $set:
-                                {'couponDetails.claimedAmount': finalDiscount}
-                        });
-
-                    } else {
-
-                        //IF GRAND TOTAL LESSER-THAN COUPON MIN AMOUNT
-                        const paymentMode=await orderDB.findById(orderId).select('paymentMethod')
-                        const status=await orderDB.findById(orderId).select('orderItems.orderStatus -_id')
-                        if(paymentMode=='COD') {
-                            const claimedAmount=parseInt(isUsed.couponDetails.claimedAmount)
-                            grandTotal=grandTotal+claimedAmount
-
-                            //UPDATE THE FIED IN DB
+                            //UPDATE DB
                             await orderDB.findByIdAndUpdate(orderId,{
-                                $set:
-                                {
-                                    'couponDetails.couponReversedAmount': claimedAmount,
-                                    'couponDetails.claimedAmount': 0
-                                }
-                            });
+                                $set:  {'couponDetails.claimedAmount': finalDiscount}  });
+                                  
+                          
 
-                        } else {       
+                        } else {
 
-                            //CANCEL THE ALL ONLINE ORDERS
-                            await orderDB.findByIdAndUpdate(orderId,{
-                                $set:
-                                    {'orderItems.$[].orderStatus': 'Cancelled'}
-                            })
+                            //IF GRAND TOTAL LESSER-THAN COUPON MIN AMOUNT
+                            const paymentMode = await orderDB.findById(orderId).select('paymentMethod')
+                            const status      = await orderDB.findById(orderId).select('orderItems.orderStatus -_id')
 
-                            if(paymentMode!=='COD'&&status!=='Pending Payment') {
+                            if(paymentMode =='COD') {
+                                const claimedAmount=parseInt(isUsed.couponDetails.claimedAmount)
+                                grandTotal=grandTotal+claimedAmount
 
-                                //GIVING REFUND FOR ONLINE & WALLET PURCHASE    
-                                await walletDB.findOneAndUpdate({userID: userID},
+                                //UPDATE THE FIED IN DB
+                                await orderDB.findByIdAndUpdate(orderId,{
+                                    $set:
                                     {
-                                        $push: {
-                                            transactions: {
-                                                amount: grandTotal,
-                                                transactionMethod: 'Refund'
-                                            }
-                                        },
-                                        $inc: {balance: grandTotal}
-                                    },
-                                    {upsert: true,new: true});
+                                        'couponDetails.couponReversedAmount': claimedAmount,
+                                        'couponDetails.claimedAmount': 0
+                                    }
+                                });
 
+                            } else {       
+
+                                //CANCEL THE ALL ONLINE ORDERS COZ ORDER LESSERTHAN COUPON MIN AMOUNT
+                                await orderDB.findByIdAndUpdate(orderId,{
+                                         $set:{'orderItems.$[].orderStatus': 'Cancelled'} })
+                                        
+                                //REFUND FOR ALL CANCELLED PRODUCT
+                                if(paymentMode!=='COD'&&status!=='Pending Payment') {
+                                    
+                                    //GIVING REFUND FOR ONLINE & WALLET PURCHASE 
+                                    if (grandTotal>0) {
+
+                                        await walletDB.findOneAndUpdate({userID: userID},
+                                            {
+                                                $push: {
+                                                    transactions: {
+                                                        amount: grandTotal,
+                                                        transactionMethod: 'Refund'
+                                                    }
+                                                },
+                                                $inc: {balance: grandTotal}
+                                            }, {upsert: true,new: true});
+                                    }   
+                                  
+                                }
                             }
                         }
-                    }
                 }
 
 
                 //UPDATING ORDER FIELDS
-                await orderDB.findByIdAndUpdate(orderId,{
-                    $set: {deliveryCharge: deliveryfee,
-                             grandTotal: grandTotal
-                        
-                           } });
-           
+                await orderDB.findByIdAndUpdate(orderId,
+                             { $set: { deliveryCharge: deliveryfee,
+                                      grandTotal: grandTotal } });
+                            
 
                 //UPDATE ORDERITEMS FIELD IN ORDER DB
                 await orderDB.findOneAndUpdate({_id: orderId,'orderItems.product': variantId},
-                    {
-                        $set: {
-                            'orderItems.$.quantity': 0,
-                            'orderItems.$.orderStatus': 'Cancelled',
-                            'orderItems.$.productPrice': 0
-                        }
-                    },{new: true});
-
+                            {$set: { 'orderItems.$.quantity': 0,
+                                     'orderItems.$.orderStatus': 'Cancelled',
+                                     'orderItems.$.productPrice': 0 }                      
+                            });
+                        
+                     
                 //REFUND FOR ONLINE AND WALLET PURCHASE
                 const productStatus = variantDetails.orderStatus;
 
                 if(orderDetail.paymentMethod!=='COD' && productStatus !=='Pending Payment') {
 
-                    await walletDB.findOneAndUpdate({userID: orderDetail.userId},
-                        {
-                            $push: {
-                                transactions: {
-                                    amount: total,
-                                    transactionMethod: 'Refund'
-                                }
-                            },
-                            $inc: {balance: total}
-                        },
-                        {upsert: true})
+                    let couponClaimedAmount=0;
+
+                    //const orderDetail=await orderDB.findOne({_id: orderID,'orderItems.product': variantID})
+
+                    const couponExist=await orderDB.findOne({_id: orderId,couponDetails: {$exists: true}})
+                    const orderCoupon=await orderDB.findById(orderId)
+
+                        //DECREASING THE CLAIMED COUPON AMOUNT
+                        if(couponExist) {
+
+                            //TO DIVIDE THE COUPON AMOUNT
+                            const coupon=orderDetail.couponDetails;
+                            const totalProducts=parseInt(orderCoupon.orderItems.length)
+                            const divideCouponAmount=parseFloat(coupon.claimedAmount/totalProducts)
+                            couponClaimedAmount=Math.ceil(divideCouponAmount!='null'? divideCouponAmount:0);
+                            total=parseInt(total-couponClaimedAmount)
+
+                        }
+
+                        //CHECKING FOR OFFER CLAIMED PRODUCT && DEDUCTION
+
+                        if(orderCoupon.offerDiscount!==0) {
+
+                            const offerDiscountAmount=orderCoupon.offerDiscount
+                            const totalProducts=parseInt(orderCoupon.orderItems.length)
+                            const divideOfferAmount=parseFloat(offerDiscountAmount/totalProducts)
+                            const offerClaimedAmount=Math.ceil(divideOfferAmount!='null'? divideOfferAmount:0);
+                            total=parseInt(total-offerClaimedAmount)
+                        }
+
+                        //REFUND AMOUNT IS >0 THEN CR TO WALLET
+                        if (total>0) {
+
+                            await walletDB.findOneAndUpdate({userID: orderDetail.userId},
+                                {
+                                    $push: {
+                                        transactions: {
+                                            amount: total,
+                                            transactionMethod: 'Refund'
+                                        }
+                                    },
+                                    $inc: {balance: total}
+                                },{upsert: true})
+                                                         
+                        }
+                       
                 }
 
                 return res.status(200).json({success: 'Order Cancelled Successfully'})
@@ -471,8 +504,7 @@ const cancelOrder=async (req,res) => {
         }
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
 
     }
 }
@@ -481,7 +513,7 @@ const cancelOrder=async (req,res) => {
 
 
 //ORDER RETURN REQUEST 
-const orderReturn=async (req,res) => {
+const orderReturn=async (req,res,next) => {
     try {
         const userID=req.session.login_id;
         const {variantId,orderId,retrunReason}=req.body
@@ -504,15 +536,14 @@ const orderReturn=async (req,res) => {
         }
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 
 //RETRY ONLINE ORDER PAYMENT 
 
-  const retryOrder = async(req,res)=>{
+  const retryOrder = async(req,res,next)=>{
     try {
 
         const{orderID}=req.body
@@ -548,16 +579,9 @@ const orderReturn=async (req,res) => {
 
         
     } catch (error) {
-        console.error(error);
+        next(error)
     }
   }
-
-
-
-
-
-
-
 
 
 
@@ -568,6 +592,6 @@ module.exports={
     cancelOrder,
     orderReturn,
     orderPage,
-    retryOrder
+    retryOrder,
 
 }

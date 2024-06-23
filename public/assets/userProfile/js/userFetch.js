@@ -533,138 +533,15 @@ async function editAddress(addressID){
 }
 
 
-/****************************************************************************************************************************************** */
-//CANCEL ORDER
-
-//async function cancelOrder(orderID,quantity,variantID){
-//    try {
-//        Swal.fire({
-//            title: "Are you sure?",
-//            text: "You want to cancel this order ?",
-//            icon: "question",
-//            showCancelButton: true,
-//            confirmButtonColor: "#3085d6",
-//            cancelButtonColor: "#d33",
-//            confirmButtonText: "Yes, Cancel it!",
-//                customClass: {
-//                popup: 'swal2-popup-custom-font-size'
-//            }
-
-//        }).then( async(result) => {
-//            if(result.isConfirmed) {
-//                const cancelButton = document.getElementById('btnCancel'+variantID);
-//                const cancelSpan   = document.getElementById('spanCancel'+variantID)
-//                const statusAlert  = document.getElementById('statusH5'+variantID)
-//                cancelButton.style.display = 'none';
-//                cancelSpan.style.display   = 'block';
-                
-//                const response = await fetch('/cancel-order',{
-//                    method: 'PATCH',
-//                    headers: {'Content-Type': 'application/json'},
-//                    body: JSON.stringify({
-//                        orderId: orderID,
-//                        stock: quantity,
-//                        variantId: variantID
-
-//                    })
-//                })
-
-//                if (response.redirected) {
-//                    return window.location.href =response.url
-//                }
-
-//                const data = await response.json();
-//                if(data.success){
-//                    statusAlert.textContent = 'Cancelled'
 
 
-//                    Swal.fire({
-//                    title: "Cancelled!",
-//                    text: data.success||"Your order has been cancelled.",
-//                    icon: "success",
-//                    customClass: {
-//                    popup: 'swal2-popup-custom-font-size'
-//                     }
-
-//                    })
-
-//                }else if (data.error) {
-//                    Swal.fire({
-                        
-//                        text: data.error||"Something went wrong !.",
-//                        icon: "error",
-//                        customClass: {
-//                            popup: 'swal2-popup-custom-font-size'
-//                        } })
-//                }
-
-                
-//            }
-//        });
-        
-//    } catch (error) {
-//        console.error(error);
-//        Swal.fire({
-
-//            text: "Something went wrong !.",
-//            icon: "error",
-//            customClass: {
-//                popup: 'swal2-popup-custom-font-size'
-//            }
-//        })
-//    }
-//}
-
-/****************************************************************************************************************************************** */
+/************************************************************************************************************************* */
 //USER PROFILE UPDATION ONLOAD
 
   
 document.addEventListener('DOMContentLoaded',async () => {
     try {
-        //document.querySelectorAll('.statusClass').forEach(item => {
-        //    const status=item.dataset.h5status;
-        //    const variantID=item.dataset.variantidd;
-        //    const parent=item.closest('tr');
-        //    const btnCancel=parent.querySelector('.btnCancel');
-        //    const spanCancel=parent.querySelector('.spanCancel');
-        //    const returnButton=parent.querySelector('.returnButton');
-
-        //    if(status==='Cancelled') {
-        //        btnCancel.style.display='none';
-        //        spanCancel.textContent='Order Cancelled ';
-        //        spanCancel.style.color='red';
-        //        spanCancel.style.display='block';
-        //    } else if(status==='Completed') {
-        //        btnCancel.style.display='none';
-        //        spanCancel.textContent='Order Delivered ';
-        //        spanCancel.style.color='green';
-        //        spanCancel.style.display='block';
-        //    } else if(status==='Delivered') {
-        //        btnCancel.style.display='none';
-        //        returnButton.style.display = 'block'
-
-        //    } else if(status==='Return requested'){
-        //        btnCancel.style.display='none';
-        //        spanCancel.textContent='Return requested  ';
-        //        spanCancel.style.color='blue';
-        //        spanCancel.style.display='block';
-        //    } else if(status==='Return approved') {
-        //        btnCancel.style.display='none';
-        //        spanCancel.textContent='Return approved  ';
-        //        spanCancel.style.color='green';
-        //        spanCancel.style.display='block';
-        //    } else if(status==='Return Rejected') {
-        //        btnCancel.style.display='none';
-        //        spanCancel.textContent='Return rejected  ';
-        //        spanCancel.style.color='red';
-        //        spanCancel.style.display='block';
-        //    } else if(status==='Refunded') {
-        //        btnCancel.style.display='none';
-        //        spanCancel.textContent='Refunded successfully ';
-        //        spanCancel.style.color='green';
-        //        spanCancel.style.display='block';
-        //    }
-        //});
+        
 
         //WISHLIST UPDATION ONLOAD
 
@@ -706,95 +583,9 @@ document.addEventListener('DOMContentLoaded',async () => {
 });
 
 
-/****************************************************************************************************************************************** */
-// RETURN REQUEST 
-//   async function orderReturn(orderID,variantID){
-//    try {
-//        Swal.fire({
-//            title: "Are you sure?",
-//            text: "You want to Return this order ?",
-//            icon: "question",
-//            showCancelButton: true,
-//            confirmButtonColor: "#3085d6",
-//            cancelButtonColor: "#d33",
-//            confirmButtonText: "Yes, Return it!",
-//                customClass: {
-//                popup: 'swal2-popup-custom-font-size'
-//            }
-
-//        }).then( async(result) => {
-//            if(result.isConfirmed) {
-//                const returnButton = document.getElementById('returnBtn'+variantID);
-//                const statusAlert   = document.getElementById('statusH5'+variantID)
-                
-//                const response = await fetch('/return-order',{
-//                    method: 'PATCH',
-//                    headers: {'Content-Type': 'application/json'},
-//                    body: JSON.stringify({
-//                        orderId: orderID,
-//                        variantId: variantID
-
-//                    })
-//                })
-
-//                if(response.redirected){
-//                    return window.location.href = response.url
-//                }
-
-//                const data = await response.json()
-
-//                if(data.success){
-
-//                    returnButton.disabled = true
-//                    returnButton.style.opacity = 0.5
-//                    statusAlert.textContent = 'Return requested'
-//                    statusAlert.style.color = 'blue'
-
-//                    Swal.fire({
-//                        title: "Success!",
-//                        text: data.success||"Your return request has been placed.",
-//                        icon: "success",
-//                        customClass: {
-//                            popup: 'swal2-popup-custom-font-size'
-//                        } })
-                  
-//                }else if (data.error) {
-//                    Swal.fire({
-//                        title: "Success!",
-//                        text: data.error||"Something went wrong !.",
-//                        icon: "error",
-//                        customClass: {
-//                            popup: 'swal2-popup-custom-font-size'
-//                        }
-//                    })
-                    
-//                }
-
-                
-//            }
-//        });
-        
-//    } catch (error) {
-//        console.error(error);
-//        Swal.fire({
-//            title: "Oops!",
-//            text: "Something went wrong plz try again !.",
-//            icon: "error",
-//            customClass: {
-//                popup: 'swal2-popup-custom-font-size'
-//            }
-
-//        })
-//    }
-//   }
-
-
-
-
 
 /************************************************************************************************************************** */
  
-
 
 //ADD TO CART FUNCTION
 
@@ -819,6 +610,12 @@ async function addToCart(variantID) {
         const data=await response.json()
 
         if(data.success) {
+
+            //TO PLAY NOTIFICATION SOUND
+
+            const audio=new Audio('/Audio/cart.mp3');
+            audio.play();
+
             Swal.fire({
                 icon: "success",
                 text: data.success||"Updated successfully",
@@ -828,6 +625,12 @@ async function addToCart(variantID) {
                 }
             })
         } else if(data.error) {
+
+            //TO PLAY NOTIFICATION SOUND
+
+            const audio=new Audio('/Audio/serror.mp3');
+            audio.play();
+
             Swal.fire({
                 icon: "error",
                 text: data.error||"Something went wrong!",
@@ -889,6 +692,12 @@ async function addToCart(variantID) {
                     const data = await response.json()
 
                     if (data.success) {
+
+                        //TO PLAY NOTIFICATION SOUND
+
+                        const audio=new Audio('/Audio/delete.mp3');
+                        audio.play();
+
                         const tableRow = document.getElementById('wlRow'+variantID)
                         tableRow.style.display = 'none'
 
@@ -925,185 +734,151 @@ async function addToCart(variantID) {
 
 
 
+/************************************************************************************************************************** */
+//* COPY REFFEREL CODE FUNCTION
+
+function copyRefferelCode(){
+    const code = document.getElementById('referrelCode').innerText
+
+    navigator.clipboard.writeText(code)
+        .then(() => alert('Referral code copied to clipboard!'))
+        .catch(()=> alert('Failed to copy to clipboard!'))
+        
+}
+
+
 
 /************************************************************************************************************************** */
-//LOAD WALLET FUNCTION 
+//* GENERATE REFFERAL LINK
 
-    //async function loadWallet(){
-    //    try {
-    //            const swalWithBootstrapButtons=Swal.mixin({
-    //            customClass: {
-    //                confirmButton: "btn btn-success",
-    //                cancelButton: "btn btn-danger",
-    //            },
-    //            buttonsStyling: true
-    //        });
-    //        swalWithBootstrapButtons.fire({
-    //            text: "Continue to Razorpay ?",
-    //            icon: "question",
-    //            showCancelButton: true,
-    //            confirmButtonText: "Yes",
-    //            cancelButtonText: "No",
-    //            reverseButtons: true,
-    //            customClass: {
-    //                popup: 'swal2-popup-custom-font-size'
-    //            }
-    //        }).then(async(result) => {
+    async function generateReferralLink(){
+        try {
+            const response  = await fetch('/generate-referral',{
+                method:'GET',
+                headers:{'Content-Type':'application/json'}
+            })
 
-    //            if(result.isConfirmed) {
-                    
-    //               const amount = parseInt(document.getElementById('walletInput').value)
-    //               const amountRegex = /^(?!0$)(?!0\.0+$)(?!0\.\d+$)\d+(\.\d{1,2})?$/
-    //               let valid = true;
+            if (response.redirected) {
+                return window.location.href = response.url
+            }
 
-    //               if (!amount) {
-    //                    valid=false;
+            const data = await response.json()
 
-    //                       Swal.fire({
-    //                       text: "fill the field",
-    //                       icon: "error",
-    //                       customClass: {
-    //                               popup: 'swal2-popup-custom-font-size'
-    //                           }
-    //                   });
-    //               }else if(!amountRegex.test(amount)){
-    //                   valid=false;
+            if (data.success) {
+                document.getElementById('generateReferral').style.display = 'none';
+                appendReferralCode(data.referralCode);
 
-    //                   Swal.fire({
-    //                       text: "Enter valid Amount",
-    //                       icon: "error",
-    //                       customClass: {
-    //                           popup: 'swal2-popup-custom-font-size'
-    //                       }
-    //                   });
-    //               }else if(amount>50000){
-    //                   valid=false;
-
-    //                   Swal.fire({
-    //                       title: "Amount Exceeded!",
-    //                       text: "Enter the amount below 50,000",
-    //                       icon: "error",
-    //                       customClass: {
-    //                           popup: 'swal2-popup-custom-font-size'
-    //                       }
-    //                   });
-    //               }
-
-    //               if (valid) {
-    //                const response = await fetch('/load-wallet',{
-    //                    method:'POST',
-    //                    headers:{'Content-Type':'application/json'},
-    //                    body:JSON.stringify({orderAmount:amount})
-    //                })
-
-    //                if (response.redirected) {
-    //                    return window.location.href=response.url
-    //                }
-
-    //                const data  = await response.json()
-
-    //                   if(data.userID&&data.order) {
-                        
-    //                       const {userID,order,keyID}=data
-    //                       const options={
-    //                           key: keyID,
-    //                           amount: order.amount,
-    //                           currency: order.currency,
-    //                           name: 'DigiCart ',
-    //                           description: 'Recharge user Wallet',
-    //                           order_id: order.id, // Razorpay order ID
-
-    //                           handler: async function (response) {
-                            
-    //                               const paymentData={
-    //                                   razorpay_order_id: response.razorpay_order_id,
-    //                                   razorpay_payment_id: response.razorpay_payment_id,
-    //                                   razorpay_signature: response.razorpay_signature,
-    //                                   order_id: userID,
-    //                                   orderAmount : order.amount
-    //                               };
-
-
-    //                               // Verify payment 
-    //                               const res=await fetch('/wallet/verify-payment',{
-    //                                   method: 'POST',
-    //                                   headers: {
-    //                                       'Content-Type': 'application/json'
-    //                                   },
-    //                                   body: JSON.stringify(paymentData)
-    //                               })
-
-    //                               const data=await res.json();
-
-
-    //                               if(data.success) {
-
-    //                                   Swal.fire({
-    //                                       text: data.success||"Success",
-    //                                       icon: "success",
-    //                                       customClass: {
-    //                                           popup: 'swal2-popup-custom-font-size'
-    //                                       }
-    //                                   }).then(() => {
-    //                                       return window.location.reload()
-    //                                   })
-
-    //                               } else if(data.error) {
-    //                                   Swal.fire({
-    //                                       text: data.error||"Failed",
-    //                                       icon: "error",
-    //                                       customClass: {
-    //                                           popup: 'swal2-popup-custom-font-size'
-    //                                       }
-    //                                   });
-
-    //                               }
-
-    //                           },
-    //                           prefill: {
-    //                               name: 'user',
-    //                               email: 'your_email@example.com',
-                                   
-    //                           },
-
-    //                           theme: {
-    //                               color: '#1462e0'
-    //                           },
-    //                           modal: {
-    //                               ondismiss: function () {
-    //                                   Swal.fire({
-    //                                       text: "Payment failed or was dismissed. Please try again.",
-    //                                       icon: "error"
-    //                                   })
-    //                               }
-    //                           }
-
-    //                       };
-    //                       const rzp1=new Razorpay(options);
-    //                       rzp1.open();
-
-
-    //                   } else {
-
-    //                       Swal.fire({
-    //                           text: "Order placement failed",
-    //                           icon: "error"
-    //                       });
-    //                   }
-
-    //                }
-
-    //            }
-
-                    
                 
-    //        });
-            
-    //    } catch (error) {
-    //        console.error(error);
-    //    }
-    //}
+            }else if(data.error){
 
+                Swal.fire({
+                    text: data.error||"failed",
+                    icon: "error",
+                    customClass: {
+                        popup: 'swal2-popup-custom-font-size'
+                    }
+                });
+               
+            }
+
+            
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function appendReferralCode(referralCode){
+        const referralContainer = document.createElement('div');
+        referralContainer.className= 'referral-container';
+        referralContainer.innerHTML = `
+         <div class="referral-header">Your Referral Code</div>
+          <div class="referral-code" id="referrelCode">
+          ${referralCode}
+          </div>
+         <p>Share this code with your friends and earn rewards!</p>
+         <button class="btn btn-custom" onclick="copyReferralCode()">Copy Code</button>
+        `;
+
+        document.getElementById('mainDiv').appendChild(referralContainer)
+        
+        // Add event listener for the new button
+        document.getElementById('copyCodeBtn').addEventListener('click',copyReferralCode);
+    }
+
+
+    //TO COPY THE CODE 
+    
+    function copyReferralCode(){
+    const code = document.getElementById('referrelCode').innerText;
+
+    navigator.clipboard.writeText(code)
+        .then(() => alert('Referral code copied to clipboard!'))
+        .catch(() => alert('Failed to copy to clipboard!'));
+}
+
+
+/************************************************************************************************************************** */
+//* APPLY REFERRAL CODE
+
+    async function applyReferralCode(){
+        try {
+            const referralCode = document.getElementById('inputReferralCode').value
+            const regex = /^[A-Za-z0-9]{15}$/
+
+            if (!regex.test(referralCode)) {
+                return Swal.fire({
+                    text: "Enter valid code !",
+                    icon: "warning",
+                    customClass: {
+                        popup: 'swal2-popup-custom-font-size'
+                    }
+                });
+            }
+
+            const response = await fetch('/verify-referral',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({referralCode})
+            })
+
+            if (response.redirected) {
+                return window.location.href  = response.url
+            }
+
+            const data = await response.json()
+
+            if (data.success) {
+                Swal.fire({
+                    title: "Success",
+                    text: data.success,
+                    icon: "success",
+                    customClass: {
+                        popup: 'swal2-popup-custom-font-size'
+                    }
+                }).then(()=>{
+                    return window.location.href= '/wallet'
+                })
+
+                
+            }else if(data.error){
+
+                Swal.fire({
+
+                    text: data.error||"failed!",
+                    icon: "error",
+                    customClass: {
+                        popup: 'swal2-popup-custom-font-size'
+                    }
+                });
+
+            }
+
+
+            
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
 
 /************************************************************************************************************************** */

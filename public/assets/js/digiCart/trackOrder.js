@@ -20,7 +20,7 @@ function backToOrders(){
                 popup: 'colored-toast',
             },
             showConfirmButton: false,
-            timer: 5000,
+            timer: 4000,
             timerProgressBar: true,
         });
         (async () => {
@@ -32,7 +32,7 @@ function backToOrders(){
 
     var opt={
         margin: [0.5,0.5,0.5,0.5], // Top, right, bottom, left margins
-    filename: 'invoice.pdf',
+    filename: 'DigiCart Order invoice.pdf',
     image: {type: 'jpeg',quality: 0.98},
     html2canvas: {scale: 2},
     jsPDF: {unit: 'in',format: 'a4',orientation: 'landscape'} // Change to landscape for wider format
@@ -64,24 +64,22 @@ document.addEventListener('DOMContentLoaded',function () {
     document.getElementById('invoiceTime').textContent=formatTime(now);
 
     //STATUS AND INVOICE BUTTON
-    const invoiceButton=document.getElementById('downloadInvoice')
-    const statusElement=document.querySelectorAll('.statusOFproduct')
+    const invoiceButton=document.getElementById('downloadInvoice');
+    const statusElements=document.querySelectorAll('.statusOFproduct');
 
-    statusElement.forEach((span) => {
-        let status=span.textContent.trim()
+    const visibleStatuses=['Delivered','Returned','Completed','Return requested','Return approved','Return Rejected','Refunded'];
 
+    let showInvoiceButton=false;
 
-        if(status==='Pending Payment') {
-            invoiceButton.style.display='none'
-        } else if(status==='Cancelled') {
-            invoiceButton.style.display='none'
-        } else if(status==='Shipped') {
-            invoiceButton.style.display='none'
-        } else if(status==='Processing') {
-            invoiceButton.style.display='none'
+    statusElements.forEach((span) => {
+        let status=span.textContent.trim();
+        if(visibleStatuses.includes(status)) {
+            showInvoiceButton=true;
         }
+    });
 
-    })
+    invoiceButton.style.display=showInvoiceButton? 'inline':'none';
+
 });
 
 //******************************************************************************************************************** */

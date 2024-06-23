@@ -2,7 +2,7 @@ const wishlistDB = require('../../model/wishlistModel')
 
 //ADD TO WISHLIST FUNCTION
 
-const addWishlist=async (req,res) => {
+const addWishlist=async (req,res,next) => {
     try {
 
         const userID=req.session.login_id;
@@ -21,15 +21,14 @@ const addWishlist=async (req,res) => {
 
 
     } catch(error) {
-        console.log(error);
-        return res.status(500).redirect('/error')
+        next(error)
 
     }
 }
 
 //REMOVE FROM WISHLIST
 
-const removeWishlistItem=async (req,res) => {
+const removeWishlistItem=async (req,res,next) => {
     try {
         const userID=req.session.login_id;
         const {variantId}=req.body
@@ -46,8 +45,7 @@ const removeWishlistItem=async (req,res) => {
         }
 
     } catch(error) {
-        console.error(error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 

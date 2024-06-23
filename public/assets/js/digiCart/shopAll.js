@@ -1,16 +1,16 @@
 
-//SEARCH FUNCTION
+////SEARCH FUNCTION
 
-const searchButton=document.getElementById('headerSearchButton')
-const headerSearchInput=document.getElementById('headerSearchInput')
+//const searchButton=document.getElementById('headerSearchButton')
+//const headerSearchInput=document.getElementById('headerSearchInput')
 
-searchButton.addEventListener('click',()=>{
-    const search = headerSearchInput.value
+//searchButton.addEventListener('click',()=>{
+//    const search = headerSearchInput.value
 
-    window.location.href=`/shopall?search=${search}`
+//    window.location.href=`/shopall?search=${search}`
 
  
-})
+//})
 
 
 //CATEGORY FILTER 

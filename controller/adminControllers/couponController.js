@@ -1,30 +1,38 @@
- const couponDB = require('../../model/couponModel')
+
+const couponDB = require ('../../model/couponModel')
 
 
 
-    const loadCouponPage = async (req,res) => {
+    const loadCouponPage = async (req,res,next) => {
         try {
-            const couponData = await couponDB.find()
-            res.render('couponManagement',{couponData})
+
+            const page  = parseInt(req.query.page) || 1 ;
+            const limit = 4;
+            const skip  = (page-1)*limit;
+
+            const couponData = await couponDB.find().skip(skip).limit(limit);
+            const totalCoupons = await couponDB.countDocuments();
+            const totalPages  = Math.ceil(totalCoupons/limit);
+            res.render('couponManagement',{couponData,currentPage:page,totalPages})
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
     //LOAD ADD COUPON PAGE 
-    const loadAddCoupon = async (req,res) => {
+    const loadAddCoupon = async (req,res,next) => {
         try {
 
             res.render('addCoupon')
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
     //ADD COUPONS
-    const addCoupons = async (req,res) =>{
+    const addCoupons = async (req,res,next) =>{
         try {
             const {couponCode,discription,discountPercentage,
                 minPurchaseAmount,maxDiscountAmount,expiryDate}=req.body;
@@ -78,12 +86,12 @@
 
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
     //BLOCK COUPON
-    const blockCoupon = async (req,res) => {
+    const blockCoupon = async (req,res,next) => {
         try {
             const{couponID}=req.body
             const authCheck = await couponDB.findById(couponID).select('_id')
@@ -97,13 +105,13 @@
 
 
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
 
     //UNBLOCK COUPON
-    const unblockCoupon = async (req,res) => {
+    const unblockCoupon = async (req,res,next) => {
         try {
            
             const{couponID}=req.body
@@ -118,12 +126,12 @@
 
 
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
     //DELETE COUPON
-    const removeCoupon = async (req,res)=>{
+    const removeCoupon = async (req,res,next) => {
         try {
 
             const couponID=req.query.id
@@ -138,12 +146,12 @@
             
 
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
     //LOAD EDIT COUPON
-    const loadEditCoupon = async (req,res)=>{
+    const loadEditCoupon = async (req,res,next) => {
         try {
             
             if (req.query.id) {
@@ -162,13 +170,13 @@
 
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
     //UPDATE COUPON
 
-const updateCoupons=async (req,res) => {
+const updateCoupons = async (req,res,next) => {
     try {
         const {couponID,couponCode,discription,discountPercentage,
             minPurchaseAmount,maxDiscountAmount,expiryDate}=req.body;
@@ -223,7 +231,7 @@ const updateCoupons=async (req,res) => {
 
 
     } catch(error) {
-        console.error(error);
+        next(error)
     }
 }
 

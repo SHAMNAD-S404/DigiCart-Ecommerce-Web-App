@@ -12,10 +12,9 @@
   
 
 
-
   <% if (typeof userData !=='undefined' ) { %>
 
-
+    <% /* %>
     <section class="blog about-blog">
       <div class="container">
         <div class="blog-bradcrum">
@@ -23,11 +22,10 @@
           <span class="devider">/</span>
           <span><a href="#">User-profile</a></span>
         </div>
-        <div class="blog-heading about-heading">
-          <h1 class="heading">User Dashboard</h1>
-        </div>
+     
       </div>
     </section>
+    <% */ %>
 
 
     <section class="user-profile footer-padding">
@@ -141,7 +139,7 @@
                   </svg>
                 </span>
                 <span class="text">
-                  My Coupons
+                  Refferel
                 </span>
               </button>
               <div class="nav-link">
@@ -292,6 +290,7 @@
 <% if (wishlistItems) { %>
   <div class="tab-pane fade" id="v-pills-wishlist" role="tabpanel" aria-labelledby="v-pills-wishlist-tab" tabindex="0">
     <div class="wishlist">
+      
       <div class="cart-section wishlist-section">
         <table>
           <tbody>
@@ -643,22 +642,24 @@
                       <div class="currentpass form-item">
                         <label for="currentpass" class="form-label">Current Password*</label>
                         <input type="password" name="currentPass" class="form-control" id="currentPass"
-                          placeholder="******">
+                          placeholder="Enter your Current password">
                       </div>
                       <div class="password form-item">
-                        <label for="pass" class="form-label">Password*</label>
-                        <input type="password" name="newPass" class="form-control" id="newPass" placeholder="******">
+                        <label for="pass" class="form-label">New Password*</label>
+                        <input type="password" name="newPass" class="form-control" id="newPass" 
+                        placeholder="Minimum length must be 6">
+                        <p style="color: blue;">*password include both alphabets and numbers</p>
                       </div>
                       <div class="re-password form-item">
-                        <label for="repass" class="form-label">Re-enter Password*</label>
+                        <label for="repass" class="form-label">Re-enter New Password*</label>
                         <input type="password" name="confirmPass" class="form-control" id="confirmPass"
-                          placeholder="******">
+                          placeholder="Re enter your new password">
                       </div>
                     </form>
 
                     <div class="form-btn">
                       <button class="shop-btn" type="button" id="changePassButton"> Upldate Password </button>
-                      <!--<a href="#" class="shop-btn">Upldate Password</a>-->
+                     
                       <a href="#" class="shop-btn cancel-btn">Cancel</a>
                     </div>
                   </div>
@@ -667,68 +668,65 @@
             </div>
 
             <% // MY COUPON SECTION %>
-            <div class="tab-pane fade" id="v-pills-ticket" role="tabpanel" aria-labelledby="v-pills-ticket-tab"
-              tabindex="0">
+            <div class="tab-pane fade" id="v-pills-ticket" role="tabpanel" aria-labelledby="v-pills-ticket-tab" tabindex="0">
               <div class="support-ticket">
-                
-                <div class="ticket-section">
-                  <table>
-                    <tbody>
-                      <tr class="table-row table-top-row">
-                        <td class="table-wrapper">
-                          <h5 class="table-heading">COUPON CODE</h5>
-                        </td>
-                        <td class="table-wrapper">
-                          <div class="table-wrapper-center">
-                            <h5 class="table-heading">DISCRIPTION</h5>
-                          </div>
-                        </td>
-                        <td class="table-wrapper">
-                          <div class="table-wrapper-center">
-                            <h5 class="table-heading">DETAILS</h5>
-                          </div>
-                        </td>
-                        
-                      </tr>
-                      <% if(coupons && coupons.length>0){ 
-                       coupons.forEach(coupon => {
-                       %>  
-                      
+                <div class="row">
+                  <div class="col-12 col-lg-6" id="mainDiv">
 
-                      <tr class="table-row ticket-row">
-                        <td class="table-wrapper">
-                          <p class="ticker-number" style="color: blue;"><%=coupon.couponCode%></p>
-                        </td>
-                        <td class="table-wrapper">
-                          <div class="table-wrapper-center">
-                            <p class="ticket-date"><%=coupon.discription%></p>
-                          </div>
-                        </td>
-                        <td class="table-wrapper">
-                          <div class="table-wrapper-center">
-                            <p class="ticket-info">Discount : <%=coupon.discountPercentage%>%
-                            <span class="inner-text">Min spend amount : <%=coupon.minPurchaseAmount%> </span>
-                            <span class="inner-text">Max redeemable amount : <%=coupon.maxDiscountAmount%> </span>
-                            <span class="inner-text" style="color: red;">Expires on  : <%=coupon.expiryDate%> </span>
-                            
-                            </p>
-                               
-                          </div>
-                        </td>
-                       
-                      </tr>
-                      <% }) 
-                        }%>
+            <% if(userData.referral.code){ %>
+              
+                    <div class="referral-container mt-2">
+                      <div class="referral-header">Your Referral Code</div>
+                      <div class="referral-code" id="referrelCode">
+                       <%=userData.referral.code%>
+                      </div>
+                      <p>Share this code with your friends and earn rewards!</p>
+                      <p>You can earn up to 200 referral rewards if you invite <br> new users to DigiCart.
+                        Both the referrer and <br> referee will receive their reward in wallet.</p>
+                      <button class="btn btn-custom" onclick="copyRefferelCode()">Copy Code</button>
+                    </div>
 
-                    </tbody>
-                  </table>
+            <% }else{ %>
+
+                    <div class="referral-container mt-2" id="generateReferral">
+                      <div class="referral-header">Generate Referral Link</div>
+                      <div id="referralLink" class="referral-link">                     
+                      </div>
+                      <p>Generate a referral link to share with your friends!</p>
+                      <p>And earn referral Bonus worth 200 on Wallet</p>
+                      <button class="btn btn-custom" onclick="generateReferralLink()">Generate Link</button>
+                    </div>
+            <% } %>
+            
+                  </div>
+            
+                  <div class="col-12 col-lg-6 ">
+
+              <% if(userData.referral.claimed===false){ %>
+            
+                    <div class="referral-container mt-2">
+                      <div class="referral-header">Apply Referral Code</div>
+                      <input type="text" id="inputReferralCode" class="form-control mb-3" placeholder="Enter referral code" required>
+                      <p>One person can avail Referral offer only one time</p>
+                      <button class="btn btn-custom" onclick="applyReferralCode()">Apply Code</button>
+                    </div>
+
+              <% } %>
+            
+                  </div>
+            
+            
                 </div>
+
               </div>
             </div>
+
           </div>
         </div>
       </div>
       </div>
+      </div>
+      
       
       
     <% } %>
@@ -736,14 +734,14 @@
     </section>
 
    
-    //sweetalert2
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    //fetch functions
+    
     <script src="assets/userProfile/js/userFetch.js"></script>
     
     <!--BOOTSTRAP-->
-    <!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>-->
+    
     <script src="assets/userProfile/js/jquery_3.7.1.min.js"></script>
 
     <script src="assets/userProfile/js/bootstrap_5.3.2.bundle.min.js"></script>

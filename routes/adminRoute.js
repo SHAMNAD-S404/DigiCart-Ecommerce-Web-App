@@ -1,19 +1,17 @@
-const express            = require('express')
-const adminRoute         = express();
-const session            = require('express-session');
-const adminController    = require('../controller/adminControllers/adminController')
-const categoryController = require('../controller/adminControllers/categoryController')
-const productController  = require('../controller/adminControllers/productController')
-const variantController  = require('../controller/adminControllers/variantController')
-const orderController    = require('../controller/adminControllers/orderController')
-const couponController   = require('../controller/adminControllers/couponController')
-const offerController    = require('../controller/adminControllers/offerController')
-const adminAuth          = require('../middleware/adminAuth')
-const flash              = require('express-flash')
-const multer             = require('multer');
-const path               = require('path')
-const upload             = require('../middleware/multer');
-const handleMulterError  = require('../middleware/multerErrorMiddleware')
+const express            = require  ('express')
+const adminRoute         = express  ();
+const adminController    = require  ('../controller/adminControllers/adminController')
+const categoryController = require  ('../controller/adminControllers/categoryController')
+const productController  = require  ('../controller/adminControllers/productController')
+const variantController  = require  ('../controller/adminControllers/variantController')
+const orderController    = require  ('../controller/adminControllers/orderController')
+const couponController   = require  ('../controller/adminControllers/couponController')
+const offerController    = require  ('../controller/adminControllers/offerController')
+const adminAuth          = require  ('../middleware/adminAuth')
+const flash              = require  ('express-flash')
+const upload             = require  ('../middleware/multer');
+const handleMulterError  = require  ('../middleware/multerErrorMiddleware')
+const handleError        = require  ('../middleware/adminError')
 require('dotenv').config();
 
 
@@ -25,20 +23,13 @@ adminRoute.use (express.json())
 adminRoute.use (express.urlencoded({extended:true}))
 adminRoute.use (express.static('public/adminAssets'));
 adminRoute.use (flash())
-//adminRoute.use (session({
-//                secret : process.env.SESSION_SECRET,
-//                resave : false,
-//                saveUninitialized : true,
-                 
-//}))
 
 //Admin action Related Routes
 
  adminRoute.get  ('/',adminAuth.isLogout,adminController.loadLogin)
-           .get  ('/home',adminController.loadHome)
-           .get  ('/error',adminController.errorPage)
+           .get  ('/home',adminAuth.isLogin,adminController.loadHome)          
            .get  ('/logout',adminAuth.isLogin,adminController.logOut)
-           .get  ('/sales-report-filter',adminController.filterSalesReport)
+           .get  ('/sales-report-filter',adminAuth.isLogin,adminController.filterSalesReport)
            .get  ('/userlist',adminAuth.isLogin,adminController.showUsers)
            .get  ('/block-user',adminAuth.isLogin,adminController.blockUser)
            .get  ('/unblock-user',adminAuth.isLogin,adminController.unblockUser)
@@ -61,8 +52,8 @@ adminRoute.use (flash())
 
 //Product management Related Routes
  
-adminRoute.get   ('/allProducts',adminAuth.isLogin,productController.showProducts)
-          .get   ('/product-details',adminAuth.isLogin,adminAuth.isLogin,productController.loadProductDetails)
+adminRoute.get   ('/allProducts',adminAuth.isLogin,productController.showProducts)   
+          .get   ('/product-details',adminAuth.isLogin,productController.loadProductDetails) 
           .get   ('/addProduct',adminAuth.isLogin,productController.loadAddProducts)
           .get   ('/block-product',adminAuth.isLogin,productController.blockProducts)
           .get   ('/unblock-product',adminAuth.isLogin,productController.unblockProducts)
@@ -73,14 +64,15 @@ adminRoute.get   ('/allProducts',adminAuth.isLogin,productController.showProduct
 
 //Variant management Related Routes
 
-adminRoute.get  ('/addVariants',adminAuth.isLogin,variantController.loadVarients)
+adminRoute.get  ('/addVariants',adminAuth.isLogin,variantController.loadVarients) 
           .get  ('/block-variant',adminAuth.isLogin,variantController.blockVariant)
           .get  ('/unblock-variant',adminAuth.isLogin,variantController.unblockVariant)
           .get  ('/edit-variant',adminAuth.isLogin,variantController.editVariant)
           .get  ('/delete-variant',adminAuth.isLogin,variantController.deleteVariant)
-          .post ('/add-anothervariant',adminAuth.isLogin,upload.array('images',3),variantController.multipleVariant)
-          .post ('/addVariants',adminAuth.isLogin,upload.array('images',3),variantController.insertVariant)
-          .post ('/edit-variant',adminAuth.isLogin,upload.array('images',3),variantController.updateVariant)
+          .get  ('/download-sales-report-pdf',adminAuth.isLogin,adminController.downloadPdf)
+          .post ('/add-anothervariant',adminAuth.isLogin,upload.any(),variantController.multipleVariant)
+          .post ('/addVariants',adminAuth.isLogin,upload.any(),variantController.insertVariant)
+          .post ('/edit-variant',adminAuth.isLogin,upload.any(),variantController.updateVariant)
 
 //Coupon management Related Routes
 
@@ -101,14 +93,25 @@ adminRoute.get   ('/orders',adminAuth.isLogin,orderController.loadOrder)
 
 //OFFER MANAGEMENT
 
-adminRoute.get   ('/offers',offerController.loadOfferPage)
-          .get   ('/add-offer',offerController.loadAddOffer)
-          .post  ('/add-offer',offerController.insertOffer)
-          .patch ('/block-offer',offerController.blockOffer)
-          .patch ('/unblock-offer',offerController.unblockOffer)
+adminRoute.get   ('/offers',adminAuth.isLogin,offerController.loadOfferPage)
+          .get   ('/add-offer',adminAuth.isLogin,offerController.loadAddOffer)
+          .post  ('/add-offer',adminAuth.isLogin,offerController.insertOffer)
+          .patch ('/block-offer',adminAuth.isLogin,offerController.blockOffer)
+          .patch ('/unblock-offer',adminAuth.isLogin,offerController.unblockOffer)
+          
 
 
-//FOR MULTER ERROR HANDLING         
-adminRoute.use (handleMulterError)
+//FOR UNDEFINED ADMIN ROUTES
+adminRoute.use ((req,res,next)=> {
+    const err = new Error('Url not found !');
+    res.status = 404;
+    next(err)
+})
+
+
+//FOR MULTER ERROR HANDLING    
+adminRoute.use  (handleError)
+adminRoute.use  (handleMulterError)
+
 
 module.exports = adminRoute

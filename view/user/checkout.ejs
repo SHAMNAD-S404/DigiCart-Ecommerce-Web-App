@@ -1,8 +1,7 @@
  <%- include('../layouts/userLayout/header.ejs')%> 
 
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
- <!--RAZORPAY-->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
 
 
@@ -12,7 +11,7 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="page-banner-content text-center">
-                        <h4 class="breadcrumb-title" style="color: black;"><i class="fa-solid fa-cart-shopping"></i>  Checkout</h4>
+                        <h4 class="breadcrumb-title mt-2" style="color: black;"><i class="fa-solid fa-cart-shopping"></i>  Checkout</h4>
                         <div class="breadcrumb-two">
                             <nav>
                                 <nav class="breadcrumb-trail breadcrumbs">
@@ -32,66 +31,7 @@
             </div>
         </div>
         <!-- page-banner-area-end -->
-<% /* %>
-        <!-- coupon-area-start -->
-        <section class="coupon-area pt-120 pb-30">
-            <div class="container">
-            <div class="row">
-            <div class="col-md-6">
-                <div class="coupon-accordion">
-                        <!-- ACCORDION START -->
-                        <h3>Returning customer? <span id="showlogin">Click here to login</span></h3>
-                        <div id="checkout-login" class="coupon-content">
-                        <div class="coupon-info">
-                            <p class="coupon-text">Quisque gravida turpis sit amet nulla posuere lacinia. Cras sed est
-                                    sit amet ipsum luctus.</p>
-                            <form action="#">
-                                    <p class="form-row-first">
-                                    <label>Username or email <span class="required">*</span></label>
-                                    <input type="text">
-                                    </p>
-                                    <p class="form-row-last">
-                                    <label>Password <span class="required">*</span></label>
-                                    <input type="text">
-                                    </p>
-                                    <p class="form-row">
-                                    <button class="tp-btn-h1" type="submit">Login</button>
-                                    <label>
-                                        <input type="checkbox">
-                                        Remember me
-                                    </label>
-                                    </p>
-                                    <p class="lost-password">
-                                    <a href="#">Lost your password?</a>
-                                    </p>
-                            </form>
-                        </div>
-                        </div>
-                        <!-- ACCORDION END -->
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="coupon-accordion">
-                        <!-- ACCORDION START -->
-                        <h3>Have a coupon? <span id="showcoupon">Click here to enter your code</span></h3>
-                        <div id="checkout_coupon" class="coupon-checkout-content">
-                        <div class="coupon-info">
-                            <form action="#">
-                                    <p class="checkout-coupon">
-                                    <input type="text" placeholder="Coupon Code">
-                                    <button class="tp-btn-h1" type="submit">Apply Coupon</button>
-                                    </p>
-                            </form>
-                        </div>
-                        </div>
-                        <!-- ACCORDION END -->
-                </div>
-            </div>
-            </div>
-        </div>
-        </section>
-        <!-- coupon-area-end -->
-<% */ %>
+
         <!-- checkout-area-start -->
         <section class="checkout-area pb-85">
             <div class="container">
@@ -232,7 +172,7 @@
                             </div>
                         </div>
                      <% if(stock) { %>   
-                        <div class="col-lg-6 " style="margin-top: 3rem;">
+                        <div class="col-lg-6 " style="margin-top: 3rem; width: 38rem;">
                             <div class="your-order mb-30 ">
                                 <h3>Your order</h3>
                                 <div class="your-order-table table-responsive">
@@ -261,7 +201,9 @@
  
 
                                             <tr class="cart_item">
-                                                <td class="product-name myClass" style="color: black; "> <%= product.name %> <br>-<%= variant.variantName %> </td>                                                                                             
+                                                <td class="product-name myClass" style="color: black; "> 
+                                                  <img src="/uploaded_Images/<%=variant.imageName[1] %>" alt="" class="img-fluid" style="width: 4rem; " > 
+                                                   <%= product.name %> <br>-<%= variant.variantName %> </td>                                                                                             
                                                 <td class="product-quantity myClass" style="text-align: center; color: black;" ><%=quantity %> Pcs</td>  
                                                 <% const sum = variant.price * quantity %>                                                  
                                                 <td class="product-total myClass"><span class="amount" style="color: green;"><%= sum  %> </span> </td>
@@ -317,29 +259,100 @@
                                         <% } %>
                                     </table>
                                 </div>
+
+                                <%// Modal %>
+                                 
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-scrollable">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Avilable Coupons</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <% if(coupons && coupons.length>0){ %>
+
+                                             <%   coupons.forEach(coupon => {  %>
+                                              
+                                        <div class="modal-body">
+                                            <div class="coupon-container">
+                                             <div class="coupon-card">
+                                                <div class="coupon-header">
+                                                    <h5>Coupon Code: <%= coupon.couponCode %> </h5>
+                                                   
+                                                    <button class="copy-button" data-code="<%= coupon.couponCode %>">
+                                                        <i class="fa-regular fa-copy"></i> Copy
+                                                    </button>
+                                                </div>
+                                                <div class="coupon-body">
+                                                    <p class="description">
+                                                        <%= coupon.description %>
+                                                    </p>
+                                                    <p class="discount">Discount: <strong>
+                                                            <%= coupon.discountPercentage %>%
+                                                        </strong></p>
+                                                    <p class="min-purchase">Min Spend: $<%= coupon.minPurchaseAmount %>
+                                                    </p>
+                                                    <p class="max-redeem">Max Redeemable: $<%= coupon.maxDiscountAmount %>
+                                                    </p>
+                                                    <p class="expiry-date">Expires on: <%= new Date(coupon.expiryDate).toLocaleDateString() %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                                </div>
+                                                </div>
+
+                                                <% }) }else{ %>
+                                                    <div class="modal-body">
+                                            
+                                                        <div class="alert alert-danger" role="alert">
+                                                            Sorry No coupon Avilable!
+                                                        </div>
+                                            
+                                                    </div>
+                                                    <%}%>
+
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
                                
                                 <div class="order-button ">
                                     <div class="coupon" id="applyCouponDiv">
-                                          <input id="coupon_code" class="input-text w-100 mb-2"  placeholder="Enter code . Coupons are case sensitive" type="text">
-                                          <button class="tp-btn-h1 mb-2 w-100" type="button" onclick="applyCoupon('<%=total%>')"  
-                                           id="applyCoupnBtn" >Apply coupon</button>
-                                          <a href="/checkout" style="display: none; " id="couponCancel"><button type="button" class="btn btn-danger w-100 mb-2 "
-                                            id="couponCancel" >Cancel coupon</button></a>
-                                               
-                                       </div>
-
-                                    <div class="order-button-payment mt-20" id="choosePaymentBtn">
-                                        <button type="button" onclick="verifyAddress()"  class="tp-btn-h1">Choose Payment</button>
-                                    </div><br>
+                                        <input id="coupon_code" class="input-text  mb-2" style="width: 27rem;"
+                                            placeholder="Enter code . Coupons are case sensitive" type="text">
+                                
+                                        <button class="btn btn-outline-primary  mb-2" type="button" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModal" style="width: 27rem;" id="viewCoupon">View coupons</button>
+                                
+                                        <button class="tp-btn-h1 mb-2 " type="button" onclick="applyCoupon('<%=total%>')" style="width: 27rem;"
+                                            id="applyCoupnBtn">Apply coupon</button>
+                                        <a href="/checkout" style="display: none; " id="couponCancel"><button type="button" style="width: 27rem;"
+                                                class="btn btn-outline-danger mb-2 " id="couponCancel">Cancel coupon</button></a>
+                                
+                                    </div>
+                                
+                                
+                                    <button type="button" id="choosePaymentBtn" onclick="verifyAddress()" class="tp-btn-h1" style="width: 27rem;">Choose
+                                        Payment</button>
+                                    <br>
                                     <div class="order-button-payment mt-20" id="backtoCartBtn" style="display: none;">
                                         <a href="/cart"><button type="button" class="tp-btn-h1"> Back to Cart </button></a>
                                     </div><br>
                                     <button type="button" id="buttonCOD" class="btn btn-outline-primary w-50">Cash on Delivery</button><br>
                                     <button type="button" id="buttonONLINE" class="btn btn-outline-success w-50"> Online Payments</button>
                                     <% if(walletBalance) {%>
-                                    <button type="button" id="buttonWALLET" class="btn btn-outline-info mt-4 w-50"> Pay with Wallet</button>
-                                    <p id="walletBalance">Wallet balance : <%=walletBalance.balance%> </p>
-                                    <%}%> 
+                                        <button type="button" id="buttonWALLET" class="btn btn-outline-info mt-4 w-50"> Pay with Wallet</button>
+                                        <p id="walletBalance">Wallet balance : <%=walletBalance.balance%>
+                                        </p>
+                                        <%}%>
                                 </div>
 
 
@@ -354,5 +367,7 @@
 
 
 <%- include('../layouts/userLayout/footer.ejs')%>
+<!--RAZORPAY-->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="assets/js/digiCart/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

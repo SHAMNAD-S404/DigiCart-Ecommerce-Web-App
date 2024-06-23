@@ -39,6 +39,16 @@ const userSchema = mongoose.Schema({
 
     gender :{
         type : String
+    },
+
+    referral :{
+        code:{
+            type:String
+        },
+        claimed:{
+            type:Boolean,
+            default:false
+        }
     }
 
   

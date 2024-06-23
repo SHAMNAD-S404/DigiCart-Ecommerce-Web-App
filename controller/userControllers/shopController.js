@@ -8,19 +8,20 @@
 
 
 
-    const loadShop=async (req,res) => {
+    const loadShop = async (req,res,next) => {
         try {
 
-            const allCategory=await categoryDB.find()
-            const allProducts=await productDB.find().populate('variants')
-            res.render('home',{allCategory,allProducts})
+            const allCategory = await categoryDB.find().limit(6)
+            const allProducts = await productDB.find().populate('variants').limit(6)
+            const latestProducts  =await productDB.find().populate('variants').limit(6).sort({createdAt:-1})
+
+            res.render('home',{allCategory,allProducts,latestProducts})
         } catch(error) {
-            console.log("Error in loadShop",error);
-            return res.status(500).redirect('/error')
+            next(error)
         }
     }
 
-const loadShopAll=async (req,res) => {
+const loadShopAll=async (req,res,next) => {
 
     try {
 
@@ -93,97 +94,81 @@ const loadShopAll=async (req,res) => {
         })
 
     } catch(error) {
-        console.log("Error in loadShopAll",error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 
-const loadAboutUs=async (req,res) => {
+const loadAboutUs=async (req,res,next) => {
 
     try {
         const success=req.flash('success')
         res.render('about',{success})
     } catch(error) {
-        console.log("Error in loadAboutUs",error);
-        return res.status(500).redirect('/error')
-    }
-}
-
-const errorPage=async (req,res) => {
-    try {
-        res.render('404')
-    } catch(error) {
-        console.error('failed to load error page');
-        return res.status(500).redirect('/error')
-
+        next(error)
     }
 }
 
 
-const loadFaq=async (req,res) => {
+
+
+const loadFaq=async (req,res,next) => {
 
     try {
         res.render('faq')
     } catch(error) {
-        console.log("Error in loadFaq",error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
-const loadContact=async (req,res) => {
+const loadContact=async (req,res,next) => {
     try {
         res.render('contact')
     } catch(error) {
-        console.log("Error in loadContact",error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
-const loadLogin=async (req,res) => {
+const loadLogin=async (req,res,next) => {
     try {
         const alert=req.flash('messages')
         const success=req.flash('success')
         res.render('login',{alert,success})
     } catch(error) {
-        console.log("Error in loadlogin",error);
-        return res.status(500).redirect('/error')
+        next(error)
 
     }
 }
 
-const loadSignUp=async (req,res) => {
+const loadSignUp=async (req,res,next) => {
 
     try {
         const alert=req.flash('alert')
         res.render('signup',{alert})
     } catch(error) {
-        console.log("Error in loadContact",error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
-const loadOTP=async (req,res) => {
+const loadOTP=async (req,res,next) => {
     try {
         res.render('otp')
     } catch(error) {
-        console.log("Error in loadOTP",error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
-const loadForgotPass=async (req,res) => {
+const loadForgotPass=async (req,res,next) => {
     try {
         res.render('forgotPassword')
     } catch(error) {
-        console.log("Error in loadContact",error);
-        return res.status(500).redirect('/error')
+        next(error)
     }
 }
 
 
 //PRODUCT DETAILS
-const productDetails=async (req,res) => {
+const productDetails=async (req,res,next) => {
     try {
         const productID=req.query.id
         const variantID=req.query.vId
@@ -213,8 +198,9 @@ const productDetails=async (req,res) => {
         res.render('product-details',{products,variants,offers,categoryOffers})
 
     } catch(error) {
-        console.log(error);
-        return res.status(500).redirect('/error')
+
+        next(error)
+        
     }
 }
 
@@ -226,7 +212,6 @@ const productDetails=async (req,res) => {
         loadShop,
         loadShopAll,
         loadAboutUs,
-        errorPage,
         loadFaq,
         loadContact,
         loadLogin,

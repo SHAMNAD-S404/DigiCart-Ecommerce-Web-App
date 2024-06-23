@@ -105,74 +105,53 @@ excelButton.addEventListener('click',() => {
 
 //TO PDF FORMAT DOWNLOAD FUNCTION
 
-const pdfButton=document.getElementById('toPDF');
+//const pdfButton=document.getElementById('toPDF');
 
-document.addEventListener('DOMContentLoaded',function () {
-    function formatDate(date) {
-        const options={year: 'numeric',month: 'long',day: 'numeric'};
-        return date.toLocaleDateString('en-US',options);
-    }
+//document.addEventListener('DOMContentLoaded',function () {
+//    function formatDate(date) {
+//        const options={year: 'numeric',month: 'long',day: 'numeric'};
+//        return date.toLocaleDateString('en-US',options);
+//    }
 
-    function formatTime(date) {
-        const options={hour: '2-digit',minute: '2-digit',second: '2-digit'};
-        return date.toLocaleTimeString('en-US',options);
-    }
+//    function formatTime(date) {
+//        const options={hour: '2-digit',minute: '2-digit',second: '2-digit'};
+//        return date.toLocaleTimeString('en-US',options);
+//    }
 
-    const now=new Date();
-    document.getElementById('currentDate').textContent=formatDate(now);
-    document.getElementById('currentTime').textContent=formatTime(now);
+//    const now=new Date();
+//    document.getElementById('currentDate').textContent=formatDate(now);
+//    document.getElementById('currentTime').textContent=formatTime(now);
 
-    pdfButton.addEventListener('click',function () {
-        var element=document.getElementById('pdfContent');
-        var opt={
-            margin: [0.5,0.5,0.5,0.5],
-            filename: 'sales_report.pdf',
-            image: {type: 'jpeg',quality: 0.98},
-            html2canvas: {scale: 2},
-            jsPDF: {unit: 'in',format: [11,17],orientation: 'landscape'} // Using tabloid size
-        };
+//    pdfButton.addEventListener('click',function () {
+//        var element=document.getElementById('pdfContent');
+//        var opt={
+//            margin: [0.5,0.5,0.5,0.5],
+//            filename: 'sales_report.pdf',
+//            image: {type: 'jpeg',quality: 0.98},
+//            html2canvas: {scale: 2},
+//            jsPDF: {unit: 'in',format: [11,17],orientation: 'landscape'} // Using tabloid size
+//        };
 
-        html2pdf().from(element).set(opt).save();
-    });
-});
-
-//pdfButton.addEventListener('click',() => {
-//    const table=document.querySelector('#ayne_ne_ethaa');
-//    const rows=Array.from(table.querySelectorAll('tr'));
-//    const data=rows.map(row => {
-//        const cells=row.querySelectorAll('td');
-//        return Array.from(cells).map(cell => cell.innerText);
+//        html2pdf().from(element).set(opt).save();
 //    });
-
-//    const doc = new jsPDF()
-
-//    doc.text('DigiCart Ecom',10,10);
-//    doc.text('Sales Report',10,20);
-//    doc.autoTable({
-//        startY: 30,
-//        head: [['ORDER ID','ORDER DATE','PRODUCT','CUSTOMER','PAYMENT MODE','STATUS','OFFER DISCOUNT','COUPON DISCOUNT','FINAL CART PRICE']],
-//        body: data,
-//    });
-
-//    doc.save('sales_report.pdf');
 //});
 
-    //pdfButton.addEventListener('click',function () {
-    //    const element=document.getElementById('pdfConvert');
+async function downloadPDF() {
+    const urlParams=new URLSearchParams(window.location.search);
+    const response=await fetch(`/admin/download-sales-report-pdf?${urlParams.toString()}`);
+    const blob=await response.blob();
+    const url=window.URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='sales_report.pdf';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
 
-    //    var opt={
-    //        margin: [0.5,0.5,0.5,0.5], // Top, right, bottom, left margins
-    //        filename: 'invoice.pdf',
-    //        image: {type: 'jpeg',quality: 0.98},
-    //        html2canvas: {scale: 2},
-    //        jsPDF: {unit: 'in',format: 'a4',orientation: 'landscape'} // Change to landscape for wider format
-    //    };
-    //    html2pdf().set({
-    //        pagebreak: {before: '.beforeClass',after: ['#after1','#after2'],avoid: 'img'}
-    //    });
+}
 
-    //    html2pdf().from(element).set(opt).save();
-    //});
+
 
 
 

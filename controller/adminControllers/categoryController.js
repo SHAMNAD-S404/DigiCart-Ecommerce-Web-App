@@ -1,22 +1,20 @@
-const {name}     = require('ejs');
-const file       = require('fs')
-const path       = require('path')
-const sharp      = require('sharp')
-const categoryDB = require('../../model/catogoryModel')
+
+    const path       = require  ('path')
+    const sharp      = require  ('sharp')
+    const categoryDB = require  ('../../model/catogoryModel')
 
 
-const loadCategory = async (req,res)=> {
+const loadCategory=async (req,res,next)=> {
         try {
 
             const alert = req.flash('alert')
             res.render('addCategory',{alert})
         } catch (error) {
-            console.log(error);
-            return res.status(500).redirect('/admin/error')
+            next(error)
         }
 }
 
-const showCategory = async(req,res) => {
+const showCategory = async(req,res,next) => {
         
         try {
             const success = req.flash('success')
@@ -25,12 +23,11 @@ const showCategory = async(req,res) => {
             
             
         } catch (error) {
-            console.log(error);
-            return res.status(500).redirect('/admin/error')
+            next(error)
         }
 }
 
-const insertCategory=async (req,res) => {
+const insertCategory=async (req,res,next) => {
 
     try {
         
@@ -64,42 +61,34 @@ const insertCategory=async (req,res) => {
                       
         })
 
-        const save = await newCategory.save()
+            await newCategory.save()
         
-        console.log(save)
+        
             res.status(200).json({success: true,message: 'Category added'})
     }
       
     } catch(error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
         
     }
 };
 
 
 
-const deleteCategory = async (req,res) => {
+const deleteCategory = async (req,res,next) => {
 
     try {
-        const categoryID = req.query.id 
-        const removeCategory = await categoryDB.findByIdAndDelete(categoryID)
-        if (removeCategory) {
-         console.log('deleted success');
-        
+        const categoryID = req.query.id ;
 
-        }else{
-            console.log('deletion failed');
-          //  return res.redirect('/admin/delete-category')
-        }
+        await categoryDB.findByIdAndDelete(categoryID)
+      
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const editCategory = async(req,res) => {
+const editCategory = async(req,res,next) => {
 
     try {
         const categoryID = req.query.id
@@ -107,13 +96,12 @@ const editCategory = async(req,res) => {
         res.render('editCategory',{categoryData})
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
 
-const updateCategory = async (req,res) => {
+const updateCategory = async (req,res,next) => {
 
     try {
         const {id,category,description,oldImage}  = req.body
@@ -144,47 +132,43 @@ const updateCategory = async (req,res) => {
             imageName=oldImage
         }
 
-        const categoryUpdate = await categoryDB.findByIdAndUpdate({_id:id},
+         await categoryDB.findByIdAndUpdate({_id:id},
                             {$set:{name:category,
-                            description:description,
-                            imageUrl:imageName}})
+                                    description:description,
+                                    imageUrl:imageName} });
 
-        //res.redirect('/admin/category_management')
         res.status(200).json({success:true,message:'updated success'})
 
         }
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const blockCategory = async(req,res) => {
+const blockCategory = async(req,res,next) => {
 
     try {
         
         const categoryID = req.query.id
-        const block = await categoryDB.updateOne({_id:categoryID},{$set:{block:true}})
-        //res.redirect('/admin/category_management')
+        await categoryDB.updateOne({_id:categoryID},{$set:{block:true}})
+
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const unblockCategory = async(req,res) => {
+const unblockCategory = async(req,res,next) => {
 
         try {
 
             const categoryID = req.query.id
-            const unblock = await categoryDB.updateOne({_id:categoryID},{$set:{block:false}})
-            //res.redirect('/admin/category_management')
+            await categoryDB.updateOne({_id:categoryID},
+                                {$set:{block:false}});
 
             
         } catch (error) {
-            console.log(error);
-            return res.status(500).redirect('/admin/error')
+            next(error)
         }
 }
 

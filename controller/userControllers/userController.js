@@ -1,49 +1,56 @@
-    //Requiring Nessesery Modules
+   
+   //Requiring Nessesery Modules
     const bcrypt     = require ('bcrypt');
     const userDetails= require ('../../model/userModel');
     const otpModel   = require ('../../model/otpModel')
     const addressDB  = require ('../../model/addressModel')   
     const util       = require ('../../util/sendMail')
-    const categoryDB = require ('../../model/catogoryModel')
-    const productDB  = require ('../../model/productModel');
-    const variantDB  = require ('../../model/variantModel')
-    const cartDB     = require ('../../model/cartModel')
-    const orderDB    = require ('../../model/orderModel')
     const wishlistDB = require ('../../model/wishlistModel')
-    const couponDB   = require ('../../model/couponModel')
     const walletDB   = require ('../../model/walletModel')
-
-
     require ('dotenv').config()
-    const path       = require ('path');
 
-    
 
-    ////rechek needed
-    //const {name}=require('ejs');
-    //const {error}=require('console');
-    //const {stat}=require('fs');
-    //const {model}=require('mongoose');
 
 
 
 
     //hash the password
-    const securePassword = async(password) => {
+    const securePassword = async(password,next) => {
 
         try {
             const passwordHash = await bcrypt.hash(password,10);
             return passwordHash;
         } catch (error) {
-            console.log(error.message);
-            return res.status(500).redirect('/error')
+            next(error)
         }
     }
 
+// Function to generate a unique referral code
+const generateUniqueReferralCode = async () => {
+
+    const characters='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let referralCode;
+    let isUnique=false;
+
+    while(!isUnique) {
+        referralCode='';
+        for(let i=0;i<15;i++) {
+            referralCode+=characters.charAt(Math.floor(Math.random()*characters.length));
+        }
+
+        const existingCode=await userDetails.findOne({'referral.code': referralCode}).select('_id')
+        if(!existingCode) {
+            isUnique=true;
+        }
+    }
+
+    return referralCode;
+};
 
 
 
-    const insertUser = async(req,res) => {
+
+    const insertUser = async(req,res,next) => {
 
         try {
                 const{name, email, phone, password, confirmPassword} = req.body 
@@ -77,19 +84,18 @@
                 req.session.userData = user
                 req.session.email_id = req.body.email
                 const userEmail = req.session.email_id
-                await util(userEmail)
+                util(userEmail)
                 res.render('otp',{userEmail})
 
 
         } catch (error) {
-                console.log('error in insertData :',error);
-                return res.status(500).redirect('/error')
+            next(error)
         }
     
     }
 
 
-    const verifyOtp = async (req,res) => {
+    const verifyOtp = async (req,res,next) => {
     
         try {
             
@@ -98,11 +104,9 @@
             }
             const mailId=req.session.email_id;
             const value = await otpModel.findOne({email:mailId})
-            req.session.otpID = value._id;
 
             const otp = parseFloat(req.body.otp.join(""));
-            console.log(req.session.otpID)
-            const userData = await otpModel.findOne({_id: req.session.otpID})
+            const userData = await otpModel.findOne({_id: value._id})
             const userOTP = userData.otp
 
             if(otp == userOTP){
@@ -120,12 +124,11 @@
 
             
         } catch (error) {
-            console.log('error in verifyOtp',error);
-            return res.status(500).redirect('/error')
+            next(error)
         }
     }
 
-    const verifyLogin = async (req,res) => {
+    const verifyLogin = async (req,res,next) => {
 
             try {
                 const {email: userEmail, password : userPassword} = req.body
@@ -148,10 +151,7 @@
                                             res.redirect('/user-profile') 
                                         });
 
-                                            //req.session.login_id = loginData._id; 
-                                                                                
-                                            //req.flash('success','Login successful')                             
-                                            //res.redirect('/user-profile') 
+                                      
                                             
                                     }else{
                                             req.flash('messages','Your account is blocked');
@@ -168,41 +168,129 @@
                     }
                 
             } catch (error) {
-                console.log('error in verifyLogin section',error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
     }
 
-    const forgotPass = async (req,res) => {
+    //FORGOT PASSWORD CHANGING
+    const forgotPass = async (req,res,next) => {
         
             try {
-                const userEmail = req.body.email
-                const userData = await userDetails.findOne({email:userEmail , isBlocked:false})
+                const {email} = req.body
+                const userData = await userDetails.findOne({email:email,isBlocked:false}).select('_id')
+
                 if(userData){
-                        res.session.forgot_id = userData._id
+                     util(email)
+                     return res.status(200).json({success:`Verification Code Sended to ${email} . `})
+                       
+                }else{
+                    return res.status(401).json({error:'Email Id not found !'})
                 }
             } catch (error) {
-                console.log('error in forgotPass', error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
     }
 
-    const resendOTP = async(req,res) => {
+
+    //LOAD RESET PASSWORD PAGE 
+    const loadResetPassPage = async (req,res,next) =>{
+        try {
+
+            const resetData = req.session.resetInfo ;
+            if (!resetData) {
+
+                const previousUrl = req.get('referer') || '/login'
+                return res.status(400).redirect(previousUrl);
+
+            }else{
+
+                res.render('resetPassword',{resetData})
+            }
+            
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
+    //VERIFY AND CHANGE PASSWORD
+    const resetPassword = async (req,res,next) => {
+        try {
+
+            const {otp} = req.body;
+            const otpCode = +otp
+            const fetchData = await otpModel.findOne({otp:otpCode});
+
+            if (fetchData) {
+
+                const findUser = await userDetails.findOne({email:fetchData.email}).select('email name');
+                req.session.resetInfo = findUser;
+                return res.status(200).json({success:'OTP VERIFIED . RESET YOUR PASSWORD !'})
+                
+            }else{
+                return res.status(400).json({error:'OTP not Matching !'})
+            }
+            
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    //CHANGING PASSWORD AND UPDATIIN DB
+    const updatePassword = async (req,res,next) => {
+        try {
+            const {userID,newPassword} = req.body
+            const authCheck = await userDetails.findOne({_id:userID}).select('_id');
+            const passwordRegex=/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+
+            if (!passwordRegex.test(newPassword)) {
+                return res.status(400).json({error: 'Enter Valid Password !'}) 
+            }
+            
+            if (authCheck) {
+
+                const newPass = await securePassword(newPassword)
+
+                await userDetails.findByIdAndUpdate(authCheck._id,
+                                {$set:{password:newPass}});
+
+                //DELETING SESSION DATA 
+                delete req.session.resetInfo ;
+
+                return res.status(200).json({success: 'Password Changed ! Kindly Login with your new password'});
+                
+            }else{
+                return res.status(400).json({error: 'User not found !'}) 
+            }
+            
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
+
+    const resendOTP = async(req,res,next) => {
             try {
                 
                 const userEmail = req.session.email_id;
-                await otpModel.deleteOne({email:userEmail})        
-                await util(userEmail)
+
+                await Promise.all([
+                 otpModel.deleteOne({email:userEmail}) ,       
+                 util(userEmail)
+                 
+                ]);
+
                 res.render('otp')
+
             } catch (error) {
-                console.log("error in resendOTP",error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
 
         
     }
 
-    const logout = async(req,res) => {
+    const logout = async(req,res,next) => {
 
             try {
 
@@ -221,17 +309,17 @@
             
 
             } catch (error) {
-                console.log(error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
     }
 
     
         //USERPROFILE SESSION LOADING
-        const userProfile = async (req,res) =>{
+        const userProfile = async (req,res,next) => {
 
             try {
                 const userID = req.session.login_id;
+          
                 const userData = await userDetails.findById(userID)
                 const addressData = await addressDB.find({userId:userID})
 
@@ -249,29 +337,26 @@
                    
                     }).sort({createdAt:-1})
 
-                        
-                const coupons = await couponDB.find({block:false}).sort({createdAt:-1})
 
                 if (!wishlistItems) {
-                   return res.render('userProfile',{userData,addressData,wishlistItems,coupons,totalPages:0,currentPage:page})
+                   return res.render('userProfile',{userData,addressData,wishlistItems,totalPages:0,currentPage:page})
                 }
 
                 const totalProduct=wishlistItems.variantId.length
                 const totalPages   = Math.ceil(totalProduct/limit)
                 const paginatedProducts=wishlistItems.variantId.slice(skip,skip+limit) 
 
-                res.render('userProfile',{userData,addressData,wishlistItems: paginatedProducts,coupons,totalPages,currentPage:page})
+                res.render('userProfile',{userData,addressData,wishlistItems: paginatedProducts,totalPages,currentPage:page})
                 
                 
             } catch (error) {
-                console.log(error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
         }
 
 
         //UPDATE USER PROFILE
-        const updateUserProfile = async (req,res) => {
+        const updateUserProfile = async (req,res,next) => {
             try {
 
                 const userID = req.session.login_id;
@@ -304,14 +389,13 @@
                 return res.status(200).json({success:'Updated Successfully'})
                 
             } catch (error) {
-                console.log(error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
             
         }
 
 
-        const changePassword = async(req,res)=>{
+        const changePassword = async(req,res,next) => {
             try {
                 const userID = req.session.login_id;
                 const{currentPass,newPass,confirmPass} = req.body;
@@ -354,15 +438,14 @@
 
                 
             } catch (error) {
-                console.error(error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
         } 
 
 
         //ADD USER ADDRESS
 
-        const addAddress = async (req,res)=> {
+        const addAddress = async (req,res,next) => {
             try {
 
                     const userID = req.session.login_id;
@@ -439,13 +522,12 @@
                     }
                             
             } catch (error) {
-                console.error(error);
-                return res.status(500).redirect('/error')
+                next(error)
             }
         }
 
     //DELETE ADDRESS
-    const deleteAddress = async (req,res) => {
+    const deleteAddress = async (req,res,next) => {
         try {
             const userID    = req.session.login_id;
             const addressID = req.body.addressID;
@@ -466,13 +548,12 @@
 
 
         } catch (error) {
-            console.error(error);
-            return res.status(500).redirect('/error')
+            next(error)
         }
     }
 
     //USER ADDRESS UPDATION
-    const updateAddress = async (req,res) => {
+    const updateAddress = async (req,res,next) => {
 
             try {
         
@@ -547,17 +628,119 @@
 
         
         } catch (error) {
-            console.error(error);
-            return res.status(500).redirect('/error')
+                next(error)
         }
     }
+
+    //GENERATE REFFERAL CODE 
+
+    const generateReferral = async (req,res,next) => {
+        try {
+            const userID = req.session.login_id;
+            const user=await userDetails.findById(userID).select('referral');
+ 
+            if(user&&user.referral&&user.referral.code) {
+                return res.status(400).json({error: 'Already have a Referral Code!'});
+            }
+
+            // Generate a unique referral code
+            const referralCode=await generateUniqueReferralCode();
+
+            // Update the user's referral code
+            await userDetails.findByIdAndUpdate(
+                userID,
+                {$set: {'referral.code': referralCode}},
+                {upsert: true,new: true}
+            );
+
+            return res.status(200).json({referralCode,success: 'Referral Code Created'});
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    
+    //APPLY REFERRAL CODE
+    const applyReferral = async (req,res,next) => {
+        try {
+            const userID = req.session.login_id;
+            const {referralCode} = req.body
+            const regex = /^[A-Za-z0-9]{15}$/
+
+            if (!regex.test(referralCode)) {
+                return res.status(400).json({error: 'Enter a valid Referral code !'});  
+            }
+
+            const user = await userDetails.findById(userID).select('referral');
+
+            if(user&&user.referral&&user.referral.claimed === true ) {
+                return res.status(400).json({error: 'Already Claimed Reward !'});
+            }
+
+            const searchReferrer = await userDetails.findOne({'referral.code':referralCode}).select('_id ')
+
+            if (!searchReferrer) {
+                return res.status(400).json({error: 'Referral Code not a Valid !'});
+            }else{
+
+                const referrer = searchReferrer._id
+
+                if (referrer.toString() === userID.toString()) {
+                    return res.status(400).json({error: 'Referral Code can not apply on self !'});
+                }
+               
+                //CREDITING BONUS TO REFERRER WALLET
+                await Promise.all([
+
+                    walletDB.findOneAndUpdate({userID: referrer},
+                        {
+                            $push: {
+                                transactions: {
+                                    amount: 200,
+                                    transactionMethod: 'Referral'
+                                }
+                            },
+                            $inc: {balance: 200}
+                        },{upsert: true}),
+                    
+                    //CREDITING BONUS TO REFERRE WALLET
+                    walletDB.findOneAndUpdate({userID: userID},
+                        {
+                            $push: {
+                                transactions: {
+                                    amount: 100,
+                                    transactionMethod: 'Referral'
+                                }
+                            },
+                            $inc: {balance: 100}
+                        },{upsert: true}),
+                    
+                    //UPDATION USER FIELD
+                    userDetails.findByIdAndUpdate(userID,
+                                {$set: {'referral.claimed': true}},
+                                {upsert:true})
+                 ])            
+
+                return res.status(200).json({success: 'Referrel bonus Claimed and Credited to your wallet'});    
+
+            }
+
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+
+    
         
   
 
 //********************************************************************************************************************* */ 
 
     // GOOGLE AUTH SETTING
-    const successGoogleLogin = async (req,res) => {
+    const successGoogleLogin = async (req,res,next) => {
         try {
             
         
@@ -586,7 +769,7 @@
             }
 
         } catch(error) {
-            console.log(error);
+            next(error)
 
         }  
     
@@ -622,6 +805,11 @@
         addAddress,
         deleteAddress,
         updateAddress,
+        generateReferral,
+        applyReferral,
+        resetPassword,
+        loadResetPassPage,
+        updatePassword,
 
         successGoogleLogin,
         failureGoogleLogin

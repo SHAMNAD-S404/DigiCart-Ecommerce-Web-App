@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded',() => {
                 legend: {display: false},
                 title: {
                     display: true,
-                    text: "Last Seven Day Order Count",
+                    text: "",
                     fontSize: 14,
                     fontColor: '#fff'
                 },
@@ -201,3 +201,5 @@ document.addEventListener('DOMContentLoaded',() => {
     }
 
 });
+
+   

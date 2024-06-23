@@ -17,14 +17,8 @@
 
 
             if(data.empty){
-                Swal.fire({
-                    text: data.empty ||"Cart is empty, add cart items",
-                    icon: "error"
-                }).then(()=>{
-                     window.location.href = '/cart'
-                })
-
                
+               return  window.location.href = '/cart'
             }
             
         } catch (error) {
@@ -231,6 +225,7 @@ async function addAddress(){
                 const chooseButton = document.getElementById('choosePaymentBtn')
                 const cancelButton = document.getElementById('backtoCartBtn');
                 const couponDiv    = document.getElementById('applyCouponDiv')
+                const viewCoupon   = document.getElementById('viewCoupon')
 
                 //WALLET AMOUNT LESS THAN GRAND TOTAL CHECKING
                 const grandTotal   = parseInt(document.getElementById('couponTotalSpan').textContent)
@@ -242,8 +237,6 @@ async function addAddress(){
                     walletAmount = walletBalance.textContent;
                     balanceValue = walletAmount.split(':')[1].trim();
                 }
-                
-                console.log(balanceValue);
                
               
 
@@ -252,6 +245,7 @@ async function addAddress(){
                 cancelButton.style.display = 'block';
                 chooseButton.style.display = 'none' ;
                 couponDiv.style.display    = 'none' ;
+                viewCoupon.style.display   = 'none' ;
 
                 //IF WALLET BALNCE BUTTON NOT HIDED
                 if(walletBalance !== null) {
@@ -307,6 +301,12 @@ async function addAddress(){
                             const data=await response.json();
 
                             if(data.success) {
+
+                                //TO PLAY NOTIFICATION
+                                const audio=new Audio('/Audio/order.mp3')
+                                audio.play();
+
+
                                 Swal.fire({
                                     text: data.success||"Order placed Successfully",
                                     icon: "success"
@@ -316,12 +316,9 @@ async function addAddress(){
 
                                 })
                             } else if(data.empty) {
-                                Swal.fire({
-                                    text: data.empty||"Your cart is empty",
-                                    icon: "error"
-                                }).then(() => {
-                                    window.location.href='/cart'
-                                })
+                               
+                                  return window.location.href='/cart';
+                                
                             } else if(data.error) {
                                 Swal.fire({
                                     text: data.error||" Oops ! Please Try again ",
@@ -407,6 +404,10 @@ async function addAddress(){
                                             const data = await res.json();
                                             
                                             if(data.success) {
+
+                                                //TO PLAY NOTIFICATION
+                                                const audio = new Audio('/Audio/order.mp3')
+                                                audio.play();
  
                                                 Swal.fire({
                                                     text: data.success||"Success",
@@ -501,6 +502,11 @@ async function addAddress(){
                             const data=await response.json();
 
                             if(data.success) {
+
+                                //TO PLAY NOTIFICATION
+                                const audio=new Audio('/Audio/order.mp3')
+                                audio.play();
+
                                 Swal.fire({
                                     text: data.success||"Order placed Successfully",
                                     icon: "success"
@@ -555,9 +561,13 @@ async function addAddress(){
         }).then(async(result) => {
 
             if(result.isConfirmed) {
+
+                //HIDE SHOW COUPONS
+                //document.getElementById('viewCoupon').style.display = 'none';
+                
                 const couponCode = document.getElementById('coupon_code').value
                 if (!couponCode) {
-                        Swal.fire({
+                        return Swal.fire({
                         text: "Please fill the field",
                         icon: "warning"
                     });
@@ -608,3 +618,19 @@ async function addAddress(){
         console.error(error);
     }
  }
+
+ //************************************************************************************************************ */
+ //?COPY COUPON CODE
+
+document.querySelectorAll('.copy-button').forEach(button => {
+    button.addEventListener('click',function () {
+        const code=this.getAttribute('data-code');
+        navigator.clipboard.writeText(code).then(() => {
+            alert('Coupon code copied to clipboard');
+        }).catch(err => {
+            console.error('Failed to copy text: ',err);
+        });
+    });
+});
+
+//************************************************************************************************************ */

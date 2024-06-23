@@ -12,7 +12,7 @@
                         <div class="breadcrumb__wrapper">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                    <li class="breadcrumb-item"><a href="/">Home</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">Shop</li>
                                 </ol>
                             </nav>
@@ -70,15 +70,25 @@
                                         <h5 class="pt-title">Choose Brand</h5>
                                         <div class="widget-category-list mt-20">
                                             <form action="#">
-                                                <% products.forEach(element=> { %>
+                                                <%
+                                                let brands = [];
+                                                products.forEach(element=> { 
+                                                brands.push(element.brand)
 
-                                                    <div class="single-widget-category">
-                                                        <input type="checkbox" id="brand-item-1" name="brand-item">
-                                                        <label for="brand-item-1">
-                                                            <%= element.brand %>
+                                                });
+                                                const brandName = Array.from(new Set(brands));
+                                                brandName.forEach(name => {
+
+                                                %>    
+                                               
+                                                    <div class="widget-category">
+                                                        <input type="radio" onclick="categoryFilter('<%=name %>')" name="cat-item">
+                                                        <label for="cat-item-1">
+                                                            <%=name %>
                                                         </label>
                                                     </div>
-                                                    <% }); %>
+
+                                                    <%  }); %>
                                             </form>
                                         </div>
                                     </div>
@@ -273,12 +283,12 @@
                                                    
                                                                   
                                                               
-                                                            </div>
-
                                                         </div>
 
-                                                    </div>
-                                                    <% }) %>
+                                                </div>
+
+                                            </div>
+                                        <% }) %>
 
                                     </div>
                                 </div>

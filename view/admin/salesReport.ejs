@@ -10,7 +10,7 @@
     <!--navbar-->
 
     <%-include('../partials/navbar.ejs')%>
-
+    
         <!--start main wrapper-->
         <main class="main-wrapper">
             <div class="main-content">
@@ -30,18 +30,8 @@
                     </div>
                 </div>
 
-
-
                 <div class="row g-3">
-                    <div class="col-auto">
-                        <!--<div class="position-relative">
-                            <input class="form-control px-5" type="search" id="searchInput"
-                                placeholder="Search  Products by Name">
-                       
-                        </div>
-                        -->
-
-                    </div>
+               
                     <div class="col-auto flex-grow-1 overflow-auto">
                         <div class="btn-group position-static">
 
@@ -84,8 +74,9 @@
                     </div>
                     <div class="col-auto">
                         <div class="d-flex align-items-center gap-2 justify-content-lg-end">
-                            <button class="btn btn-outline-success" id="toPDF"><i class="fa-solid fa-file-pdf"></i>
-                                - PDF</button>
+                            <button class="btn btn-outline-success" id="toPDF" onclick="downloadPDF()">
+                                <i class="fa-solid fa-file-pdf"   ></i>- PDF</button>
+                                                               
                             <button class="btn btn-outline-info" id="toExcel" ><i class="fa-solid fa-file-excel"></i>
                                  - Excel</button>
                             <a href="/admin/"><button class="btn btn-primary px-4">Go Back</button></a>
@@ -127,8 +118,7 @@
                                                 orderInfo.forEach(order => {
                                                 order.orderItems.forEach(item => {
                                                 const product = item.product.productID;
-                                                const variant = item.product;
-                                                //const address = order.shippingAddress;
+                                                const variant = item.product;                                                
                                                 const quantity = item.quantity
                                                 const status = item.orderStatus
                                                 const totalPrice = order.grandTotal
@@ -142,10 +132,9 @@
                                                 const orderDate = newDate.toDateString();
                                                 const temp = order.orderItems
                                                 
-                                                if (status === 'Delivered' || status === 'Return Rejected' || status === 'Completed') {
+                                                if (status === 'Delivered' || status === 'Return Rejected'
+                                                     || status === 'Completed') {
                                                 %>
-                                                
-                                               
 
                                                 <tr>
                                                     
@@ -182,13 +171,12 @@
                                                         <span>
                                                             <%= user.name%>
                                                         </span><br>
-                                                        <a href=""><span>
+                                                        <a href="">
+                                                            <span>
                                                                 <%= user.email%>
                                                             </span></a>
 
                                                     </td>
-
-
                                                     <td>
                                                         <h6 style="color: rgb(19, 215, 19);">
                                                             <%= paymentMode%>
@@ -281,7 +269,6 @@
 
             <!--bootstrap js-->
             <script src="assets/js/bootstrap.bundle.min.js"></script>
-
             <!--plugins-->
             <script src="assets/js/jquery.min.js"></script>
 
@@ -302,7 +289,6 @@
 
                 });
             </script>
-
 
             </body>
 

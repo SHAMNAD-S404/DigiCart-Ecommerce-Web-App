@@ -1,11 +1,25 @@
- //document.getElementById('otpForm').addEventListener('submit',function (event) {
-//    event.preventDefault();
-//    // Add your OTP verification logic here
-//});
+//*************************************************************************************************************** */
 
+// JavaScript to automatically move cursor to the next input field
+document.addEventListener('DOMContentLoaded',() => {
+    const inputs=document.querySelectorAll('.otp-inputs input');
 
+    inputs.forEach((input,index) => {
+        input.addEventListener('input',() => {
+            if(input.value.length===1&&index<inputs.length-1) {
+                inputs[index+1].focus();
+            }
+        });
 
+        input.addEventListener('keydown',(event) => {
+            if(event.key==='Backspace'&&input.value.length===0&&index>0) {
+                inputs[index-1].focus();
+            }
+        });
+    });
+});
 
+//*************************************************************************************************************** */
 
 // RESEND OTP FUNCTION 
 
@@ -39,4 +53,4 @@ document.addEventListener('DOMContentLoaded',() => {
     startTimer(120);
 });
 
-
+//*************************************************************************************************************** */

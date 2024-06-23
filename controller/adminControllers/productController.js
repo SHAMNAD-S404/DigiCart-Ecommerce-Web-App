@@ -1,26 +1,24 @@
-const file       = require('fs')
+
 const path       = require('path')
 const sharp      = require('sharp')
 const productDB  = require ('../../model/productModel')
 const catagoryDB = require ('../../model/catogoryModel')
 const variantDB  = require ('../../model/variantModel')
-const shamnad    = require('../../model/catogoryModel')
 require('dotenv').config()
 
  
 
-const loadAddProducts = async (req,res) => {
+const loadAddProducts = async (req,res,next) => {
 
     try {
       const allCatagories=await catagoryDB.find()
         res.render('addProducts',{categories: allCatagories})
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const showProducts = async (req,res) => {
+const showProducts = async (req,res,next) => {
 
         try {
 
@@ -40,13 +38,12 @@ const showProducts = async (req,res) => {
              res.render('allProducts',{showProducts,currentPage:page,totalPages}) 
 
         } catch (error) {
-            console.log(error);
-            return res.status(500).redirect('/admin/error')
+            next(error)
         }
 
 }
 
-const insertProducts = async (req,res) => {
+const insertProducts = async (req,res,next) => {
     
     try {
         
@@ -94,48 +91,37 @@ const insertProducts = async (req,res) => {
                 res.status(500).json({message: 'Failed to save product'});
          }  
     } catch (error) {
-        console.log(error);
-        res.status(500).json({message: 'Internal server error'});
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 };
 
-const blockProducts = async (req,res) => {
+const blockProducts = async (req,res,next) => {
 
     try {
         
         const productID = req.query.id
-        const productBlock = await productDB.updateOne({ _id:productID},
+        await productDB.updateOne({ _id:productID},
                                  {$set:{Blocked:true}});
-        if(productBlock){
-            console.log('success');
-            // res.redirect('/admin/allProducts')
-        }else{
-            console.log('product not found !!');
-           // return res.redirect('/admin/allProducts')
-        }
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 
 }
 
-const unblockProducts = async (req,res) => {
+const unblockProducts = async (req,res,next) => {
 
     try {
         const productID = req.query.id
-        const productUnblock=await productDB.updateOne({_id: productID},{$set: {Blocked:false}})
-       // res.redirect('/admin/allProducts')
+        await productDB.updateOne({_id: productID},{$set: {Blocked:false}})
+       
         
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const editProducts = async (req,res) => {
+const editProducts = async (req,res,next) => {
 
     try {
         const productID = req.query.id
@@ -143,12 +129,11 @@ const editProducts = async (req,res) => {
         const productDetails=await productDB.findById(productID).populate('category')
         res.render('editProducts',{product:productDetails,categories: allCatagories})
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const updateProduct = async (req,res) => {
+const updateProduct = async (req,res,next) => {
 
     try {
         const {id,name,discription,category,brand,oldImage} = req.body
@@ -194,12 +179,11 @@ const updateProduct = async (req,res) => {
               return res.status(200).json({success:true,message:'product updated !!'})                                               
          }      
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const deleteProduct = async (req,res) => {
+const deleteProduct = async (req,res,next) => {
 
     try {
         const productID = req.query.id
@@ -216,12 +200,11 @@ const deleteProduct = async (req,res) => {
        
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 
-const loadProductDetails = async(req,res) =>{
+const loadProductDetails = async(req,res,next) =>{
 
     try {
         const success   = req.flash('success') 
@@ -231,8 +214,7 @@ const loadProductDetails = async(req,res) =>{
 
         res.render('productDetails',{product,variant,success})
     } catch (error) {
-        console.log(error);
-        return res.status(500).redirect('/admin/error')
+        next(error)
     }
 }
 

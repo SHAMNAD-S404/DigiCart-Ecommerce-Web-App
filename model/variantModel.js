@@ -65,6 +65,11 @@ const variantSchema = new mongoose.Schema({
         
         type:String,
         required:true
+    },
+    brandName:{
+
+        type:String,
+        required:true
     }
 
 

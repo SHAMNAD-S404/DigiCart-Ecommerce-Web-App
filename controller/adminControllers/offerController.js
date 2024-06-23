@@ -5,19 +5,28 @@ const categoryDB = require ('../../model/catogoryModel')
 const variantDB  = require ('../../model/variantModel')
 
 //LOAD OFFER MANAGEMENT PAGE
-    const loadOfferPage = async(req,res) =>{
+    const loadOfferPage = async(req,res,next) =>{
+        
         try {
-            const offers=await offerDB.find()
+
+            const page  = parseInt(req.query.page) || 1 ;
+            const limit = 4;
+            const skip  = (page-1) * limit;
+
+            const offers= await offerDB.find().skip(skip).limit(limit)
+            const totalOffers = await offerDB.countDocuments();
+            const totalPages = Math.ceil(totalOffers/limit)
     
-            res.render('offers',{offers})
+            res.render('offers',{offers,currentPage:page,totalPages})
+            
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
 
 //LOAD ADD OFFER PAGE
-    const loadAddOffer = async(req,res) => {
+    const loadAddOffer = async(req,res,next) => {
         try {
 
             const category = await categoryDB.find({}).select('name')
@@ -25,13 +34,13 @@ const variantDB  = require ('../../model/variantModel')
             res.status(200).render('addOffer',{category,product})
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
 
 //INSER OFFER
-    const insertOffer = async (req,res) => {
+    const insertOffer = async (req,res,next) => {
         try {
             const { offerType,offerItem,name,
                     discription,percentage,
@@ -182,12 +191,12 @@ const variantDB  = require ('../../model/variantModel')
 
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
 // BLOCK OFFERS
-         const blockOffer = async (req,res) =>{
+         const blockOffer = async (req,res,next) =>{
             try {
 
                 const{offerID}= req.body
@@ -208,13 +217,13 @@ const variantDB  = require ('../../model/variantModel')
                 }
 
             } catch (error) {
-                console.error(error);
+                next(error)
             }
          }
 
 
 // UNBLOCK OFFERS
-         const unblockOffer = async (req,res) =>{
+         const unblockOffer = async (req,res,next) =>{
             try {
 
                 const{offerID}= req.body
@@ -235,7 +244,7 @@ const variantDB  = require ('../../model/variantModel')
                 }
 
             } catch (error) {
-                console.error(error);
+                next(error)
             }
          }
 

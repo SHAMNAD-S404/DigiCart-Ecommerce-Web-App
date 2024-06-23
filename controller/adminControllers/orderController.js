@@ -1,9 +1,10 @@
+
 const orderDB   = require('../../model/orderModel');
 const variantDB = require ('../../model/variantModel')
 const walletDB  = require ('../../model/walletModel')
 
 
-    const loadOrder = async (req,res) => {
+    const loadOrder = async (req,res,next) => {
         try {
 
             const page = parseInt(req.query.page) || 1
@@ -27,12 +28,12 @@ const walletDB  = require ('../../model/walletModel')
             res.render('order',{orderInfo,currentPage:page,totalPages})
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
     
 
-    const loadOrderDetails = async (req,res) => {
+    const loadOrderDetails = async (req,res,next) => {
         try {
             const orderID = req.query.orderId
             const orderInfo = await orderDB.find({_id: orderID}).populate({
@@ -47,18 +48,20 @@ const walletDB  = require ('../../model/walletModel')
             res.render('orderDetails',{orderInfo})
             
         } catch (error) {
-            console.error(error);
+            next(error)
         }
     }
 
 
 //CHANGE ORDER STATUS
     
-    const orderStatusUpdate = async (req,res) => {
+    const orderStatusUpdate = async (req,res,next) => {
         try {
             const{status,variantID,orderID} = req.body;
             const authCheck = await orderDB.findOne({_id:orderID,'orderItems.product':variantID}).select('_id');
             if(authCheck){
+
+                //FOR CANCEL ORDER FUCTIONS
                 if(status==='Cancelled'){
 
                     const orderDetail=await orderDB.findOne({_id:orderID,'orderItems.product': variantID})
@@ -68,7 +71,7 @@ const walletDB  = require ('../../model/walletModel')
                         const variantDetails=orderDetail.orderItems.find(item => item.product.equals(variantID))
                         const quantity=parseInt(variantDetails.quantity)
                         const productPrice=parseInt(variantDetails.productPrice)                      
-                        const total=quantity*productPrice;   //CANCELLED PRODUCT PRICE
+                        let total=quantity*productPrice;   //CANCELLED PRODUCT PRICE
 
                         //INCREASE STOCK QUANTITY OF THAT PRODUCT
                         await variantDB.findByIdAndUpdate(variantID,
@@ -82,20 +85,53 @@ const walletDB  = require ('../../model/walletModel')
                         const deliveryfee=(subTotal>10000)? 'free shipping':(subTotal>0&&subTotal<=10000)? 60:0;
                         const grandTotal=(subTotal>10000)? subTotal:(subTotal>0&&subTotal<=10000)? subTotal+60:0;
 
-                        const update=await orderDB.findByIdAndUpdate(orderID,{
+                        //UPDATION FIELDS
+                        await Promise.all[
+
+                         orderDB.findByIdAndUpdate(orderID,{
                                     $set: {deliveryCharge: deliveryfee,
                                             grandTotal: grandTotal}},
-                                            {new: true});
+                                            {new: true}),
 
-                        const updateStatus = await orderDB.findOneAndUpdate({_id:orderID,'orderItems.product':variantID},
+                         orderDB.findOneAndUpdate({_id:orderID,'orderItems.product':variantID},
                                             {$set:{
                                                 'orderItems.$.quantity' :0,
                                                 'orderItems.$.orderStatus' :status,
                                                 'orderItems.$.productPrice' :0,
-                                              }},{new:true});
+                                              }},{new:true})
+
+                                        ];               
 
                         //REFUND FOR ONLINE & WALLET  PURCHASE 
                         if (orderDetail.paymentMethod !=='COD') {
+
+                            //CHECKING FOR COUPON APPLIED OR NOT 
+                            const couponExist=await orderDB.findOne({_id: orderID,couponDetails: {$exists: true}})
+                            const orderCoupon=await orderDB.findById(orderID)
+
+                            //DECREASING THE CLAIMED AMOUT
+                            if (couponExist) {
+                                
+                                //DIVIDE THE COUPON
+                                const coupon = orderDetail.couponDetails;                              
+                                const totalProducts=parseInt(orderCoupon.orderItems.length)
+                                const divideCouponAmount=parseFloat(coupon.claimedAmount/totalProducts)
+                                couponClaimedAmount=Math.ceil(divideCouponAmount!='null'? divideCouponAmount:0);
+                                total=parseInt(total-couponClaimedAmount)
+                            }
+                            
+                            //CHECKING FOR OFFER CLAIMED PRODUCT && DEDUCTION
+
+                            if (orderCoupon.offerDiscount !== 0) {
+
+                                const offerDiscountAmount = orderCoupon.offerDiscount
+                                const totalProducts=parseInt(orderCoupon.orderItems.length)
+                                const divideOfferAmount=parseFloat(offerDiscountAmount/totalProducts)
+                                const offerClaimedAmount=Math.ceil(divideOfferAmount!='null'? divideOfferAmount:0);
+                                total=parseInt(total-offerClaimedAmount)
+                            }
+
+                            
 
                              await walletDB.findOneAndUpdate({userID:orderDetail.userId},
                                          {
@@ -111,25 +147,49 @@ const walletDB  = require ('../../model/walletModel')
                         return res.status(200).json({success:'Order Cancelled Successfully'})    
                     }else{
                         return res.status(403).json({error: 'Invalid Operation'})
-                    }         
+                    }  
+
                 } else if(status==='Refunded'){
+
                     let couponClaimedAmount=0;
 
                     const orderDetail=await orderDB.findOne({_id: orderID,'orderItems.product': variantID})
+
                     if(orderDetail) {
 
                         //FILTER OUT THE CORRESPONDENT VARIANT DOC
                         const variantDetails=orderDetail.orderItems.find(item => item.product.equals(variantID))
                         const quantity=parseInt(variantDetails.quantity)
                         const productPrice=parseInt(variantDetails.productPrice)
+                        //FINDING TOTAL AMOUNT OF PRODUCT WITH PRO QUANTITY x UNIT PRICE
                         let refundedAmount= parseInt(quantity*productPrice);
                         
 
+                        const couponExist=await orderDB.findOne({_id:orderID,couponDetails:{$exists:true}})
+                        const orderCoupon=await orderDB.findById(orderID)
+                   
                         //DECREASING THE CLAIMED COUPON AMOUNT
-                        if(orderDetail.couponDetails){
-                            const coupon=orderDetail.couponDetails;
-                            couponClaimedAmount = coupon.claimedAmount != 'null' ? coupon.claimedAmount : 0;
+                        if(couponExist){
+                            
+                            //TO DIVIDE THE COUPON AMOUNT
+                            const coupon = orderDetail.couponDetails;                          
+                            const totalProducts=parseInt(orderCoupon.orderItems.length)
+                            const divideCouponAmount = parseFloat(coupon.claimedAmount/totalProducts)                           
+                            couponClaimedAmount = Math.ceil(divideCouponAmount != 'null' ? divideCouponAmount : 0);
                             refundedAmount = parseInt(refundedAmount - couponClaimedAmount)
+
+                        }
+
+                        //CHECKING FOR OFFER CLAIMED PRODUCT && DEDUCTION
+
+                        if(orderCoupon.offerDiscount!==0) {
+
+                            const offerDiscountAmount=orderCoupon.offerDiscount
+                            const totalProducts     = parseInt(orderCoupon.orderItems.length)
+                            const divideOfferAmount = parseFloat(offerDiscountAmount/totalProducts)
+                            const offerClaimedAmount = Math.ceil(divideOfferAmount!='null'? divideOfferAmount:0);
+                            console.log(total);
+                            refundedAmount = parseInt(total-offerClaimedAmount)
                         }
 
 
@@ -152,8 +212,8 @@ const walletDB  = require ('../../model/walletModel')
 
                         //UPDATE STATUS
                         await orderDB.findOneAndUpdate({_id:orderID,'orderItems.product':variantID},
-                                 {$set:{'orderItems.$.orderStatus' :status}},                                   
-                                 {new:true})
+                                 {$set:{'orderItems.$.orderStatus' :status}} );                                 
+                                 
 
                         return res.status(200).json({success: 'Refunded Successfully'})  
 
@@ -161,7 +221,15 @@ const walletDB  = require ('../../model/walletModel')
                             return res.status(403).json({error: 'Invalid Operation'})
                         }        
 
-                }else{
+                } else if(status==='Delivered'){
+
+                     await orderDB.findOneAndUpdate({_id:orderID,'orderItems.product':variantID},
+                                 {$set:{'orderItems.$.orderStatus' :status,deliveryDate:Date.now()}} ); 
+
+                    return res.status(200).json({success: 'Order Status updated Successfully'})  
+
+                } else{
+               
                     
                      await orderDB.findOneAndUpdate({_id:orderID,'orderItems.product':variantID},
                                  {$set:{'orderItems.$.orderStatus' :status,                                   
@@ -176,7 +244,7 @@ const walletDB  = require ('../../model/walletModel')
             
                                     
         } catch (error) {
-            console.log(error);
+            next(error)
         }
     }
 
