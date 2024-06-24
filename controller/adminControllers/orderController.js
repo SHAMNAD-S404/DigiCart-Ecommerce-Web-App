@@ -141,7 +141,7 @@ const walletDB  = require ('../../model/walletModel')
                                                    },
                                             $inc:  {balance: total}
                                          },
-                                            {upsert: true,new: true})
+                                            {upsert: true});
                         }                     
 
                         return res.status(200).json({success:'Order Cancelled Successfully'})    
@@ -187,8 +187,7 @@ const walletDB  = require ('../../model/walletModel')
                             const offerDiscountAmount=orderCoupon.offerDiscount
                             const totalProducts     = parseInt(orderCoupon.orderItems.length)
                             const divideOfferAmount = parseFloat(offerDiscountAmount/totalProducts)
-                            const offerClaimedAmount = Math.ceil(divideOfferAmount!='null'? divideOfferAmount:0);
-                            console.log(total);
+                            const offerClaimedAmount = Math.ceil(divideOfferAmount!='null'? divideOfferAmount:0);              
                             refundedAmount = parseInt(total-offerClaimedAmount)
                         }
 

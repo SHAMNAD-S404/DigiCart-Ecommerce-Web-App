@@ -211,15 +211,10 @@ const editVariant = async(req,res,next) => {
 const deleteVariant = async (req,res,next) => {
 
     try {
+
         const variantID = req.query.id
-        const deleteVar = await variantDB.findByIdAndDelete(variantID)
-        if (deleteVar) {
-            console.log('succefully deleted');
-        }else{
-            console.error('failed to delete');
-            
-        }
-        
+        await variantDB.findByIdAndDelete(variantID)
+         
     } catch (error) {
         next(error)
     }
@@ -252,7 +247,7 @@ const updateVariant = async(req,res,next) => {
                 });
             }
 
-            const update = await variantDB.findByIdAndUpdate(variantID, {
+            await variantDB.findByIdAndUpdate(variantID, {
                 $set:{
                     variantName:variantName,
                     price:price,
@@ -264,12 +259,7 @@ const updateVariant = async(req,res,next) => {
                     imageName:images
                 }});
 
-                if (update) {
-                        
-                        res.redirect('/admin/product-details?id='+update.productID)
-                }else{
-                    console.log('update failed');
-                }             
+            
     } catch (error) {
         next(error)
     }

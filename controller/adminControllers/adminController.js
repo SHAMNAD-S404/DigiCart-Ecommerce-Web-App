@@ -102,6 +102,7 @@ const loadHome=async (req,res,next) => {
                         }
                     }
                 ]);
+                
 
         //REVERSE THE ARRAY IN DESENDING ORDER
         const sortedOrderInfo = orderInfo.sort((a,b)=>b.count - a.count).slice(0,6);
@@ -302,7 +303,7 @@ const blockUser = async (req,res,next) => {
             delete req.session.login_id
             res.redirect('/admin/userList')
         } else{
-            console.log('User not found');
+           
             res.redirect('/admin/userlist')
         }
         

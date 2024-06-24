@@ -50,7 +50,6 @@ const insertCategory=async (req,res,next) => {
                     //Save the resized image
 
                 const newPath = 'public/uploaded_Images/resized'+ req.file.filename;
-                console.log('resized worked');
                 await sharp(resizedImage).toFile(newPath);   
                 const fileName=path.basename(newPath);
                 
@@ -109,7 +108,6 @@ const updateCategory = async (req,res,next) => {
         const existingCategory=await categoryDB.findOne({name: category});
        
         if(existingCategory&&(existingCategory._id.toString()!==id||existingCategory.name.toLowerCase()!==category.toLowerCase())) {
-            console.log('Category name already exists');
             return res.status(401).json({success: false,message: 'Category name already exists'});
         }
         else{

@@ -8,8 +8,10 @@ require('dotenv').config()
 
 //GET WALLET
 const walletPage=async (req,res,next) => {
+    
     try {
         const userID = req.session.login_id;
+
         const wallet = await walletDB.findOne({userID: userID})
                         .sort({createdAt: -1})
                         .limit(6);

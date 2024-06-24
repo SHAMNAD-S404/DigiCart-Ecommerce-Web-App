@@ -61,7 +61,6 @@ const generateUniqueReferralCode = async () => {
             if (isExistingUser){
 
                 req.flash('alert',"User with this email id already exist.Try with another email");
-                console.log('already usser');
             
                 return res.status(400).redirect('/signup')
             }else if (existingNumber) {

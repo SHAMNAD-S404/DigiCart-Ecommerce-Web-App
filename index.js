@@ -11,7 +11,7 @@ require('dotenv').config();
 
 
 app.set('view engine','ejs');
-app.set('views','./views');
+app.set('views','./view');
 
 //MIDDLEWARE
 app.use (nocache());
@@ -24,7 +24,7 @@ app.use(session({
     saveUninitialized: false,
     cookie: {httpOnly: true,secure: false,sameSite: 'strict'}
 
-}))
+}));
 
 
 app.use(flash());
@@ -35,12 +35,12 @@ app.use ('/admin',adminRoute)
 
 const port = process.env.PORT || 3000 ;
 
+//TO REDIRECT TO UNDEFINED 404 FOR UNDEFINED URLS
+app.all('*',(req,res) => {
+    res.status(404).render('admin/505')
 
-//app.use((req,res,next) => {
-//    const err=new Error('Not Found');
-//    err.status=404;
-//    next(err);
-//});
+})
+
 
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => {

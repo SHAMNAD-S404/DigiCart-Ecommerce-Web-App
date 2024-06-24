@@ -77,8 +77,6 @@ const loadShopAll=async (req,res,next) => {
             .sort(sortCondition)
 
 
-        //console.log(allVariants);
-
         const totalProducts=await variantDB.find(searchQuery).countDocuments();
 
         const totalPages=Math.ceil(totalProducts/limit);
@@ -207,7 +205,6 @@ const productDetails=async (req,res,next) => {
 
 
 
-
     module.exports = {
         loadShop,
         loadShopAll,
@@ -218,7 +215,8 @@ const productDetails=async (req,res,next) => {
         loadSignUp,
         loadOTP,
         loadForgotPass,
-        productDetails
+        productDetails,
+        
 
 
     }

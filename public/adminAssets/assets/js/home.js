@@ -68,6 +68,7 @@ document.addEventListener('DOMContentLoaded',() => {
     if(pieChart) {
         const catLabel=JSON.parse(pieChart.dataset.labels);
         const catCount=JSON.parse(pieChart.dataset.counts);
+        
         const barColors=[
             "#FF6384", // Soft Red
             "#36A2EB", // Soft Blue

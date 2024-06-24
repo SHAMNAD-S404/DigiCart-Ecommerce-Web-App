@@ -186,17 +186,13 @@ const updateProduct = async (req,res,next) => {
 const deleteProduct = async (req,res,next) => {
 
     try {
-        const productID = req.query.id
-        const deletion = await productDB.deleteOne({_id:productID})
-        const variantDelete=await variantDB.deleteMany({productID:productID})
-    
-        if(deletion && variantDelete){
-             console.log('both product and variant deleted sucess');
-            // res.redirect('/admin/allProducts')
-        }else{
-            console.log('failed');
-           // res.redirect('/admin/allProducts')
-        }
+        const productID = req.query.id;
+        await Promise.all[
+
+         productDB.deleteOne({_id:productID}),
+         variantDB.deleteMany({productID:productID})
+         
+        ];
        
 
     } catch (error) {
