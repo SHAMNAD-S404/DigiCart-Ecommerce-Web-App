@@ -7,6 +7,7 @@ const nocache    = require  ('nocache')
 const userRoute  = require  ('./routes/userRoute');
 const adminRoute = require  ('./routes/adminRoute')
 const mongoose   = require  ('mongoose');
+const username   = require  ('./middleware/username')
 require('dotenv').config();
 
 
@@ -26,7 +27,7 @@ app.use(session({
 
 }));
 
-
+app.use(username)
 app.use(flash());
 app.use ('/',userRoute);
 app.use ('/admin',adminRoute)

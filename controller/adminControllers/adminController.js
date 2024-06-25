@@ -11,7 +11,7 @@ require('dotenv').config()
 const loadLogin = async (req,res,next) => {
 
         try {
-          
+                    
             res.render('login')
 
         } catch (error) {
@@ -228,7 +228,6 @@ const verifyLogin = async (req,res,next) => {
             const{email,password} = req.body
             const adminEmail = process.env.ADMIN_EMAIL
             const adminPass = process.env.ADMIN_PASS
-          
 
         try {
              if(adminEmail == email && adminPass == password){

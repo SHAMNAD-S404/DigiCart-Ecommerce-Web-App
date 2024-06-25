@@ -1,8 +1,9 @@
-const cartDB    = require('../../model/cartModel')
-const variantDB = require('../../model/variantModel')
-const walletDB  = require('../../model/walletModel')
-const addressDB = require('../../model/addressModel')
-const couponDB  = require('../../model/couponModel')
+const cartDB    = require   ('../../model/cartModel')
+const variantDB = require   ('../../model/variantModel')
+const walletDB  = require   ('../../model/walletModel')
+const addressDB = require   ('../../model/addressModel')
+const couponDB  = require   ('../../model/couponModel')
+const userDB    = require   ('../../model/userModel')
 
 
 
@@ -12,6 +13,7 @@ const loadCart=async (req,res,next) => {
     try {
 
         const userID=req.session.login_id;
+        let username=await userDB.findOne({_id: userID}).select('-_id name') 
         const cartProducts=await cartDB.findOne({userId: userID}).populate({
             path: 'products.productVariantId',
             select: 'variantName price stock block imageName',
@@ -21,7 +23,7 @@ const loadCart=async (req,res,next) => {
             }
         });
 
-        res.render('cart',{cartProducts})
+        res.render('cart',{cartProducts,username})
 
     } catch(error) {
         next(error)
@@ -159,6 +161,8 @@ const loadCheckOut=async (req,res,next) => {
     try {
 
         const userID=req.session.login_id;
+        const username=await userDB.findOne({_id: userID}).select('-_id name') 
+
         const authCheck=await cartDB.findOne({userId: userID}).select('userId');
 
         if(authCheck) {
@@ -199,7 +203,11 @@ const loadCheckOut=async (req,res,next) => {
             const coupons = await couponDB.find({block: false}).select('-_id -block -updatedAt -createdAt')
 
 
-            res.render('checkout',{stock,subTotal,userAddress,total,walletBalance,offerDiscount,coupons})
+            res.render('checkout',{
+                stock,subTotal,userAddress,
+                total,walletBalance,offerDiscount,
+                coupons,username
+            })
 
         } else {
             return res.status(400).redirect('/cart')

@@ -1,7 +1,8 @@
 
-const Razorpay  =   require('razorpay')
-const crypto    =   require('crypto')
-const walletDB  =   require('../../model/walletModel')
+const Razorpay   =   require ('razorpay')
+const crypto     =   require ('crypto')
+const walletDB   =   require ('../../model/walletModel')
+const nameFinder =   require ('../../controller/userControllers/userController')
 require('dotenv').config()
 
 
@@ -10,9 +11,10 @@ require('dotenv').config()
 const walletPage=async (req,res,next) => {
     
     try {
-        const userID = req.session.login_id;
+        const userID   = req.session.login_id;
+        const username = await nameFinder.usernameFinder(userID)
 
-        const wallet = await walletDB.findOne({userID: userID})
+        const wallet   = await walletDB.findOne({userID: userID})
                         .sort({createdAt: -1})
                         .limit(6);
 
@@ -21,7 +23,7 @@ const walletPage=async (req,res,next) => {
             wallet.transactions.reverse();
         }
 
-        res.render('wallet',{wallet})
+        res.render('wallet',{wallet,username});
 
 
     } catch(error) {

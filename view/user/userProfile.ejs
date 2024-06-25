@@ -188,7 +188,9 @@
                                 <p class="itachi">Name:</p>
                                 <p class="itachi"> Email:</p>
                                 <p class="itachi">Phone:</p>
+                                <% if (typeof userData.gender !=='undefined' ) { %>
                                 <p class="itachi">Gender:</p>
+                                <% } %>
 
                               </div>
                               <div class="info-details">
@@ -208,9 +210,7 @@
                                     <%= userData.gender %>
                                   </p>
 
-                                  <% } else { %>
-                                    <p class="" style="color: blue;">Update your gender</p>
-                                    <% } %>
+                                  <% } %>
 
                               </div>
                             </div>
@@ -507,26 +507,13 @@
         </div>
         </div>
 
-
                             </div>
                           </div>
                         </div>
                       </div>
                       
                       <% }); %>
-                        <%
-                       } else{ %>
 
-                          <div class="card" style="width: 35rem;">
-                            <img src="assets/userProfile/homepage-one/page-not-found.jpg" class="card-img-top"
-                              alt="...">
-                            <div class="card-body">
-                              <p class="card-text"> <span style="color: red;"> Address is not addedd !</span> Press '
-                                <span style="color: green; font-weight: bold;">Add new Address </span>' button to add
-                                Address
-                              </p>
-                            </div>
-                          </div>
                           <% }%>
 
 

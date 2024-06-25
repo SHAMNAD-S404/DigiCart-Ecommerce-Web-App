@@ -260,6 +260,14 @@ async function addAddress(){
                         }
                 }
 
+                //FOR HIDING CASH ON DELIVERY AND ONLINE PAYMENT ACCORDING TO TOTAL
+                if(grandTotal>5000&&grandTotal<40000) {
+
+                    cashButton.style.display='none';
+                    onlineButton.style.display='block';
+
+                }
+
                
 
                 //CASH ON DELIVERY
@@ -623,7 +631,8 @@ async function addAddress(){
  //?COPY COUPON CODE
 
 document.querySelectorAll('.copy-button').forEach(button => {
-    button.addEventListener('click',function () {
+    button.addEventListener('click',function (event) {
+        event.preventDefault(); // Prevent the default button behavior
         const code=this.getAttribute('data-code');
         navigator.clipboard.writeText(code).then(() => {
             alert('Coupon code copied to clipboard');
@@ -632,5 +641,4 @@ document.querySelectorAll('.copy-button').forEach(button => {
         });
     });
 });
-
 //************************************************************************************************************ */

@@ -141,7 +141,7 @@ document.getElementById('insertAddress').addEventListener('click',async()=>{
     try {
 
         
-        const fullname=document.getElementById('nameAddress').value;
+        const fullname=document.getElementById('nameAddress').value.trim();
         const phoneNumber=document.getElementById('userphone').value.trim();
         const userAddress=document.getElementById('useraddress').value.trim();
         const userLocality=document.getElementById('userLocality').value.trim();

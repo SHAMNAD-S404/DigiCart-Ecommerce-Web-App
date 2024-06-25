@@ -1,7 +1,10 @@
-    const categoryDB = require('../../model/catogoryModel')
-    const productDB  = require('../../model/productModel');
+    const categoryDB = require ('../../model/catogoryModel')
+    const productDB  = require ('../../model/productModel');
     const variantDB  = require ('../../model/variantModel');
     const offerDB    = require ('../../model/offerModel')
+    const userDB     = require ('../../model/userModel');
+    const nameFinder = require ('../../controller/userControllers/userController')
+
 
 
 
@@ -11,11 +14,14 @@
     const loadShop = async (req,res,next) => {
         try {
 
+            const userID = req.session.login_id;
+            const username = await nameFinder.usernameFinder(userID)
+        
             const allCategory = await categoryDB.find().limit(6)
             const allProducts = await productDB.find().populate('variants').limit(6)
             const latestProducts  =await productDB.find().populate('variants').limit(6).sort({createdAt:-1})
 
-            res.render('home',{allCategory,allProducts,latestProducts})
+            res.render('home',{allCategory,allProducts,latestProducts,username})
         } catch(error) {
             next(error)
         }
@@ -24,6 +30,9 @@
 const loadShopAll=async (req,res,next) => {
 
     try {
+
+        const userID = req.session.login_id;
+        const username=await nameFinder.usernameFinder(userID)
 
         let searchQuery={}
         let sortCondition={}
@@ -87,7 +96,7 @@ const loadShopAll=async (req,res,next) => {
         const allCategory=await categoryDB.find()
 
         res.render('shopAll',{
-            allVariants,allCategory,products,
+            allVariants,allCategory,products,username,
             currentPage: (skip/limit)+1,totalPages,limit
         })
 
@@ -100,8 +109,11 @@ const loadShopAll=async (req,res,next) => {
 const loadAboutUs=async (req,res,next) => {
 
     try {
+        const userID=req.session.login_id;
+        const username=await nameFinder.usernameFinder(userID)
+       
         const success=req.flash('success')
-        res.render('about',{success})
+        res.render('about',{success,username})
     } catch(error) {
         next(error)
     }
@@ -113,7 +125,11 @@ const loadAboutUs=async (req,res,next) => {
 const loadFaq=async (req,res,next) => {
 
     try {
-        res.render('faq')
+
+        const userID=req.session.login_id;
+        const username=await nameFinder.usernameFinder(userID)
+        res.render('faq',{username})
+
     } catch(error) {
         next(error)
     }
@@ -121,17 +137,29 @@ const loadFaq=async (req,res,next) => {
 
 const loadContact=async (req,res,next) => {
     try {
-        res.render('contact')
+
+        const userID=req.session.login_id;
+        const username=await nameFinder.usernameFinder(userID)
+
+        res.render('contact',{username})
+
     } catch(error) {
         next(error)
     }
 }
 
 const loadLogin=async (req,res,next) => {
+
     try {
+
+
+        const userID=req.session.login_id;
+        const username=await nameFinder.usernameFinder(userID)
         const alert=req.flash('messages')
         const success=req.flash('success')
-        res.render('login',{alert,success})
+
+        res.render('login',{alert,success,username})
+
     } catch(error) {
         next(error)
 
@@ -141,8 +169,13 @@ const loadLogin=async (req,res,next) => {
 const loadSignUp=async (req,res,next) => {
 
     try {
-        const alert=req.flash('alert')
-        res.render('signup',{alert})
+
+        const userID    =   req.session.login_id;
+        const username  =   await nameFinder.usernameFinder(userID)
+        const alert     =   req.flash('alert')
+        
+        res.render('signup',{alert,username})
+
     } catch(error) {
         next(error)
     }
@@ -150,15 +183,23 @@ const loadSignUp=async (req,res,next) => {
 
 const loadOTP=async (req,res,next) => {
     try {
-        res.render('otp')
+
+        const userID=req.session.login_id;
+        const username=await nameFinder.usernameFinder(userID)
+
+        res.render('otp',{username})
+
     } catch(error) {
         next(error)
     }
 }
 
 const loadForgotPass=async (req,res,next) => {
+
     try {
+
         res.render('forgotPassword')
+
     } catch(error) {
         next(error)
     }
@@ -167,7 +208,12 @@ const loadForgotPass=async (req,res,next) => {
 
 //PRODUCT DETAILS
 const productDetails=async (req,res,next) => {
+    
     try {
+
+        const userID=req.session.login_id;
+        const username=await nameFinder.usernameFinder(userID)
+
         const productID=req.query.id
         const variantID=req.query.vId
         const products=await productDB.findById(productID).populate('variants')
@@ -193,7 +239,7 @@ const productDetails=async (req,res,next) => {
             }
         }).select('discountPercentage offerName -_id')
 
-        res.render('product-details',{products,variants,offers,categoryOffers})
+        res.render('product-details',{products,variants,offers,categoryOffers,username})
 
     } catch(error) {
 

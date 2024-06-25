@@ -25,10 +25,10 @@
                             <% } %>
                             <form action="/login" method="post">
 
-                                        <label for="name">Username or email address  <span>*</span></label>
-                                        <input id="name" type="email" placeholder="Enter your email" name="email">
+                                        <label for="name">Email address  <span>*</span></label>
+                                        <input id="name" type="email" placeholder="Enter your email" name="email" required>
                                         <label for="pass">Password <span>*</span></label>
-                                        <input id="pass" type="password" placeholder="Enter password..." name="password">
+                                        <input id="pass" type="password" placeholder="Enter password..." name="password" required>
                                         <div class="login-action mb-10 fix">
                                             
                                             <span class="forgot-login f-right">
@@ -37,7 +37,7 @@
                                         </div>
                                          <input type="submit" placeholder="Log in" class="tp-in-btn w-100" value="Log In">        
                                         <a href="/signup" class="tp-in-btn1 w-100" style="border-radius: 2rem;">
-                                            New User &nbsp ? &nbsp SignUp</a>
+                                            New User &nbsp ? &nbsp Create a Account</a>
                             </form>
 
 

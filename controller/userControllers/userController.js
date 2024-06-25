@@ -193,6 +193,7 @@ const generateUniqueReferralCode = async () => {
 
     //LOAD RESET PASSWORD PAGE 
     const loadResetPassPage = async (req,res,next) =>{
+
         try {
 
             const resetData = req.session.resetInfo ;
@@ -270,6 +271,7 @@ const generateUniqueReferralCode = async () => {
 
 
     const resendOTP = async(req,res,next) => {
+
             try {
                 
                 const userEmail = req.session.email_id;
@@ -317,8 +319,8 @@ const generateUniqueReferralCode = async () => {
         const userProfile = async (req,res,next) => {
 
             try {
-                const userID = req.session.login_id;
-          
+                const userID   = req.session.login_id;
+                const username = await usernameFinder(userID)
                 const userData = await userDetails.findById(userID)
                 const addressData = await addressDB.find({userId:userID})
 
@@ -338,14 +340,19 @@ const generateUniqueReferralCode = async () => {
 
 
                 if (!wishlistItems) {
-                   return res.render('userProfile',{userData,addressData,wishlistItems,totalPages:0,currentPage:page})
+
+                   return res.render('userProfile',{
+                       userData,addressData,username,
+                       wishlistItems,totalPages:0,currentPage:page });
                 }
 
                 const totalProduct=wishlistItems.variantId.length
                 const totalPages   = Math.ceil(totalProduct/limit)
                 const paginatedProducts=wishlistItems.variantId.slice(skip,skip+limit) 
 
-                res.render('userProfile',{userData,addressData,wishlistItems: paginatedProducts,totalPages,currentPage:page})
+                res.render('userProfile',{
+                    userData,addressData,wishlistItems: paginatedProducts,username,
+                    totalPages,currentPage:page })
                 
                 
             } catch (error) {
@@ -731,6 +738,17 @@ const generateUniqueReferralCode = async () => {
         }
     }
 
+    const usernameFinder = async(userID) => {
+        try {
+
+            const username=await userDetails.findOne({_id: userID}).select('-_id name')
+            return username;
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
 
     
         
@@ -744,6 +762,7 @@ const generateUniqueReferralCode = async () => {
             
         
             if(req.user){
+
                 const isExistingUser=await userDetails.findOne({email:req.user.email})
                     
                     if (isExistingUser) {
@@ -758,7 +777,7 @@ const generateUniqueReferralCode = async () => {
                         })
 
                         const addUser=await userDetails.create(user)
-                        req.session.login_id=addUser._id; 
+                        req.session.login_id = addUser._id; 
                         res.status(200).redirect('/user-profile')
                     }
                 
@@ -809,6 +828,7 @@ const generateUniqueReferralCode = async () => {
         resetPassword,
         loadResetPassPage,
         updatePassword,
+        usernameFinder,
 
         successGoogleLogin,
         failureGoogleLogin

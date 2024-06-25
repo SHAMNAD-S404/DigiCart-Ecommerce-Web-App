@@ -280,7 +280,7 @@
                                                 <div class="coupon-header">
                                                     <h5>Coupon Code: <%= coupon.couponCode %> </h5>
                                                    
-                                                    <button class="copy-button" data-code="<%= coupon.couponCode %>">
+                                                    <button type="button" class="copy-button" data-code="<%= coupon.couponCode %>">
                                                         <i class="fa-regular fa-copy"></i> Copy
                                                     </button>
                                                 </div>
@@ -291,11 +291,12 @@
                                                     <p class="discount">Discount: <strong>
                                                             <%= coupon.discountPercentage %>%
                                                         </strong></p>
-                                                    <p class="min-purchase">Min Spend: $<%= coupon.minPurchaseAmount %>
+                                                    <p class="min-purchase">Min Spend: &#8377; <%= coupon.minPurchaseAmount %>
                                                     </p>
-                                                    <p class="max-redeem">Max Redeemable: $<%= coupon.maxDiscountAmount %>
+                                                    <p class="max-redeem">Max Redeemable: &#8377; <%= coupon.maxDiscountAmount %>
                                                     </p>
-                                                    <p class="expiry-date">Expires on: <%= new Date(coupon.expiryDate).toLocaleDateString() %>
+                                                    <p class="expiry-date" style="color: red;">
+                                                        Expires on: <%= coupon.expiryDate %>                            
                                                     </p>
                                                 </div>
                                             </div>
@@ -364,7 +365,19 @@
             </div>
         </section>
         <!-- checkout-area-end -->
+<script>
+    document.addEventListener('DOMContentLoaded',()=>{
+        const totalField = document.getElementById('couponTotalSpan')
+        const totatAmount = parseInt(totalField.textContent)
+        if (totatAmount > 5000 && totatAmount < 40000) {
 
+            cashButton.style.display='none';
+            onlineButton.style.display='block';
+           
+        }
+    })
+    
+    </script>
 
 <%- include('../layouts/userLayout/footer.ejs')%>
 <!--RAZORPAY-->

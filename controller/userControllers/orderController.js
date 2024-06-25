@@ -5,8 +5,9 @@ const cartDB    =   require ('../../model/cartModel')
 const couponDB  =   require ('../../model/couponModel')
 const addressDB =   require ('../../model/addressModel')
 const orderDB   =   require ('../../model/orderModel')
-const variantDB =   require ('../../model/variantModel')
-const walletDB  =   require ('../../model/walletModel')
+const variantDB  =   require ('../../model/variantModel')
+const walletDB   =   require ('../../model/walletModel')
+const nameFinder =   require ('../../controller/userControllers/userController')
 require('dotenv').config()
 
 
@@ -254,8 +255,10 @@ const verifyPayment=async (req,res,next) => {
 //LOAD TRACK ORDERS 
 const loadTrackOrder=async (req,res,next) => {
     try {
-        const userID=req.session.login_id;
-        const orderID=req.query.orderID
+        const userID    = req.session.login_id;
+        const orderID   = req.query.orderID
+        const username  = await nameFinder.usernameFinder(userID)
+
         const authCheck=await orderDB.findOne({userId: userID,_id: orderID}).select('userId');
         if(authCheck) {
 
@@ -269,7 +272,7 @@ const loadTrackOrder=async (req,res,next) => {
             });
 
 
-            res.render('trackOrders',{orderInfo})
+            res.render('trackOrders',{orderInfo,username})
 
         } else {
             return res.status(400).json({error: 'Invalid operation'})
@@ -290,8 +293,9 @@ const orderPage=async (req,res,next)=>{
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5 ;
         const skip  = (page-1)*limit
-
         const userID=req.session.login_id;
+        const username = await nameFinder.usernameFinder(userID)
+      
         const orderInfo=await orderDB.find({userId: userID}).populate({
             path: 'orderItems.product',
             model: 'Variant',
@@ -311,7 +315,7 @@ const orderPage=async (req,res,next)=>{
 
 
 
-        res.render('orders',{orderInfo,currentPage:page,totalPages})
+        res.render('orders',{orderInfo,currentPage:page,totalPages,username})
         
     } catch (error) {
         next(error)

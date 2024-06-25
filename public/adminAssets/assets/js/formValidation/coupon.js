@@ -18,7 +18,7 @@
         const maxDiscountAmountSpan  = document.getElementById('maxError')
         const expiryDateSpan         = document.getElementById('dateError')
 
-        const couponRegex= /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{}; ':"\\|,.<>/?]{6}$/
+        const couponRegex= /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{}; ':"\\|,.<>/?]{4,15}$/
         const discriptionRegex=/^[a-zA-Z0-9][a-zA-Z0-9 ]{4,60}[a-zA-Z0-9]$/;
         const discountRegex=/^(10|[1-6][0-9]|70)$/
         const amountRegex=/^[1-9][0-9]*$/
