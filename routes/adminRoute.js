@@ -19,8 +19,8 @@ adminRoute.set ('view engine','ejs');
 adminRoute.set ('views','./view/admin');
 
 
-adminRoute.use (express.json())
-adminRoute.use (express.urlencoded({extended:true}))
+adminRoute.use (express.json({ limit:'50mb' }));
+adminRoute.use (express.urlencoded( { limit:'50mb',extended:true } ))
 adminRoute.use (express.static('public/adminAssets'));
 adminRoute.use (flash())
 
